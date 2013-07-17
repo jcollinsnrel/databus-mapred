@@ -66,7 +66,7 @@ public class DatabusMapredTest extends Configured implements Tool
         		log.info("    in map1:column is "+ByteBufferUtil.string(column.name())+"/"+ByteBufferUtil.string(column.value()));
         	log.info("in map1: context is "+context);
         	log.info("in map1:key is "+ByteBufferUtil.string(key));        	
-        	super.map(key, columns, context);
+        	//super.map(key, columns, context);
         	log.info("in map2");
             for (IColumn column : columns.values())
             {
