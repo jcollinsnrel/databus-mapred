@@ -24,7 +24,7 @@ import org.apache.hadoop.util.ToolRunner;
 
 public class DatabusMapredTest extends Configured implements Tool
 {
-    static final String KEYSPACE = "databu5";
+    static final String KEYSPACE = "databus5";
     static final String COLUMN_FAMILY = "nreldata";
 
     static final String OUTPUT_REDUCER_VAR = "output_reducer";
