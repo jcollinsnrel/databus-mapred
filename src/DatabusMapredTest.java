@@ -21,6 +21,10 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import controllers.ApiPostDataPoints;
 
 
 public class DatabusMapredTest extends Configured implements Tool
@@ -43,6 +47,8 @@ public class DatabusMapredTest extends Configured implements Tool
 
     public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, Text, IntWritable>
     {
+    	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
+
         private final static IntWritable one = new IntWritable(1);
         private Text word = new Text();
         private ByteBuffer sourceColumn;
@@ -50,8 +56,8 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
-        	System.out.println("in setup");
-        	Configuration config = new Configuration();
+        	log.info("in setup");
+			Configuration config = new Configuration();
         	FileSystem hdfs = FileSystem.get(config);
         	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
         	hdfs.delete(srcPath, true);
@@ -60,7 +66,7 @@ public class DatabusMapredTest extends Configured implements Tool
         @Override
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
-        	System.out.println("in map");
+        	log.info("in map");
         	super.map(key, columns, context);
             for (IColumn column : columns.values())
             {
@@ -75,8 +81,11 @@ public class DatabusMapredTest extends Configured implements Tool
 
     public static class ReducerToLogger extends Reducer<Text, IntWritable, Text, IntWritable>
     {
+    	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
+
         public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException
         {
+        	log.info("in reduce");
             int sum = 0;
             for (IntWritable val : values)
                 sum += val.get();
