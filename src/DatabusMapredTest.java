@@ -2,20 +2,11 @@
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.SortedMap;
-import java.util.StringTokenizer;
 
 import org.apache.cassandra.db.IColumn;
 import org.apache.cassandra.hadoop.ColumnFamilyInputFormat;
-import org.apache.cassandra.hadoop.ColumnFamilyOutputFormat;
 import org.apache.cassandra.hadoop.ConfigHelper;
-import org.apache.cassandra.thrift.Column;
-import org.apache.cassandra.thrift.ColumnOrSuperColumn;
-import org.apache.cassandra.thrift.IndexExpression;
-import org.apache.cassandra.thrift.IndexOperator;
-import org.apache.cassandra.thrift.Mutation;
 import org.apache.cassandra.thrift.SlicePredicate;
 import org.apache.cassandra.utils.ByteBufferUtil;
 import org.apache.hadoop.conf.Configuration;
@@ -146,7 +137,7 @@ public class DatabusMapredTest extends Configured implements Tool
             ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 
             ConfigHelper.setOutputInitialAddress(job.getConfiguration(), "localhost");
-            ConfigHelper.setOutputPartitioner(job.getConfiguration(), "Murmur3Partitioner");
+            ConfigHelper.setOutputPartitioner(job.getConfiguration(), "RandomPartitioner");
 
             job.waitForCompletion(true);
 //        }
