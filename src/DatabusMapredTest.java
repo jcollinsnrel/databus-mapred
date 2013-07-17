@@ -11,6 +11,7 @@ import org.apache.cassandra.thrift.SlicePredicate;
 import org.apache.cassandra.utils.ByteBufferUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -49,6 +50,10 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
+        	Configuration config = new Configuration();
+        	  FileSystem hdfs = FileSystem.get(config);
+        	  Path srcPath = new Path(OUTPUT_PATH_PREFIX);
+        	  hdfs.delete(srcPath, false);
         }
 
         @Override
