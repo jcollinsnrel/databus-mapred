@@ -62,14 +62,19 @@ public class DatabusMapredTest extends Configured implements Tool
         {
         	log.info("in map");
         	super.map(key, columns, context);
+        	log.info("in map2");
             for (IColumn column : columns.values())
             {
+            	log.info("in map3");
                 String name  = ByteBufferUtil.string(column.name());
                 //value = ByteBufferUtil.string(column.value());
-                         
+                log.info("in map4");
                 word.set(name);
+                log.info("in map5");
                 context.write(word, one);                
+                log.info("in map6");
             }
+            log.info("in map7");
         }
     }
 
