@@ -46,7 +46,8 @@ public class DatabusMapredTest extends Configured implements Tool
     public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, Text, IntWritable>
     {
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
-
+    	static long mapcounter=0;
+    	
         private final static IntWritable one = new IntWritable(1);
         private Text word = new Text();
         private ByteBuffer sourceColumn;
@@ -60,31 +61,17 @@ public class DatabusMapredTest extends Configured implements Tool
         @Override
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
-        	log.info("in map1");
-        	try {
-	        	log.info("in map1:key is "+ByteBufferUtil.string(key));
-	        	for (IColumn column : columns.values())
-	        		log.info("    in map1:column is "+ByteBufferUtil.string(column.name())+"/"+ByteBufferUtil.string(column.value()));
-	        	log.info("in map1: context is "+context);
-	        	log.info("in map1:key is "+ByteBufferUtil.string(key));        	
-        	}
-        	catch (Exception e) {
-        		//do nothing
-        	}
+        	mapcounter++;
+        	if (mapcounter%1000 == 1)
+        		log.info("called map "+mapcounter+" times.");
         	//super.map(key, columns, context);
-        	log.info("in map2");
             for (IColumn column : columns.values())
             {
-            	log.info("in map3");
                 String name  = ByteBufferUtil.string(column.name());
                 //value = ByteBufferUtil.string(column.value());
-                log.info("in map4");
                 word.set(name);
-                log.info("in map5");
                 context.write(word, one);                
-                log.info("in map6");
             }
-            log.info("in map7");
         }
     }
 
@@ -92,9 +79,13 @@ public class DatabusMapredTest extends Configured implements Tool
     {
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
 
+    	static long reducecounter=0;
+
         public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException
         {
-        	log.info("in reduce");
+        	reducecounter++;
+        	if (reducecounter%1000 == 1)
+        		log.info("called reduce "+reducecounter+" times.");
             int sum = 0;
             for (IntWritable val : values)
                 sum += val.get();
