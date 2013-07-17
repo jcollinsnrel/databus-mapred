@@ -24,8 +24,6 @@ import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.ApiPostDataPoints;
-
 
 public class DatabusMapredTest extends Configured implements Tool
 {
