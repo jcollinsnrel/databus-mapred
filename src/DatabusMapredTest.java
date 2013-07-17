@@ -54,21 +54,12 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
-        	if (0==0)
-        		throw new RuntimeException("ARG!  Setup.");
-        	
         	log.info("in setup");
-			Configuration config = new Configuration();
-        	FileSystem hdfs = FileSystem.get(config);
-        	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
-        	hdfs.delete(srcPath, true);
         }
 
         @Override
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
-        	if (0==0)
-        		throw new RuntimeException("ARG!  map.");
         	log.info("in map");
         	super.map(key, columns, context);
             for (IColumn column : columns.values())
@@ -126,6 +117,11 @@ public class DatabusMapredTest extends Configured implements Tool
                 job.setOutputKeyClass(Text.class);
                 job.setOutputValueClass(IntWritable.class);
 //                FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX + i));
+                Configuration config = new Configuration();
+            	FileSystem hdfs = FileSystem.get(config);
+            	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
+            	if (hdfs.exists(srcPath))
+            		hdfs.delete(srcPath, true);
                 FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
 
             }
