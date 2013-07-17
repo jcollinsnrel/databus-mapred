@@ -53,7 +53,7 @@ public class DatabusMapredTest extends Configured implements Tool
         	Configuration config = new Configuration();
         	  FileSystem hdfs = FileSystem.get(config);
         	  Path srcPath = new Path(OUTPUT_PATH_PREFIX);
-        	  hdfs.delete(srcPath, false);
+        	  hdfs.delete(srcPath, true);
         }
 
         @Override
