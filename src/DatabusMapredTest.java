@@ -61,11 +61,16 @@ public class DatabusMapredTest extends Configured implements Tool
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
         	log.info("in map1");
-        	log.info("in map1:key is "+ByteBufferUtil.string(key));
-        	for (IColumn column : columns.values())
-        		log.info("    in map1:column is "+ByteBufferUtil.string(column.name())+"/"+ByteBufferUtil.string(column.value()));
-        	log.info("in map1: context is "+context);
-        	log.info("in map1:key is "+ByteBufferUtil.string(key));        	
+        	try {
+	        	log.info("in map1:key is "+ByteBufferUtil.string(key));
+	        	for (IColumn column : columns.values())
+	        		log.info("    in map1:column is "+ByteBufferUtil.string(column.name())+"/"+ByteBufferUtil.string(column.value()));
+	        	log.info("in map1: context is "+context);
+	        	log.info("in map1:key is "+ByteBufferUtil.string(key));        	
+        	}
+        	catch (Exception e) {
+        		//do nothing
+        	}
         	//super.map(key, columns, context);
         	log.info("in map2");
             for (IColumn column : columns.values())
