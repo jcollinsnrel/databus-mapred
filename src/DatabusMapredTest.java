@@ -50,15 +50,17 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
+        	System.out.println("in setup");
         	Configuration config = new Configuration();
-        	  FileSystem hdfs = FileSystem.get(config);
-        	  Path srcPath = new Path(OUTPUT_PATH_PREFIX);
-        	  hdfs.delete(srcPath, true);
+        	FileSystem hdfs = FileSystem.get(config);
+        	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
+        	hdfs.delete(srcPath, true);
         }
 
         @Override
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
+        	System.out.println("in map");
         	super.map(key, columns, context);
             for (IColumn column : columns.values())
             {
