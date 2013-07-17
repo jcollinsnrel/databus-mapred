@@ -54,6 +54,9 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
+        	if (0==0)
+        		throw new RuntimeException("ARG!  Setup.");
+        	
         	log.info("in setup");
 			Configuration config = new Configuration();
         	FileSystem hdfs = FileSystem.get(config);
@@ -64,6 +67,8 @@ public class DatabusMapredTest extends Configured implements Tool
         @Override
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
+        	if (0==0)
+        		throw new RuntimeException("ARG!  map.");
         	log.info("in map");
         	super.map(key, columns, context);
             for (IColumn column : columns.values())
