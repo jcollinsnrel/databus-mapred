@@ -60,7 +60,7 @@ public class DatabusMapredTest extends Configured implements Tool
         @Override
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
-        	log.info("in map");
+        	log.info("in map1");
         	super.map(key, columns, context);
         	log.info("in map2");
             for (IColumn column : columns.values())
