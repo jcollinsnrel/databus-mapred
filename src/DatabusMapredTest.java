@@ -129,14 +129,14 @@ public class DatabusMapredTest extends Configured implements Tool
             job.setInputFormatClass(ColumnFamilyInputFormat.class);
 
             ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
-            ConfigHelper.setInputInitialAddress(job.getConfiguration(), "localhost");
-            ConfigHelper.setInputPartitioner(job.getConfiguration(), "Murmur3Partitioner");
+            ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
+            ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
              // this will cause the predicate to be ignored in favor of scanning everything as a wide row
             ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
             SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
             ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 
-            ConfigHelper.setOutputInitialAddress(job.getConfiguration(), "localhost");
+            ConfigHelper.setOutputInitialAddress(job.getConfiguration(), "sdi-prod-01");
             ConfigHelper.setOutputPartitioner(job.getConfiguration(), "RandomPartitioner");
 
             job.waitForCompletion(true);
