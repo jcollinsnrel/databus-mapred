@@ -39,6 +39,7 @@ for jar in $cwd/build/lib/jars/*.jar; do
 done
 
 
+
 if [ -x $JAVA_HOME/bin/java ]; then
     JAVA=$JAVA_HOME/bin/java
 else
