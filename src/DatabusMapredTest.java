@@ -67,7 +67,7 @@ public class DatabusMapredTest extends Configured implements Tool
         	//super.map(key, columns, context);
             for (IColumn column : columns.values())
             {
-                String name  = ByteBufferUtil.string(column.name());
+                String name  = ByteBufferUtil.string(column.value());
                 //value = ByteBufferUtil.string(column.value());
                 word.set(name);
                 context.write(word, one);                
