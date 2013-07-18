@@ -67,6 +67,9 @@
            <fileset dir="${lib.dir}">
         	  <include name="**/*.jar" />
            </fileset>
+           <fileset dir="${ivy.lib.dir}">
+              <include name="**/*.jar" />
+           </fileset>
            <fileset file="${basedir}/cassandra.yaml" />
         </jar>
     </target>
