@@ -38,6 +38,9 @@ public class DatabusMapredTest extends Configured implements Tool
 
     public static void main(String[] args) throws Exception
     {
+    	System.out.println("printing params");
+    	for (String s:args)
+    		System.out.println(s);
         // Let ToolRunner handle generic command-line options
         ToolRunner.run(new Configuration(), new DatabusMapredTest(), args);
         System.exit(0);
