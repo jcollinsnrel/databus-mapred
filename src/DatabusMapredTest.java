@@ -32,7 +32,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
     static final String OUTPUT_REDUCER_VAR = "output_reducer";
     static final String OUTPUT_COLUMN_FAMILY = "output_words";
-    private static final String OUTPUT_PATH_PREFIX = "/tmp/data_count";
+    private static final String OUTPUT_PATH_PREFIX = "/tmp/data_count2";
 
 //    private static final String CONF_COLUMN_NAME = "columnname";
 
