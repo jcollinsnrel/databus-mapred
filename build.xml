@@ -79,6 +79,7 @@
            <!--<fileset dir="${build.classes}" />-->
            <fileset dir="${build.classes}">
         	  <include name="**/*.jar" />
+           	  <include name="**/*.class" />
            </fileset>
 
            <fileset dir="${ivy.jars.dir}">
