@@ -22,7 +22,8 @@
     <property name="build.src" value="${basedir}/src" />
     <property name="build.dir" value="${basedir}/build" />
     <property name="lib.dir" value="${basedir}/lib" />
-    <property name="ivy.lib.dir" value="${build.dir}/lib" />
+    <property name="ivy.lib.dir" value="${build.dir}/lib/" />
+    <property name="ivy.jars.dir" value="${build.dir}/lib/jars/" />
     <property name="build.classes" value="${build.dir}/classes" />
     <property name="final.name" value="databus-mapred" />
     <property name="ivy.version" value="2.1.0" />
@@ -49,6 +50,12 @@
         </fileset>
     </path>
 
+    <target name="clean">
+        <delete dir="${build.dir}" />
+        <delete dir="${ivy.lib.dir}" />
+
+    </target>
+	
     <target name="init">
         <mkdir dir="${build.classes}" />
     </target>
@@ -67,18 +74,15 @@
            <fileset dir="${lib.dir}">
         	  <include name="**/*.jar" />
            </fileset>
-           <fileset dir="${ivy.lib.dir}">
-              <include name="**/*.jar" />
-           </fileset>
+
+           <fileset dir="${ivy.jars.dir}">
+              <include name="*.jar" />
+           </fileset> 
            <fileset file="${basedir}/cassandra.yaml" />
         </jar>
     </target>
 
-    <target name="clean">
-        <delete dir="${build.dir}" />
-        <delete dir="${ivy.lib.dir}" />
 
-    </target>
 
     <!--
         Ivy Specific targets
