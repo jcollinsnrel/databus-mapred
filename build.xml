@@ -75,6 +75,11 @@
     	      <include name="**/*.jar" />
            </fileset>
     	</copy>
+    	<copy todir="${build.classes}/lib">
+    	   <fileset dir="${lib.dir}">
+    	      <include name="**/*.jar" />
+    	   </fileset>
+    	</copy>
         <jar jarfile="${build.dir}/${final.name}.jar">
            <!--<fileset dir="${build.classes}" />-->
            <fileset dir="${build.classes}">
