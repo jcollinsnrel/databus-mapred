@@ -24,6 +24,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.ByteWritable;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -74,7 +75,7 @@ public class DatabusMapredTest extends Configured implements Tool
         System.exit(0);
     }
 
-    public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, ByteBuffer, SortedMap<ByteBuffer, IColumn>>
+    public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, BytesWritable, SortedMap<ByteBuffer, IColumn>>
     {
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
     	static long mapcounter=0;
@@ -96,7 +97,7 @@ public class DatabusMapredTest extends Configured implements Tool
         	if (mapcounter%1000 == 1)
         		log.info("called map "+mapcounter+" times.");
         	//super.map(key, columns, context);
-        	context.write(key, columns);
+        	context.write(new BytesWritable(key.array()), columns);
         }
     }
 
@@ -154,7 +155,7 @@ public class DatabusMapredTest extends Configured implements Tool
             //ConfigHelper.setOutputColumnFamily(job.getConfiguration(), KEYSPACE, OUTPUT_COLUMN_FAMILY);
            // job.getConfiguration().set(CONF_COLUMN_NAME, "sum");
             
-            job.setOutputKeyClass(ByteBuffer.class);
+            job.setOutputKeyClass(BytesWritable.class);
             job.setOutputValueClass(IntWritable.class);
 //            FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX + i));
             Configuration config = new Configuration();
@@ -193,12 +194,11 @@ public class DatabusMapredTest extends Configured implements Tool
     
     
     
-    public static class ReducerToCassandra extends Reducer<ByteBuffer, SortedMap<ByteBuffer, IColumn>, ByteBuffer, List<Mutation>>
+    public static class ReducerToCassandra extends Reducer<BytesWritable, SortedMap<ByteBuffer, IColumn>, BytesWritable, List<Mutation>>
     {
     	
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
 
-        private ByteBuffer outputKey;
         private NoSqlEntityManager sourceMgr;
         private NoSqlEntityManager destMgr;        
 
@@ -248,14 +248,14 @@ public class DatabusMapredTest extends Configured implements Tool
             
         }
 
-        public void reduce(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
+        public void reduce(BytesWritable key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
         	NoSqlTypedSession session = sourceMgr.getTypedSession();
     		NoSqlTypedSession session2 = destMgr.getTypedSession();
         	NoSqlSession raw = session.getRawSession();
     		NoSqlSession raw2 = session2.getRawSession();
     		
-    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.array());
+    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.getBytes());
     				
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
     		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
@@ -274,7 +274,7 @@ public class DatabusMapredTest extends Configured implements Tool
     			
     		}
             RowImpl row = new RowImpl(colTree);
-            row.setKey(key.array());
+            row.setKey(key.getBytes());
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
