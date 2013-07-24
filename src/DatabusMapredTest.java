@@ -70,9 +70,9 @@ public class DatabusMapredTest extends Configured implements Tool
 
     public static void main(String[] args) throws Exception
     {
-    	System.out.println("printing params");
+    	System.out.println("printing params!!!!!!!");
     	for (String s:args)
-    		System.out.println(s);
+    		System.out.println(s +"!!!!!!!");
         // Let ToolRunner handle generic command-line options
         ToolRunner.run(new Configuration(), new DatabusMapredTest(), args);
         System.exit(0);
@@ -216,7 +216,7 @@ public class DatabusMapredTest extends Configured implements Tool
         throws IOException, InterruptedException
         {
             //outputKey = ByteBufferUtil.bytes(context.getConfiguration().get(CONF_COLUMN_NAME));
-            
+            System.out.println("in reducerToCassandra setup!!!!!!!");
     		String cluster1 = "TestCluster";
     		String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
     		String port1 = "9160";
@@ -260,6 +260,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
         public void reduce(BytesWritable key, SortedMapWritable columns, Context context) throws IOException, InterruptedException
         {
+        	System.out.println("in reduce!!!!!!!");
         	NoSqlTypedSession session = sourceMgr.getTypedSession();
     		NoSqlTypedSession session2 = destMgr.getTypedSession();
         	NoSqlSession raw = session.getRawSession();
@@ -290,7 +291,7 @@ public class DatabusMapredTest extends Configured implements Tool
             row.setKey(key.getBytes());
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
-    		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
+    		System.out.println("posting to timeseries table!!!!!!!='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
             
     		//postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), NoSqlTypedSession typedSession);
         }
@@ -304,7 +305,7 @@ public class DatabusMapredTest extends Configured implements Tool
         private static void postTimeSeries(DboTableMeta table, Object pkValue, Object value, NoSqlTypedSession typedSession) {
 
     		if (log.isInfoEnabled())
-    			log.info("writing to Timeseries, table name = '" + table.getColumnFamily() + "'");
+    			log.info("writing to Timeseries, table name!!!!!!! = '" + table.getColumnFamily() + "'");
     		String cf = table.getColumnFamily();
     		
     		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
