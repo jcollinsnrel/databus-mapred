@@ -209,8 +209,9 @@ public class DatabusMapredTest extends Configured implements Tool
     	
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
 
-        private NoSqlEntityManager sourceMgr;
-        private NoSqlEntityManager destMgr;     
+        static private NoSqlEntityManager sourceMgr;
+        static private NoSqlEntityManager destMgr;     
+        static private boolean initialized = false;
 
         public ReducerToCassandra() {
         	log.info("CONSTRUCTING A ReducerToCassandra11!!!!!");
@@ -219,44 +220,45 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Reducer.Context context)
         throws IOException, InterruptedException
         {
-            //outputKey = ByteBufferUtil.bytes(context.getConfiguration().get(CONF_COLUMN_NAME));
-        	log.info("in reducerToCassandra setup11!!!!!!!");
-    		String cluster1 = "TestCluster";
-    		String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
-    		String port1 = "9160";
-    		
-    		String cluster2 = "TestCluster";
-    		String seeds2 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
-    		String port2 = "9160";
-
-//            List<Class> classes = Play.classloader.getAnnotatedClasses(NoSqlEntity.class);
-//            List<Class> classEmbeddables = Play.classloader.getAnnotatedClasses(NoSqlEmbeddable.class);
-//            classes.addAll(classEmbeddables);
-            
-    		Map<String, Object> props = new HashMap<String, Object>();
-    		props.put(Bootstrap.TYPE, "cassandra");
-    		props.put(Bootstrap.CASSANDRA_KEYSPACE, KEYSPACE);
-    		props.put(Bootstrap.CASSANDRA_CLUSTERNAME, cluster1);
-    		props.put(Bootstrap.CASSANDRA_SEEDS, seeds1);
-    		props.put(Bootstrap.CASSANDRA_THRIFT_PORT, port1);
-    		props.put(Bootstrap.AUTO_CREATE_KEY, "create");
-    		//props.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
-
-    		NoSqlEntityManagerFactory factory1 = Bootstrap.create(props, null);  //that 'null' is a classloader that supposed to come from play...  does null work?
-    		sourceMgr = factory1.createEntityManager();
-    		
-    		Map<String, Object> props2 = new HashMap<String, Object>();
-    		props2.put(Bootstrap.TYPE, "cassandra");
-    		props2.put(Bootstrap.CASSANDRA_KEYSPACE, KEYSPACE);
-    		props2.put(Bootstrap.CASSANDRA_CLUSTERNAME, cluster2);
-    		props2.put(Bootstrap.CASSANDRA_SEEDS, seeds2);
-    		props2.put(Bootstrap.CASSANDRA_THRIFT_PORT, port2);
-    		props2.put(Bootstrap.AUTO_CREATE_KEY, "create");
-    		//props2.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
-
-    		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props2, null);  //that 'null' is a classloader that supposed to come from play...  does null work?
-    		destMgr = factory2.createEntityManager();
-
+        	if (!initialized) {
+	            //outputKey = ByteBufferUtil.bytes(context.getConfiguration().get(CONF_COLUMN_NAME));
+	        	log.info("in reducerToCassandra setup11!!!!!!!");
+	    		String cluster1 = "TestCluster";
+	    		String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
+	    		String port1 = "9160";
+	    		
+	    		String cluster2 = "TestCluster";
+	    		String seeds2 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
+	    		String port2 = "9160";
+	
+	//            List<Class> classes = Play.classloader.getAnnotatedClasses(NoSqlEntity.class);
+	//            List<Class> classEmbeddables = Play.classloader.getAnnotatedClasses(NoSqlEmbeddable.class);
+	//            classes.addAll(classEmbeddables);
+	            
+	    		Map<String, Object> props = new HashMap<String, Object>();
+	    		props.put(Bootstrap.TYPE, "cassandra");
+	    		props.put(Bootstrap.CASSANDRA_KEYSPACE, KEYSPACE);
+	    		props.put(Bootstrap.CASSANDRA_CLUSTERNAME, cluster1);
+	    		props.put(Bootstrap.CASSANDRA_SEEDS, seeds1);
+	    		props.put(Bootstrap.CASSANDRA_THRIFT_PORT, port1);
+	    		props.put(Bootstrap.AUTO_CREATE_KEY, "create");
+	    		//props.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
+	
+	    		NoSqlEntityManagerFactory factory1 = Bootstrap.create(props, null);  //that 'null' is a classloader that supposed to come from play...  does null work?
+	    		sourceMgr = factory1.createEntityManager();
+	    		
+	    		Map<String, Object> props2 = new HashMap<String, Object>();
+	    		props2.put(Bootstrap.TYPE, "cassandra");
+	    		props2.put(Bootstrap.CASSANDRA_KEYSPACE, KEYSPACE);
+	    		props2.put(Bootstrap.CASSANDRA_CLUSTERNAME, cluster2);
+	    		props2.put(Bootstrap.CASSANDRA_SEEDS, seeds2);
+	    		props2.put(Bootstrap.CASSANDRA_THRIFT_PORT, port2);
+	    		props2.put(Bootstrap.AUTO_CREATE_KEY, "create");
+	    		//props2.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
+	
+	    		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props2, null);  //that 'null' is a classloader that supposed to come from play...  does null work?
+	    		destMgr = factory2.createEntityManager();
+        	}
             
             
             
