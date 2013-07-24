@@ -210,13 +210,17 @@ public class DatabusMapredTest extends Configured implements Tool
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
 
         private NoSqlEntityManager sourceMgr;
-        private NoSqlEntityManager destMgr;        
+        private NoSqlEntityManager destMgr;     
+
+        public ReducerToCassandra() {
+        	log.info("CONSTRUCTING A ReducerToCassandra!!");
+        }
 
         protected void setup(org.apache.hadoop.mapreduce.Reducer.Context context)
         throws IOException, InterruptedException
         {
             //outputKey = ByteBufferUtil.bytes(context.getConfiguration().get(CONF_COLUMN_NAME));
-            System.out.println("in reducerToCassandra setup!!!!!!!");
+        	log.info("in reducerToCassandra setup!!!!!!!");
     		String cluster1 = "TestCluster";
     		String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
     		String port1 = "9160";
@@ -260,7 +264,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
         public void reduce(BytesWritable key, SortedMapWritable columns, Context context) throws IOException, InterruptedException
         {
-        	System.out.println("in reduce!!!!!!!");
+        	log.info("in reduce!!!!!!!");
         	NoSqlTypedSession session = sourceMgr.getTypedSession();
     		NoSqlTypedSession session2 = destMgr.getTypedSession();
         	NoSqlSession raw = session.getRawSession();
