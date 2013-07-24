@@ -26,7 +26,6 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.SortedMapWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
@@ -59,6 +58,7 @@ import com.alvazan.orm.layer9z.spi.db.inmemory.RowImpl;
 
 public class DatabusMapredTest extends Configured implements Tool
 {
+	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
     static final String KEYSPACE = "databus5";
     static final String COLUMN_FAMILY = "nreldata";
 
@@ -70,9 +70,9 @@ public class DatabusMapredTest extends Configured implements Tool
 
     public static void main(String[] args) throws Exception
     {
-    	System.out.println("printing params!!!!!!!");
+    	log.info("printing params111!!!!!!!");
     	for (String s:args)
-    		System.out.println(s +"!!!!!!!");
+    		System.out.println(s +"111!!!!!!!");
         // Let ToolRunner handle generic command-line options
         ToolRunner.run(new Configuration(), new DatabusMapredTest(), args);
         System.exit(0);
@@ -89,7 +89,7 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
-        	log.info("in setup");
+        	log.info("in setup11!!!!!!");
         }
 
         @Override
@@ -97,7 +97,7 @@ public class DatabusMapredTest extends Configured implements Tool
         {
         	mapcounter++;
         	if (mapcounter%1000 == 1)
-        		log.info("called map "+mapcounter+" times.");
+        		log.info("called map "+mapcounter+" times.11!!!");
         	//super.map(key, columns, context);
         	//if smw was generic it would be SortedMapWritable<WritableComparable, TupleWriteable>
         	SortedMapWritable smw = new SortedMapWritable();
@@ -213,14 +213,14 @@ public class DatabusMapredTest extends Configured implements Tool
         private NoSqlEntityManager destMgr;     
 
         public ReducerToCassandra() {
-        	log.info("CONSTRUCTING A ReducerToCassandra!!");
+        	log.info("CONSTRUCTING A ReducerToCassandra11!!!!!");
         }
 
         protected void setup(org.apache.hadoop.mapreduce.Reducer.Context context)
         throws IOException, InterruptedException
         {
             //outputKey = ByteBufferUtil.bytes(context.getConfiguration().get(CONF_COLUMN_NAME));
-        	log.info("in reducerToCassandra setup!!!!!!!");
+        	log.info("in reducerToCassandra setup11!!!!!!!");
     		String cluster1 = "TestCluster";
     		String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
     		String port1 = "9160";
@@ -264,7 +264,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
         public void reduce(BytesWritable key, SortedMapWritable columns, Context context) throws IOException, InterruptedException
         {
-        	log.info("in reduce!!!!!!!");
+        	log.info("in reduce111!!!!!!!");
         	NoSqlTypedSession session = sourceMgr.getTypedSession();
     		NoSqlTypedSession session2 = destMgr.getTypedSession();
         	NoSqlSession raw = session.getRawSession();
