@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -25,8 +26,11 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.SortedMapWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.mapred.join.TupleWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -74,7 +78,7 @@ public class DatabusMapredTest extends Configured implements Tool
         System.exit(0);
     }
 
-    public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, BytesWritable, SortedMap<ByteBuffer, IColumn>>
+    public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, BytesWritable, SortedMapWritable>
     {
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
     	static long mapcounter=0;
@@ -95,7 +99,14 @@ public class DatabusMapredTest extends Configured implements Tool
         	if (mapcounter%1000 == 1)
         		log.info("called map "+mapcounter+" times.");
         	//super.map(key, columns, context);
-        	context.write(new BytesWritable(key.array()), columns);
+        	//if smw was generic it would be SortedMapWritable<WritableComparable, TupleWriteable>
+        	SortedMapWritable smw = new SortedMapWritable();
+        	
+        	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) {
+        		smw.put(new BytesWritable(entry.getKey().array()), 
+        				new TupleWritable(new Writable[]{new BytesWritable(entry.getValue().name().array()), new BytesWritable(entry.getValue().value().array())}));
+        	}
+        	context.write(new BytesWritable(key.array()), smw);
         }
     }
 
@@ -193,7 +204,7 @@ public class DatabusMapredTest extends Configured implements Tool
     
     
     
-    public static class ReducerToCassandra extends Reducer<BytesWritable, SortedMap<ByteBuffer, IColumn>, BytesWritable, List<Mutation>>
+    public static class ReducerToCassandra extends Reducer<BytesWritable, SortedMapWritable, BytesWritable, List<Mutation>>
     {
     	
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
@@ -247,7 +258,7 @@ public class DatabusMapredTest extends Configured implements Tool
             
         }
 
-        public void reduce(BytesWritable key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
+        public void reduce(BytesWritable key, SortedMapWritable columns, Context context) throws IOException, InterruptedException
         {
         	NoSqlTypedSession session = sourceMgr.getTypedSession();
     		NoSqlTypedSession session2 = destMgr.getTypedSession();
@@ -265,13 +276,16 @@ public class DatabusMapredTest extends Configured implements Tool
     		List<com.alvazan.orm.api.z8spi.action.Column> cols = new ArrayList<com.alvazan.orm.api.z8spi.action.Column>();
 			TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column> colTree = new TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column>();
 
-    		for (IColumn col:columns.values()) {    		
-    			com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(col.name().array(), col.value().array());
+			for (Writable col:columns.values()) {
+				TupleWritable colTuple = (TupleWritable)col;
+				BytesWritable name = (BytesWritable)colTuple.get(0);
+				BytesWritable value = (BytesWritable)colTuple.get(1);				
+				com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(name.getBytes(), value.getBytes());
     			pormCol.getName();
     			
     			cols.add(pormCol);
-    			
-    		}
+			}
+    		
             RowImpl row = new RowImpl(colTree);
             row.setKey(key.getBytes());
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
