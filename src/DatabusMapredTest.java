@@ -248,14 +248,14 @@ public class DatabusMapredTest extends Configured implements Tool
             
         }
 
-        public void reduce(BytesWritable key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
+        public void reduce(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
         	NoSqlTypedSession session = sourceMgr.getTypedSession();
     		NoSqlTypedSession session2 = destMgr.getTypedSession();
         	NoSqlSession raw = session.getRawSession();
     		NoSqlSession raw2 = session2.getRawSession();
     		
-    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.getBytes());
+    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.array());
     				
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
     		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
@@ -274,7 +274,7 @@ public class DatabusMapredTest extends Configured implements Tool
     			
     		}
             RowImpl row = new RowImpl(colTree);
-            row.setKey(key.getBytes());
+            row.setKey(key.array());
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
