@@ -258,6 +258,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	
 	    		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props2, null);  //that 'null' is a classloader that supposed to come from play...  does null work?
 	    		destMgr = factory2.createEntityManager();
+	    		initialized = true;
         	}
             
             
