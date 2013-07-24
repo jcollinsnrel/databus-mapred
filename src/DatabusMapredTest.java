@@ -153,7 +153,8 @@ public class DatabusMapredTest extends Configured implements Tool
            // job.getConfiguration().set(CONF_COLUMN_NAME, "sum");
             
             job.setOutputKeyClass(BytesWritable.class);
-            job.setOutputValueClass(SortedMap.class);
+            job.setMapOutputValueClass(SortedMap.class);
+            //job.setOutputValueClass(SortedMap.class);
 //            FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX + i));
             Configuration config = new Configuration();
         	FileSystem hdfs = FileSystem.get(config);
