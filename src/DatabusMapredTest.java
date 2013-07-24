@@ -154,7 +154,7 @@ public class DatabusMapredTest extends Configured implements Tool
             //ConfigHelper.setOutputColumnFamily(job.getConfiguration(), KEYSPACE, OUTPUT_COLUMN_FAMILY);
            // job.getConfiguration().set(CONF_COLUMN_NAME, "sum");
             
-            job.setOutputKeyClass(BytesWritable.class);
+            job.setOutputKeyClass(ByteBuffer.class);
             job.setOutputValueClass(IntWritable.class);
 //            FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX + i));
             Configuration config = new Configuration();
