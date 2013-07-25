@@ -131,7 +131,7 @@ public class DatabusMapredTest extends Configured implements Tool
         	}
         	context.write(new BytesWritable(key.array()), smw);
         	//REMOVE THIS!!!!!!!!  Try to avoid timeouts by lowering load:
-        	//Thread.sleep(5);
+        	Thread.sleep(2);
         }
     }
 
@@ -313,15 +313,14 @@ public class DatabusMapredTest extends Configured implements Tool
     		List<com.alvazan.orm.api.z8spi.action.Column> cols = new ArrayList<com.alvazan.orm.api.z8spi.action.Column>();
 			TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column> colTree = new TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column>();
 
-			for (Writable col:columns.values()) {
-				TupleWritable colTuple = (TupleWritable)col;
-				BytesWritable name = (BytesWritable)colTuple.get(0);
-				BytesWritable value = (BytesWritable)colTuple.get(1);				
-				com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(name.getBytes(), value.getBytes());
-    			pormCol.getName();
-    			
-    			cols.add(pormCol);
-			}
+//			for (Writable col:columns.values()) {
+//				TupleWritable colTuple = (TupleWritable)col;
+//				BytesWritable name = (BytesWritable)colTuple.get(0);
+//				BytesWritable value = (BytesWritable)colTuple.get(1);				
+//				com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(name.getBytes(), value.getBytes());
+//    			
+//    			cols.add(pormCol);
+//			}
     		
             RowImpl row = new RowImpl(colTree);
             row.setKey(key.getBytes());
