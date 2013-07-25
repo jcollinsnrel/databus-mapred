@@ -88,6 +88,8 @@ public class DatabusMapredTest extends Configured implements Tool
         private SortedMapWritable smw = new SortedMapWritable();
         
         private Map<Integer, Integer> columnCounts = new HashMap<Integer, Integer>();
+        private BytesWritable keyBytes = new BytesWritable();
+        private TupleWritable tupleWrite = new TupleWritable(new Writable[]{});
 
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
@@ -118,9 +120,13 @@ public class DatabusMapredTest extends Configured implements Tool
 
     		columnCounts.put(colcount, ++currentCount);
         	
-        	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) { 
-        		smw.put(new BytesWritable(entry.getKey().array()), 
-        				new TupleWritable(new Writable[]{}));
+        	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) {
+        		byte[] keybytes = entry.getKey().array();
+        		keyBytes.set(keybytes, 0, keybytes.length);
+        		smw.put(keyBytes, tupleWrite);
+//        		smw.put(new BytesWritable(entry.getKey().array()), 
+//        				new TupleWritable(new Writable[]{}));
+//        		smw.put(new BytesWritable(entry.getKey().array()), 
 //        				new TupleWritable(new Writable[]{new BytesWritable(entry.getValue().name().array()), new BytesWritable(entry.getValue().value().array())}));
         	}
         	context.write(new BytesWritable(key.array()), smw);
