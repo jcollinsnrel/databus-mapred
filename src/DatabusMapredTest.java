@@ -102,7 +102,7 @@ public class DatabusMapredTest extends Configured implements Tool
         {
         	mapcounter++;
         	//only do every 5th one:
-        	if (mapcounter%5==0)
+        	if (mapcounter%5!=1)
         		return;
         	if (mapcounter%1000 == 1) {
         		log.info("columnCounts statistics222:");
