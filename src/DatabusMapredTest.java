@@ -118,9 +118,9 @@ public class DatabusMapredTest extends Configured implements Tool
 
     		columnCounts.put(colcount, ++currentCount);
         	
-        	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) {
- 
-//        		smw.put(new BytesWritable(entry.getKey().array()), 
+        	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) { 
+        		smw.put(new BytesWritable(entry.getKey().array()), 
+        				new TupleWritable());
 //        				new TupleWritable(new Writable[]{new BytesWritable(entry.getValue().name().array()), new BytesWritable(entry.getValue().value().array())}));
         	}
         	//context.write(new BytesWritable(key.array()), smw);
@@ -292,13 +292,14 @@ public class DatabusMapredTest extends Configured implements Tool
         	log.info("in reduce111!!!!!!!");
         	NoSqlTypedSession session = sourceMgr.getTypedSession();
     		NoSqlTypedSession session2 = destMgr.getTypedSession();
-        	NoSqlSession raw = session.getRawSession();
-    		NoSqlSession raw2 = session2.getRawSession();
+        	//NoSqlSession raw = session.getRawSession();
+    		//NoSqlSession raw2 = session2.getRawSession();
     		
     		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.getBytes());
-    				
+    		System.out.println("table name is!!!!!!!='"+ tableNameIfVirtual);
+	
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
-    		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
+    		//DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
     		
     		//raw.find(meta, key.getBytes());
     		
@@ -319,8 +320,8 @@ public class DatabusMapredTest extends Configured implements Tool
             RowImpl row = new RowImpl(colTree);
             row.setKey(key.getBytes());
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
-
-    		System.out.println("posting to timeseries table!!!!!!!='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
+            System.out.println("posting to timeseries table!!!!!!!='"+ tableNameIfVirtual +"' key="+keyVal.getKey());
+//    		System.out.println("posting to timeseries table!!!!!!!='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
             
     		//postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), NoSqlTypedSession typedSession);
         }
