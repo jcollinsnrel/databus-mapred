@@ -189,7 +189,9 @@ public class DatabusMapredTest extends Configured implements Tool
 
             //ConfigHelper.setOutputInitialAddress(job.getConfiguration(), "sdi-prod-01");
             //ConfigHelper.setOutputPartitioner(job.getConfiguration(), "RandomPartitioner");
-            ConfigHelper.setRangeBatchSize(job.getConfiguration(), 2048);
+            int rangebatchsize = 1024;
+            log.info("setting rangeBatchSize to "+rangebatchsize);
+            ConfigHelper.setRangeBatchSize(job.getConfiguration(), rangebatchsize);
 
             job.waitForCompletion(true);
 //        }
