@@ -85,6 +85,9 @@ public class DatabusMapredTest extends Configured implements Tool
     	
         private Text word = new Text();
         private ByteBuffer sourceColumn;
+        private SortedMapWritable smw = new SortedMapWritable();
+        
+        private Map<Integer, Integer> columnCounts = new HashMap<Integer, Integer>();
 
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
@@ -97,16 +100,28 @@ public class DatabusMapredTest extends Configured implements Tool
         {
         	mapcounter++;
         	if (mapcounter%1000 == 1) {
+        		log.info("columnCounts statistics:");
+        		for (Entry<Integer, Integer> entry:columnCounts.entrySet()) {
+        			log.info("number of columns: "+entry.getKey()+" this many times:"+entry.getValue());
+        		}
         		log.info("called map "+mapcounter+" times.  Informing m/r framework of progress.");
         		context.progress();
+        		columnCounts.clear();
         	}
         	//super.map(key, columns, context);
         	//if smw was generic it would be SortedMapWritable<WritableComparable, TupleWriteable>
-        	SortedMapWritable smw = new SortedMapWritable();
+
+        	int colcount = columns.size();
+        	int currentCount = 0;
+        	if (columnCounts.get(colcount) != null)
+        		currentCount = columnCounts.get(colcount);
+
+    		columnCounts.put(colcount, ++currentCount);
         	
         	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) {
-        		smw.put(new BytesWritable(entry.getKey().array()), 
-        				new TupleWritable(new Writable[]{new BytesWritable(entry.getValue().name().array()), new BytesWritable(entry.getValue().value().array())}));
+ 
+//        		smw.put(new BytesWritable(entry.getKey().array()), 
+//        				new TupleWritable(new Writable[]{new BytesWritable(entry.getValue().name().array()), new BytesWritable(entry.getValue().value().array())}));
         	}
         	//context.write(new BytesWritable(key.array()), smw);
         	//REMOVE THIS!!!!!!!!  Try to avoid timeouts by lowering load:
