@@ -145,7 +145,7 @@ public class DatabusMapredTest extends Configured implements Tool
 //        for (int i = 0; i < WordCountSetup.TEST_COUNT; i++)
 //        {
 //            String columnName = "text" + i;
-            String columnName = "text";
+            String columnName = "value";
 
             Job job = new Job(getConf(), "databusmapredtest");
             job.setJarByClass(DatabusMapredTest.class);
@@ -187,8 +187,9 @@ public class DatabusMapredTest extends Configured implements Tool
             SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
             ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 
-            ConfigHelper.setOutputInitialAddress(job.getConfiguration(), "sdi-prod-01");
-            ConfigHelper.setOutputPartitioner(job.getConfiguration(), "RandomPartitioner");
+            //ConfigHelper.setOutputInitialAddress(job.getConfiguration(), "sdi-prod-01");
+            //ConfigHelper.setOutputPartitioner(job.getConfiguration(), "RandomPartitioner");
+            ConfigHelper.setRangeBatchSize(job.getConfiguration(), 2048);
 
             job.waitForCompletion(true);
 //        }
