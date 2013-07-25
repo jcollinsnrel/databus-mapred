@@ -120,7 +120,7 @@ public class DatabusMapredTest extends Configured implements Tool
         	
         	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) { 
         		smw.put(new BytesWritable(entry.getKey().array()), 
-        				new TupleWritable());
+        				new TupleWritable(new Writable[]{}));
 //        				new TupleWritable(new Writable[]{new BytesWritable(entry.getValue().name().array()), new BytesWritable(entry.getValue().value().array())}));
         	}
         	context.write(new BytesWritable(key.array()), smw);
