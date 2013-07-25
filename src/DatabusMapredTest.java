@@ -203,6 +203,9 @@ public class DatabusMapredTest extends Configured implements Tool
             
 
             job.setInputFormatClass(ColumnFamilyInputFormat.class);
+            log.info("number of reduce tasks:  "+job.getNumReduceTasks());
+            job.setNumReduceTasks(3);
+            log.info("updated, now number of reduce tasks:  "+job.getNumReduceTasks());
 
             ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
             ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
