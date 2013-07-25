@@ -110,7 +110,7 @@ public class DatabusMapredTest extends Configured implements Tool
         	}
         	//context.write(new BytesWritable(key.array()), smw);
         	//REMOVE THIS!!!!!!!!  Try to avoid timeouts by lowering load:
-        	Thread.sleep(5);
+        	//Thread.sleep(5);
         }
     }
 
