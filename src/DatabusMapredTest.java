@@ -100,7 +100,7 @@ public class DatabusMapredTest extends Configured implements Tool
         {
         	mapcounter++;
         	if (mapcounter%1000 == 1) {
-        		log.info("columnCounts statistics:");
+        		log.info("columnCounts statistics222:");
         		for (Entry<Integer, Integer> entry:columnCounts.entrySet()) {
         			log.info("number of columns: "+entry.getKey()+" this many times:"+entry.getValue());
         		}
