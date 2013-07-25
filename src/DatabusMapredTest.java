@@ -123,7 +123,7 @@ public class DatabusMapredTest extends Configured implements Tool
         				new TupleWritable());
 //        				new TupleWritable(new Writable[]{new BytesWritable(entry.getValue().name().array()), new BytesWritable(entry.getValue().value().array())}));
         	}
-        	//context.write(new BytesWritable(key.array()), smw);
+        	context.write(new BytesWritable(key.array()), smw);
         	//REMOVE THIS!!!!!!!!  Try to avoid timeouts by lowering load:
         	//Thread.sleep(5);
         }
