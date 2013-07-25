@@ -101,6 +101,9 @@ public class DatabusMapredTest extends Configured implements Tool
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
         	mapcounter++;
+        	//only do every 5th one:
+        	if (mapcounter%5==0)
+        		return;
         	if (mapcounter%1000 == 1) {
         		log.info("columnCounts statistics222:");
         		for (Entry<Integer, Integer> entry:columnCounts.entrySet()) {
