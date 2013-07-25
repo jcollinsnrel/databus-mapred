@@ -96,8 +96,10 @@ public class DatabusMapredTest extends Configured implements Tool
         public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
         	mapcounter++;
-        	if (mapcounter%1000 == 1)
-        		log.info("called map "+mapcounter+" times.11!!!");
+        	if (mapcounter%1000 == 1) {
+        		log.info("called map "+mapcounter+" times.  Informing m/r framework of progress.");
+        		context.progress();
+        	}
         	//super.map(key, columns, context);
         	//if smw was generic it would be SortedMapWritable<WritableComparable, TupleWriteable>
         	SortedMapWritable smw = new SortedMapWritable();
@@ -108,7 +110,7 @@ public class DatabusMapredTest extends Configured implements Tool
         	}
         	context.write(new BytesWritable(key.array()), smw);
         	//REMOVE THIS!!!!!!!!  Try to avoid timeouts by lowering load:
-        	Thread.sleep(10);
+        	Thread.sleep(5);
         }
     }
 
