@@ -182,7 +182,6 @@ public class DatabusMapredTest extends Configured implements Tool
     		
     		
     		//eventually you want to do this:
-    		List<com.alvazan.orm.api.z8spi.action.Column> cols = new ArrayList<com.alvazan.orm.api.z8spi.action.Column>();
 			TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column> colTree = new TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column>();
     		System.err.println("columns size is "+columns.size());
     		for (IColumn col:columns.values()) {    		
@@ -193,8 +192,7 @@ public class DatabusMapredTest extends Configured implements Tool
     			System.err.println("    A column is "+ namearray+", value "+valuearray);
     			com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(namearray, valuearray);
     			
-    			cols.add(pormCol);
-    			
+    			colTree.put(new ByteArray(key), pormCol);
     		}
             RowImpl row = new RowImpl(colTree);
             row.setKey(key);
