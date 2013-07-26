@@ -212,7 +212,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
             
-    		//postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), session2);
+    		postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), session2);
         }
         
         private static void postTimeSeries(DboTableMeta table, Object pkValue, Object value, NoSqlTypedSession typedSession) {
