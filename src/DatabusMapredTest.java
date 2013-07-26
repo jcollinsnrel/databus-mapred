@@ -219,7 +219,7 @@ public class DatabusMapredTest extends Configured implements Tool
             row.setKey(key);
             
             com.alvazan.orm.api.z8spi.action.Column next = row.getColumns().iterator().next();
-            System.err.println("After Row is created, it has "+row.getColumns().size()+" columns [0]name is "+next.getName()+" value is "+next.getValue()+" timestamp is "+next.getTimestamp());
+            System.err.println("After Row is created, it has "+row.getColumns().size()+" columns [0]name is "+StandardConverters.convertFromBytes(String.class,next.getName())+" value is "+StandardConverters.convertFromBytes(BigInteger.class,next.getValue())+" timestamp is "+next.getTimestamp());
 
             String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
     		System.err.println("z tableNameIfVirtual is "+tableNameIfVirtual);
