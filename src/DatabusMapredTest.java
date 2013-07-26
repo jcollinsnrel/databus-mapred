@@ -200,7 +200,7 @@ public class DatabusMapredTest extends Configured implements Tool
             RowImpl row = new RowImpl(colTree);
             row.setKey(key);
             
-            System.err.println("--After Row is created, it has "+row.getColumns().size()+" columns");
+            System.err.println("After Row is created, it has "+row.getColumns().size()+" columns");
             String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
     		System.err.println("z tableNameIfVirtual is "+tableNameIfVirtual);
 
