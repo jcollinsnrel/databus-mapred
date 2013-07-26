@@ -326,8 +326,8 @@ public class DatabusMapredTest extends Configured implements Tool
         ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
          // this will cause the predicate to be ignored in favor of scanning everything as a wide row
         ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
-        //SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
-        //ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
+        SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
+        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 
         int rangebatchsize = 1024;
         log.info("setting rangeBatchSize to "+rangebatchsize);
