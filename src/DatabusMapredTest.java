@@ -49,6 +49,7 @@ import com.alvazan.orm.api.z5api.NoSqlSession;
 import com.alvazan.orm.api.z8spi.KeyValue;
 import com.alvazan.orm.api.z8spi.conv.ByteArray;
 import com.alvazan.orm.api.z8spi.conv.Converter;
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
@@ -190,6 +191,8 @@ public class DatabusMapredTest extends Configured implements Tool
         		byte[] valuearray = new byte[col.value().remaining()];
         		col.value().get(valuearray);
     			System.err.println("    A column is "+ namearray+", value "+valuearray);
+    			System.err.println("    As strings, A column is "+ StandardConverters.convertFromBytes(String.class, namearray)+", value "+valuearray);
+    			
     			com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(namearray, valuearray);
     			
     			colTree.put(new ByteArray(key), pormCol);
@@ -198,9 +201,7 @@ public class DatabusMapredTest extends Configured implements Tool
             row.setKey(key);
             
             String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
-            log.info("a tableNameIfVirtual is "+tableNameIfVirtual);
-    		System.out.println("b tableNameIfVirtual is "+tableNameIfVirtual);
-    		System.err.println("c tableNameIfVirtual is "+tableNameIfVirtual);
+    		System.err.println("z tableNameIfVirtual is "+tableNameIfVirtual);
 
     		
             //log.info("tableNameIfVirtual len is "+key.array());
