@@ -192,13 +192,14 @@ public class DatabusMapredTest extends Configured implements Tool
             row.setKey(key.array());
             
             String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.array());
-            log.info("tableNameIfVirtual is "+tableNameIfVirtual);
-    		System.out.println("tableNameIfVirtual is "+tableNameIfVirtual);
-    		System.err.println("tableNameIfVirtual is "+tableNameIfVirtual);
+            log.info("a tableNameIfVirtual is "+tableNameIfVirtual);
+    		System.out.println("b tableNameIfVirtual is "+tableNameIfVirtual);
+    		System.err.println("c tableNameIfVirtual is "+tableNameIfVirtual);
     		
-            log.info("tableNameIfVirtualasbytes is "+key.array());
-    		System.out.println("tableNameIfVirtualasbytes is "+key.array());
-    		System.err.println("tableNameIfVirtualasbytes is "+key.array());
+            //log.info("tableNameIfVirtual len is "+key.array());
+    		//System.out.println("tableNameIfVirtualasbytes is "+key.array());
+    		System.err.println("tableNameIfVirtual bytes len is "+key.array().length);
+    		System.err.println("first byte is '"+key.array()[0]+"'");
             
     		
     		
