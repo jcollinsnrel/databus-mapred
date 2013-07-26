@@ -133,7 +133,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		props.put(Bootstrap.AUTO_CREATE_KEY, "create");
 	    		//props.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
 	
-	    		NoSqlEntityManagerFactory factory1 = Bootstrap.create(props, null);  //that 'null' is a classloader that supposed to come from play...  does null work?
+	    		NoSqlEntityManagerFactory factory1 = Bootstrap.create(props, Thread.currentThread().getContextClassLoader());  //that 'null' is a classloader that supposed to come from play...  does null work?
 	    		sourceMgr = factory1.createEntityManager();
 	    		
 	    		Map<String, Object> props2 = new HashMap<String, Object>();
@@ -145,7 +145,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		props2.put(Bootstrap.AUTO_CREATE_KEY, "create");
 	    		//props2.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
 	
-	    		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props2, null);  //that 'null' is a classloader that supposed to come from play...  does null work?
+	    		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props2, Thread.currentThread().getContextClassLoader());  //that 'null' is a classloader that supposed to come from play...  does null work?
 	    		destMgr = factory2.createEntityManager();
 	    		initialized = true;
 	    		initializing=false;
