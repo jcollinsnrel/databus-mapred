@@ -156,8 +156,11 @@ public class DatabusMapredTest extends Configured implements Tool
         }
 
         @Override
-        public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
+        public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
+    		byte[] key = new byte[keyData.remaining()];
+    		keyData.get(key);
+    		
         	mapcounter++;
         	//only do every 10th one:
         	if (mapcounter%10!=1)
@@ -189,17 +192,18 @@ public class DatabusMapredTest extends Configured implements Tool
     			
     		}
             RowImpl row = new RowImpl(colTree);
-            row.setKey(key.array());
+            row.setKey(key);
             
-            String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.array());
+            String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
             log.info("a tableNameIfVirtual is "+tableNameIfVirtual);
     		System.out.println("b tableNameIfVirtual is "+tableNameIfVirtual);
     		System.err.println("c tableNameIfVirtual is "+tableNameIfVirtual);
+
     		
             //log.info("tableNameIfVirtual len is "+key.array());
     		//System.out.println("tableNameIfVirtualasbytes is "+key.array());
-    		System.err.println("tableNameIfVirtual bytes len is "+key.array().length);
-    		System.err.println("first byte is '"+key.array()[0]+"'");
+    		System.err.println("tableNameIfVirtual bytes len is "+key.length);
+    		System.err.println("first byte is '"+key[0]+"'");
             
     		
     		
