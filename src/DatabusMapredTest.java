@@ -210,10 +210,13 @@ public class DatabusMapredTest extends Configured implements Tool
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
-    		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
+            Object val = null;
+            if (keyVal.getValue() instanceof TypedRow)
+            	val = ((TypedRow)keyVal.getValue()).getColumn("value").getValue();
+    		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+val);
     		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
     		System.err.println("meta2 is "+meta2);
-    		postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), session2);
+    		postTimeSeries(meta2, keyVal.getKey(), val, session2);
         }
         
         private static void postTimeSeries(DboTableMeta table, Object pkValue, Object value, NoSqlTypedSession typedSession) {
