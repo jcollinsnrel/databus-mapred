@@ -61,7 +61,7 @@
     </target>
 
     <target depends="init,ivy-retrieve-build" name="build">
-        <javac destdir="${build.classes}">
+        <javac destdir="${build.classes}" debug="true">
             <src path="${build.src}" />
             <classpath refid="databus-mapred.build.classpath" />
         </javac>
