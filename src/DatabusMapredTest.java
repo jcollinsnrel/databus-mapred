@@ -211,7 +211,8 @@ public class DatabusMapredTest extends Configured implements Tool
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
-    		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
+    		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
+    		System.err.println("meta2 is "+meta2);
     		postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), session2);
         }
         
