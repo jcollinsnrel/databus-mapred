@@ -178,7 +178,7 @@ public class DatabusMapredTest extends Configured implements Tool
     		//NoSqlSession raw2 = session2.getRawSession();
     		
     		
-    		//DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
+    		
     		
     		//eventually you want to do this:
     		List<com.alvazan.orm.api.z8spi.action.Column> cols = new ArrayList<com.alvazan.orm.api.z8spi.action.Column>();
@@ -211,7 +211,7 @@ public class DatabusMapredTest extends Configured implements Tool
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
-            
+    		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
     		postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), session2);
         }
         
