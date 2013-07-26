@@ -262,6 +262,7 @@ public class DatabusMapredTest extends Configured implements Tool
     				return null; //a fix for when they pass us "null" instead of null
     			
     			String val = ""+someVal;
+    			System.err.println("VALUE is "+val);
     			if(val.length() == 0)
     				val = null;
     			return col.convertStringToType(val);
