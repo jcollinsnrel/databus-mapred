@@ -1,6 +1,7 @@
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -191,7 +192,24 @@ public class DatabusMapredTest extends Configured implements Tool
         		byte[] valuearray = new byte[col.value().remaining()];
         		col.value().get(valuearray);
     			System.err.println("    A column is "+ namearray+", value "+valuearray);
-    			System.err.println("    As strings, A column is "+ StandardConverters.convertFromBytes(String.class, namearray)+", value "+valuearray);
+    			BigDecimal valBD = null;
+    			BigInteger valBI = null;
+    			Number n = null;
+    			try {
+    				valBD = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
+    				n=valBD;
+    			}
+    			catch (Exception e) {
+    				System.err.println(" -- got an exception trying to convert value to BD, it's not a BD!");
+    				n=valBI;
+    			}
+    			try {
+    				valBI = StandardConverters.convertFromBytes(BigInteger.class, valuearray);
+    			}
+    			catch (Exception e) {
+    				System.err.println(" -- got an exception trying to convert value to BI, it's not a BI!");
+    			}
+    			System.err.println("    As strings, A column is "+ StandardConverters.convertFromBytes(String.class, namearray)+", value "+n);
     			
     			com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(namearray, valuearray);
     			
@@ -213,6 +231,7 @@ public class DatabusMapredTest extends Configured implements Tool
     		
     		
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
             Object val = null;
@@ -223,7 +242,7 @@ public class DatabusMapredTest extends Configured implements Tool
             	val = ((TypedRow)keyVal.getValue()).getColumn("value").getValue();
             }
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+val);
-    		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
+    		
     		System.err.println("meta2 is "+meta2);
     		postTimeSeries(meta2, keyVal.getKey(), val, session2);
         }
