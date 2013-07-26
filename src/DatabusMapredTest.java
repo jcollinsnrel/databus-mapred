@@ -235,12 +235,12 @@ public class DatabusMapredTest extends Configured implements Tool
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
             Object val = null;
-            if (keyVal.getValue() instanceof TypedRow) {
-            	System.err.println("for table "+tableNameIfVirtual+" it has "+((TypedRow)keyVal.getValue()).getColumnsAsColl().size()+" columns");
-            	for (TypedColumn c:((TypedRow)keyVal.getValue()).getColumnsAsColl())
-            		System.err.println(" for table "+tableNameIfVirtual+" got column "+c.getName()+" value "+c.getValueAsString());
-            	val = ((TypedRow)keyVal.getValue()).getColumn("value").getValue();
-            }
+            
+        	System.err.println("for table "+tableNameIfVirtual+" key "+keyVal.getKey()+" it has "+keyVal.getValue().getColumnsAsColl().size()+" columns");
+        	for (TypedColumn c:keyVal.getValue().getColumnsAsColl())
+        		System.err.println(" for table "+tableNameIfVirtual+" got column "+c.getName()+" value "+c.getValueAsString());
+        	val = keyVal.getValue().getColumn("value").getValue();
+            
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+val);
     		
     		System.err.println("meta2 is "+meta2);
