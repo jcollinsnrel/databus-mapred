@@ -213,6 +213,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
             Object val = null;
             if (keyVal.getValue() instanceof TypedRow) {
+            	System.err.println("for table "+tableNameIfVirtual+" it has "+((TypedRow)keyVal.getValue()).getColumnsAsColl().size()+" columns");
             	for (TypedColumn c:((TypedRow)keyVal.getValue()).getColumnsAsColl())
             		System.err.println(" for table "+tableNameIfVirtual+" got column "+c.getName()+" value "+c.getValueAsString());
             	val = ((TypedRow)keyVal.getValue()).getColumn("value").getValue();
