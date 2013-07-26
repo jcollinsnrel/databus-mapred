@@ -175,7 +175,11 @@ public class DatabusMapredTest extends Configured implements Tool
     		//NoSqlSession raw2 = session2.getRawSession();
     		
     		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.array());
-    				
+    		
+    		log.info("tableNameIfVirtual is "+tableNameIfVirtual);
+    		System.out.println("tableNameIfVirtual is "+tableNameIfVirtual);
+    		System.err.println("tableNameIfVirtual is "+tableNameIfVirtual);
+    		
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
     		//DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
     		
