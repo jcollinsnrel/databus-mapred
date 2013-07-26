@@ -26,6 +26,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.SortedMapWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
@@ -78,183 +79,37 @@ public class DatabusMapredTest extends Configured implements Tool
         System.exit(0);
     }
 
-    public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, BytesWritable, SortedMapWritable>
+    public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, Text, IntWritable>
     {
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
     	static long mapcounter=0;
     	
         private Text word = new Text();
+        private final static IntWritable one = new IntWritable(1);
+
         private ByteBuffer sourceColumn;
-        private SortedMapWritable smw = new SortedMapWritable();
-        
-        private Map<Integer, Integer> columnCounts = new HashMap<Integer, Integer>();
-        private BytesWritable keyBytes = new BytesWritable();
-        private TupleWritable tupleWrite = new TupleWritable(new Writable[]{});
-
-        protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
-        throws IOException, InterruptedException
-        {
-        	log.info("in setup11!!!!!!");
-        }
-
-        @Override
-        public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
-        {
-        	mapcounter++;
-        	//only do every 5th one:
-        	if (mapcounter%5!=1)
-        		return;
-        	if (mapcounter%1000 == 1) {
-        		log.info("columnCounts statistics222:");
-        		for (Entry<Integer, Integer> entry:columnCounts.entrySet()) {
-        			log.info("number of columns: "+entry.getKey()+" this many times:"+entry.getValue());
-        		}
-        		log.info("called map "+mapcounter+" times.  Informing m/r framework of progress.");
-        		context.progress();
-        		columnCounts.clear();
-        	}
-        	//super.map(key, columns, context);
-        	//if smw was generic it would be SortedMapWritable<WritableComparable, TupleWriteable>
-
-        	int colcount = columns.size();
-        	int currentCount = 0;
-        	if (columnCounts.get(colcount) != null)
-        		currentCount = columnCounts.get(colcount);
-
-    		columnCounts.put(colcount, ++currentCount);
-        	
-        	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) {
-        		byte[] keybytes = entry.getKey().array();
-        		keyBytes.set(keybytes, 0, keybytes.length);
-        		smw.put(keyBytes, tupleWrite);
-//        		smw.put(new BytesWritable(entry.getKey().array()), 
-//        				new TupleWritable(new Writable[]{}));
-//        		smw.put(new BytesWritable(entry.getKey().array()), 
-//        				new TupleWritable(new Writable[]{new BytesWritable(entry.getValue().name().array()), new BytesWritable(entry.getValue().value().array())}));
-        	}
-        	context.write(new BytesWritable(key.array()), smw);
-        	//REMOVE THIS!!!!!!!!  Try to avoid timeouts by lowering load:
-        	Thread.sleep(3);
-        }
-    }
-
-//    public static class ReducerToLogger extends Reducer<Text, IntWritable, Text, IntWritable>
-//    {
-//    	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
-//
-//    	static long reducecounter=0;
-//
-//        public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException
-//        {
-//        	reducecounter++;
-//        	if (reducecounter%1000 == 1)
-//        		log.info("called reduce "+reducecounter+" times.");
-//            int sum = 0;
-//            for (IntWritable val : values)
-//                sum += val.get();
-//            context.write(key, new IntWritable(sum));
-//        }
-//    }
-
-    
-    public int run(String[] args) throws Exception
-    {
-        String outputReducerType = "logger";
-        if (args != null && args[0].startsWith(OUTPUT_REDUCER_VAR))
-        {
-            String[] s = args[0].split("=");
-            if (s != null && s.length == 2)
-                outputReducerType = s[1];
-        }
-        
-        // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
-        ConfigHelper.setRangeBatchSize(getConf(), 99);
-
-//        for (int i = 0; i < WordCountSetup.TEST_COUNT; i++)
-//        {
-//            String columnName = "text" + i;
-            String columnName = "value";
-
-            Job job = new Job(getConf(), "databusmapredtest");
-            job.setJarByClass(DatabusMapredTest.class);
-            job.setMapperClass(TokenizerMapper.class);
-
-            job.setCombinerClass(ReducerToCassandra.class);
-            job.setReducerClass(ReducerToCassandra.class);
-
-//                job.setMapOutputKeyClass(Text.class);
-//                job.setMapOutputValueClass(IntWritable.class);
-//                job.setOutputKeyClass(ByteBuffer.class);
-//                job.setOutputValueClass(Text.class);
-//                job.setOutputValueClass(IntWritable.class);
-            //job.setOutputFormatClass(ColumnFamilyOutputFormat.class);
-
-            //ConfigHelper.setOutputColumnFamily(job.getConfiguration(), KEYSPACE, OUTPUT_COLUMN_FAMILY);
-           // job.getConfiguration().set(CONF_COLUMN_NAME, "sum");
-            
-            job.setOutputKeyClass(BytesWritable.class);
-            job.setMapOutputValueClass(SortedMapWritable.class);
-            job.setOutputValueClass(SortedMapWritable.class);
-//            FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX + i));
-            Configuration config = new Configuration();
-        	FileSystem hdfs = FileSystem.get(config);
-        	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
-        	if (hdfs.exists(srcPath))
-        		hdfs.delete(srcPath, true);
-            FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
-            
-            
-
-            job.setInputFormatClass(ColumnFamilyInputFormat.class);
-            log.info("number of reduce tasks:  "+job.getNumReduceTasks());
-            job.setNumReduceTasks(3);
-            log.info("updated, now number of reduce tasks:  "+job.getNumReduceTasks());
-
-            ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
-            ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
-            ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
-             // this will cause the predicate to be ignored in favor of scanning everything as a wide row
-            ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
-            SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
-            ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
-
-            //ConfigHelper.setOutputInitialAddress(job.getConfiguration(), "sdi-prod-01");
-            //ConfigHelper.setOutputPartitioner(job.getConfiguration(), "RandomPartitioner");
-            int rangebatchsize = 1024;
-            log.info("setting rangeBatchSize to "+rangebatchsize);
-            ConfigHelper.setRangeBatchSize(job.getConfiguration(), rangebatchsize);
-
-            job.waitForCompletion(true);
-//        }
-        return 0;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    public static class ReducerToCassandra extends Reducer<BytesWritable, SortedMapWritable, BytesWritable, List<Mutation>>
-    {
-    	
-    	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
 
         static private NoSqlEntityManager sourceMgr;
         static private NoSqlEntityManager destMgr;     
         static private boolean initialized = false;
+        static private boolean initializing = false;
 
-        public ReducerToCassandra() {
-        	log.info("CONSTRUCTING A ReducerToCassandra11!!!!!");
-        }
 
-        protected void setup(org.apache.hadoop.mapreduce.Reducer.Context context)
+        
+        protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
+        	if (destMgr != null)
+        		return;
+        	while (initializing)
+        		Thread.sleep(1);
+        	//manual thread locking!  Why not.
         	if (!initialized) {
+        		if (initializing) {
+        			while(initializing) Thread.sleep(2);
+        			return;
+        		}
+        		initializing=true;
 	            //outputKey = ByteBufferUtil.bytes(context.getConfiguration().get(CONF_COLUMN_NAME));
 	        	log.info("in reducerToCassandra setup11!!!!!!!");
 	    		String cluster1 = "TestCluster";
@@ -293,55 +148,56 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props2, null);  //that 'null' is a classloader that supposed to come from play...  does null work?
 	    		destMgr = factory2.createEntityManager();
 	    		initialized = true;
+	    		initializing=false;
         	}
             
             
             
         }
 
-        public void reduce(BytesWritable key, SortedMapWritable columns, Context context) throws IOException, InterruptedException
+        @Override
+        public void map(ByteBuffer key, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
-        	log.info("in reduce111!!!!!!!");
+        	mapcounter++;
+        	//only do every 10th one:
+        	if (mapcounter%10!=1)
+        		return;
+        	if (mapcounter%1000 == 1) {
+        		log.info("called map "+mapcounter+" times.");
+        		context.progress();
+        	}
+        	//super.map(key, columns, context);
+
+        	
         	NoSqlTypedSession session = sourceMgr.getTypedSession();
     		NoSqlTypedSession session2 = destMgr.getTypedSession();
         	//NoSqlSession raw = session.getRawSession();
     		//NoSqlSession raw2 = session2.getRawSession();
     		
-    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.getBytes());
-    		System.out.println("table name is!!!!!!!='"+ tableNameIfVirtual);
-	
+    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.array());
+    				
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
     		//DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
-    		
-    		//raw.find(meta, key.getBytes());
     		
     		//eventually you want to do this:
     		List<com.alvazan.orm.api.z8spi.action.Column> cols = new ArrayList<com.alvazan.orm.api.z8spi.action.Column>();
 			TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column> colTree = new TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column>();
-
-//			for (Writable col:columns.values()) {
-//				TupleWritable colTuple = (TupleWritable)col;
-//				BytesWritable name = (BytesWritable)colTuple.get(0);
-//				BytesWritable value = (BytesWritable)colTuple.get(1);				
-//				com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(name.getBytes(), value.getBytes());
-//    			
-//    			cols.add(pormCol);
-//			}
     		
+    		for (IColumn col:columns.values()) {    		
+    			com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(col.name().array(), col.value().array());
+    			pormCol.getName();
+    			
+    			cols.add(pormCol);
+    			
+    		}
             RowImpl row = new RowImpl(colTree);
-            row.setKey(key.getBytes());
+            row.setKey(key.array());
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
-            System.out.println("posting to timeseries table!!!!!!!='"+ tableNameIfVirtual +"' key="+keyVal.getKey());
-//    		System.out.println("posting to timeseries table!!!!!!!='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
+
+    		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
             
-    		//postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), NoSqlTypedSession typedSession);
+    		//postTimeSeries(meta2, keyVal.getKey(), keyVal.getValue(), session2);
         }
-    		
-		private Object getValue(byte[] value, NoSqlConverter customConv) {
-	        Class<? extends Converter> convClazz = customConv.converter();
-	        Converter converter = ReflectionUtil.create(convClazz);
-	        return converter.convertFromNoSql(value);
-	    }
         
         private static void postTimeSeries(DboTableMeta table, Object pkValue, Object value, NoSqlTypedSession typedSession) {
 
@@ -402,19 +258,72 @@ public class DatabusMapredTest extends Configured implements Tool
     			throw new RuntimeException(e);
     		}
     	}
+    }
 
-        private static Mutation getMutation(Text word, int sum)
+    public static class ReducerToLogger extends Reducer<Text, IntWritable, Text, IntWritable>
+    {
+    	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
+
+    	static long reducecounter=0;
+
+        public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException
         {
-            Column c = new Column();
-            c.setName(Arrays.copyOf(word.getBytes(), word.getLength()));
-            c.setValue(ByteBufferUtil.bytes(sum));
-            c.setTimestamp(System.currentTimeMillis());
-
-            Mutation m = new Mutation();
-            m.setColumn_or_supercolumn(new ColumnOrSuperColumn());
-            m.column_or_supercolumn.setColumn(c);
-            return m;
+        	reducecounter++;
+        	if (reducecounter%1000 == 1)
+        		log.info("called reduce "+reducecounter+" times.");
+            int sum = 0;
+            for (IntWritable val : values)
+                sum += val.get();
+            context.write(key, new IntWritable(sum));
         }
+    }
+
+    
+    public int run(String[] args) throws Exception
+    {        
+        // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
+        ConfigHelper.setRangeBatchSize(getConf(), 99);
+
+        String columnName = "value";
+
+        Job job = new Job(getConf(), "databusmapredtest");
+        job.setJarByClass(DatabusMapredTest.class);
+        job.setMapperClass(TokenizerMapper.class);
+
+        job.setCombinerClass(ReducerToLogger.class);
+        job.setReducerClass(ReducerToLogger.class);
+        
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
+        Configuration config = new Configuration();
+    	FileSystem hdfs = FileSystem.get(config);
+    	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
+    	if (hdfs.exists(srcPath))
+    		hdfs.delete(srcPath, true);
+        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
+        
+        
+
+        job.setInputFormatClass(ColumnFamilyInputFormat.class);
+        log.info("number of reduce tasks:  "+job.getNumReduceTasks());
+        job.setNumReduceTasks(3);
+        log.info("updated, now number of reduce tasks:  "+job.getNumReduceTasks());
+
+        ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
+        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
+        ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
+         // this will cause the predicate to be ignored in favor of scanning everything as a wide row
+        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
+        SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
+        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
+
+        int rangebatchsize = 1024;
+        log.info("setting rangeBatchSize to "+rangebatchsize);
+        ConfigHelper.setRangeBatchSize(job.getConfiguration(), rangebatchsize);
+
+        job.waitForCompletion(true);
+        return 0;
     }
 
 }
