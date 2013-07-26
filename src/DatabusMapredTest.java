@@ -174,13 +174,7 @@ public class DatabusMapredTest extends Configured implements Tool
         	//NoSqlSession raw = session.getRawSession();
     		//NoSqlSession raw2 = session2.getRawSession();
     		
-    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.array());
     		
-    		log.info("tableNameIfVirtual is "+tableNameIfVirtual);
-    		System.out.println("tableNameIfVirtual is "+tableNameIfVirtual);
-    		System.err.println("tableNameIfVirtual is "+tableNameIfVirtual);
-    		
-    		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
     		//DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"StreamTrans");
     		
     		//eventually you want to do this:
@@ -196,6 +190,19 @@ public class DatabusMapredTest extends Configured implements Tool
     		}
             RowImpl row = new RowImpl(colTree);
             row.setKey(key.array());
+            
+            String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key.array());
+            log.info("tableNameIfVirtual is "+tableNameIfVirtual);
+    		System.out.println("tableNameIfVirtual is "+tableNameIfVirtual);
+    		System.err.println("tableNameIfVirtual is "+tableNameIfVirtual);
+    		
+            log.info("tableNameIfVirtualasbytes is "+key.array());
+    		System.out.println("tableNameIfVirtualasbytes is "+key.array());
+    		System.err.println("tableNameIfVirtualasbytes is "+key.array());
+            
+    		
+    		
+    		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+keyVal.getValue());
@@ -319,8 +326,8 @@ public class DatabusMapredTest extends Configured implements Tool
         ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
          // this will cause the predicate to be ignored in favor of scanning everything as a wide row
         ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
-        SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
-        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
+        //SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
+        //ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 
         int rangebatchsize = 1024;
         log.info("setting rangeBatchSize to "+rangebatchsize);
