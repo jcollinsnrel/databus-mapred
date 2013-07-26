@@ -53,6 +53,7 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.ReflectionUtil;
+import com.alvazan.orm.api.z8spi.meta.TypedColumn;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.orm.layer9z.spi.db.inmemory.RowImpl;
 
@@ -211,8 +212,11 @@ public class DatabusMapredTest extends Configured implements Tool
             KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
 
             Object val = null;
-            if (keyVal.getValue() instanceof TypedRow)
+            if (keyVal.getValue() instanceof TypedRow) {
+            	for (TypedColumn c:((TypedRow)keyVal.getValue()).getColumnsAsColl())
+            		System.err.println(" for table "+tableNameIfVirtual+" got column "+c.getName()+" value "+c.getValueAsString());
             	val = ((TypedRow)keyVal.getValue()).getColumn("value").getValue();
+            }
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+val);
     		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
     		System.err.println("meta2 is "+meta2);
