@@ -202,39 +202,46 @@ public class DatabusMapredTest extends Configured implements Tool
         	if (allColumns.length==1 && "value".equals(allColumns[0].getColumnName()) && "time".equals(idColumnName)) 
         		return true;
 
-        	log.info("table is not a stream, length is "+allColumns.length+" idcolname is "+idColumnName);
-        	
-        	for (int i =0; i< allColumns.length; i++) {
-        		DboColumnMeta colmeta = allColumns[i];
-        		log.info("    colmeta["+i+"] is "+colmeta.getColumnName());
-        	}
+//        	log.info("table is not a stream, length is "+allColumns.length+" idcolname is "+idColumnName);
+//        	
+//        	for (int i =0; i< allColumns.length; i++) {
+//        		DboColumnMeta colmeta = allColumns[i];
+//        		log.info("    colmeta["+i+"] is "+colmeta.getColumnName());
+//        	}
         	return false;
 		}
 
 		private void transferOrdinary(NoSqlEntityManager sourceMgr2,
 				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
-			log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual);
+			byte[] nonvirtkey = meta.getIdColumnMeta().unformVirtRowKey(key);
+    		String idValue = ""+meta.getIdColumnMeta().convertFromStorage2(nonvirtkey);
+    		String idColName = ""+meta.getIdColumnMeta().getColumnName();
+			log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
+		
 			for (IColumn col:columns.values()) {    		
     			byte[] namearray = new byte[col.name().remaining()];
         		col.name().get(namearray);
         		byte[] valuearray = new byte[col.value().remaining()];
         		col.value().get(valuearray);
-    			System.err.println("    A column is "+ namearray+", value "+valuearray);
-    			Number n = null;
-    			try {
-    				n = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
-    			}
-    			catch (Exception e) {
-    				System.err.println(" -- got an exception trying to convert value to BD, it's not a BD!");
-    			}
-    			try {
-    				n = StandardConverters.convertFromBytes(BigInteger.class, valuearray);
-    			}
-    			catch (Exception e) {
-    				System.err.println(" -- got an exception trying to convert value to BI, it's not a BI!");
-    			}
-    			String colName = StandardConverters.convertFromBytes(String.class, namearray);  			
-    			System.err.println("    As strings, A (relational) column is "+ colName+", value "+n);
+    			//Object n = null;
+    			String colName = StandardConverters.convertFromBytes(String.class, namearray); 
+    			Object objVal = meta.getColumnMeta(colName).convertFromStorage2(valuearray);
+				
+
+//    			try {
+//    				n = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
+//    			}
+//    			catch (Exception e) {
+//    				System.err.println(" -- got an exception trying to convert value to BD, it's not a BD!");
+//    			}
+//    			try {
+//    				n = StandardConverters.convertFromBytes(BigInteger.class, valuearray);
+//    			}
+//    			catch (Exception e) {
+//    				System.err.println(" -- got an exception trying to convert value to BI, it's not a BI!");
+//    			}
+    			
+    			log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
     		}
 			
 		}
@@ -271,13 +278,13 @@ public class DatabusMapredTest extends Configured implements Tool
 
     			if ("value".equals(colName)) 
     				value = ""+n;    			
-    			System.err.println("    As strings, A column is "+ colName+", value "+n);
+    			//log.info("    As strings, A column is "+ colName+", value "+n);
     		}
     		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test
     		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
             
-    		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+value);
-    		System.err.println("meta2 is "+meta2);
+    		log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+value);
+    		//log.info("meta2 is "+meta2);
     		//postTimeSeries(meta2, time, value, session2);
 			
 		}
