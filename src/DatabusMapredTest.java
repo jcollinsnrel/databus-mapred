@@ -198,8 +198,6 @@ public class DatabusMapredTest extends Configured implements Tool
     		DboColumnMeta[] allColumns = meta.getAllColumns().toArray(new DboColumnMeta[]{});
 
     		String idColumnName = meta.getIdColumnMeta().getColumnName();
-    		byte[] nonvirtkey = meta.getIdColumnMeta().unformVirtRowKey(key);
-    		log.info("the object I get back from convertfromStorage2 is "+meta.getIdColumnMeta().convertFromStorage2(nonvirtkey));
 
         	if (allColumns.length==1 && "value".equals(allColumns[0].getColumnName()) && "time".equals(idColumnName)) 
         		return true;
@@ -247,12 +245,15 @@ public class DatabusMapredTest extends Configured implements Tool
     		System.err.println("columns size is "+columns.size());
     		String time = null;
     		String value = null;
+    		
+    		byte[] nonvirtkey = meta.getIdColumnMeta().unformVirtRowKey(key);
+    		time = ""+meta.getIdColumnMeta().convertFromStorage2(nonvirtkey);
+    		
     		for (IColumn col:columns.values()) {    		
     			byte[] namearray = new byte[col.name().remaining()];
         		col.name().get(namearray);
         		byte[] valuearray = new byte[col.value().remaining()];
         		col.value().get(valuearray);
-    			System.err.println("    A column is "+ namearray+", value "+valuearray);
     			Number n = null;
     			try {
     				n = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
@@ -267,21 +268,12 @@ public class DatabusMapredTest extends Configured implements Tool
     				System.err.println(" -- got an exception trying to convert value to BI, it's not a BI!");
     			}
     			String colName = StandardConverters.convertFromBytes(String.class, namearray);
-    			if ("time".equals(colName)) 
-    				time = ""+n;
+
     			if ("value".equals(colName)) 
     				value = ""+n;    			
     			System.err.println("    As strings, A column is "+ colName+", value "+n);
     		}
-            
-    		System.err.println("z tableNameIfVirtual is "+tableNameIfVirtual);
-
-    		
-            //log.info("tableNameIfVirtual len is "+key.array());
-    		//System.out.println("tableNameIfVirtualasbytes is "+key.array());
-    		System.err.println("tableNameIfVirtual bytes len is "+key.length);
-    		System.err.println("first byte is '"+key[0]+"'");
-    		
+    		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test
     		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
             
     		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+value);
