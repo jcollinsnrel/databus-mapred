@@ -183,7 +183,7 @@ public class DatabusMapredTest extends Configured implements Tool
     		
     		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
-    		if (tableIsStream(meta)) {
+    		if (tableIsStream(meta, key)) {
     			transferStream(sourceMgr, destMgr, meta, key, columns, tableNameIfVirtual, session2);
     		}
     		else {
@@ -194,10 +194,11 @@ public class DatabusMapredTest extends Configured implements Tool
         }
         
 
-		private boolean tableIsStream(DboTableMeta meta) {
+		private boolean tableIsStream(DboTableMeta meta, byte[] key) {
     		DboColumnMeta[] allColumns = meta.getAllColumns().toArray(new DboColumnMeta[]{});
 
     		String idColumnName = meta.getIdColumnMeta().getColumnName();
+    		log.info("the object I get back from convertfromStorage2 is "+meta.getIdColumnMeta().convertFromStorage2(key));
 
         	if (allColumns.length==1 && "value".equals(allColumns[0].getColumnName()) && "time".equals(idColumnName)) 
         		return true;
