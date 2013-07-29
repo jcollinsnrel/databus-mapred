@@ -198,6 +198,7 @@ public class DatabusMapredTest extends Configured implements Tool
     		DboColumnMeta[] allColumns = meta.getAllColumns().toArray(new DboColumnMeta[]{});
 
     		String idColumnName = meta.getIdColumnMeta().getColumnName();
+    		log.info("convertFromStorage2s class is "+meta.getIdColumnMeta().convertFromStorage2(key).getClass());
     		log.info("the object I get back from convertfromStorage2 is "+meta.getIdColumnMeta().convertFromStorage2(key));
 
         	if (allColumns.length==1 && "value".equals(allColumns[0].getColumnName()) && "time".equals(idColumnName)) 
