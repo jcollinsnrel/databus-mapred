@@ -21,6 +21,7 @@ import org.apache.cassandra.thrift.Column;
 import org.apache.cassandra.thrift.ColumnOrSuperColumn;
 import org.apache.cassandra.thrift.Mutation;
 import org.apache.cassandra.thrift.SlicePredicate;
+import org.apache.cassandra.thrift.SliceRange;
 import org.apache.cassandra.utils.ByteBufferUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -165,7 +166,7 @@ public class DatabusMapredTest extends Configured implements Tool
     		keyData.get(key);
     		
         	mapcounter++;
-        	//only do every 10th one:
+        	//only do every 10th one for testing:
         	if (mapcounter%10!=1)
         		return;
         	if (mapcounter%1000 == 1) {
@@ -180,48 +181,67 @@ public class DatabusMapredTest extends Configured implements Tool
         	//NoSqlSession raw = session.getRawSession();
     		//NoSqlSession raw2 = session2.getRawSession();
     		
+    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
+    		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    		if (tableIsStream(meta)) {
+    			transferStream(sourceMgr, destMgr, meta, key, columns, tableNameIfVirtual, session2);
+    		}
+    		else {
+    			transferOrdinary(sourceMgr, destMgr, meta, key, columns, tableNameIfVirtual, session2);
+    		}
     		
     		
-    		
-    		//eventually you want to do this:
-			TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column> colTree = new TreeMap<ByteArray, com.alvazan.orm.api.z8spi.action.Column>();
+        }
+
+		private void transferOrdinary(NoSqlEntityManager sourceMgr2,
+				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
+			log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW!");
+			
+		}
+
+		private boolean tableIsStream(DboTableMeta meta) {
+    		DboColumnMeta[] allColumns = meta.getAllColumns().toArray(new DboColumnMeta[]{});
+
+        	if (allColumns.length==2 && !allColumns[0].getColumnName().equals(allColumns[1].getColumnName()) &&
+    				("time".equals(allColumns[0].getColumnName()) || "value".equals(allColumns[0].getColumnName())) &&
+    				("time".equals(allColumns[1].getColumnName()) || "value".equals(allColumns[1].getColumnName()))) {
+        		return true;
+        	}
+        	return false;
+		}
+
+		private void transferStream(NoSqlEntityManager sourceMgr2,
+				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
     		System.err.println("columns size is "+columns.size());
+    		String time = null;
+    		String value = null;
     		for (IColumn col:columns.values()) {    		
     			byte[] namearray = new byte[col.name().remaining()];
         		col.name().get(namearray);
         		byte[] valuearray = new byte[col.value().remaining()];
         		col.value().get(valuearray);
     			System.err.println("    A column is "+ namearray+", value "+valuearray);
-    			BigDecimal valBD = null;
-    			BigInteger valBI = null;
     			Number n = null;
     			try {
-    				valBD = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
-    				n=valBD;
+    				n = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
     			}
     			catch (Exception e) {
     				System.err.println(" -- got an exception trying to convert value to BD, it's not a BD!");
-    				n=valBI;
     			}
     			try {
-    				valBI = StandardConverters.convertFromBytes(BigInteger.class, valuearray);
+    				n = StandardConverters.convertFromBytes(BigInteger.class, valuearray);
     			}
     			catch (Exception e) {
     				System.err.println(" -- got an exception trying to convert value to BI, it's not a BI!");
     			}
-    			System.err.println("    As strings, A column is "+ StandardConverters.convertFromBytes(String.class, namearray)+", value "+n);
-    			
-    			com.alvazan.orm.api.z8spi.action.Column pormCol = new com.alvazan.orm.api.z8spi.action.Column(namearray, valuearray);
-    			
-    			colTree.put(new ByteArray(key), pormCol);
+    			String colName = StandardConverters.convertFromBytes(String.class, namearray);
+    			if ("time".equals(colName)) 
+    				time = ""+n;
+    			if ("value".equals(colName)) 
+    				value = ""+n;    			
+    			System.err.println("    As strings, A column is "+ colName+", value "+n);
     		}
-            RowImpl row = new RowImpl(colTree);
-            row.setKey(key);
             
-            com.alvazan.orm.api.z8spi.action.Column next = row.getColumns().iterator().next();
-            System.err.println("After Row is created, it has "+row.getColumns().size()+" columns [0]name is "+StandardConverters.convertFromBytes(String.class,next.getName())+" value is "+StandardConverters.convertFromBytes(BigInteger.class,next.getValue())+" timestamp is "+next.getTimestamp());
-
-            String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
     		System.err.println("z tableNameIfVirtual is "+tableNameIfVirtual);
 
     		
@@ -229,27 +249,16 @@ public class DatabusMapredTest extends Configured implements Tool
     		//System.out.println("tableNameIfVirtualasbytes is "+key.array());
     		System.err.println("tableNameIfVirtual bytes len is "+key.length);
     		System.err.println("first byte is '"+key[0]+"'");
-            
     		
-    		
-    		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
     		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
-            KeyValue<TypedRow> keyVal = meta.translateFromRow(row);
-
-            Object val = null;
             
-        	System.err.println("for table "+tableNameIfVirtual+" key "+keyVal.getKey()+" it has "+keyVal.getValue().getColumnsAsColl().size()+" columns");
-        	for (TypedColumn c:keyVal.getValue().getColumnsAsColl())
-        		System.err.println(" for table "+tableNameIfVirtual+" got column "+c.getName()+" value "+c.getValueAsString());
-        	val = keyVal.getValue().getColumn("value").getValue();
-            
-    		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+keyVal.getKey()+", value="+val);
-    		
+    		System.out.println("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+value);
     		System.err.println("meta2 is "+meta2);
-    		postTimeSeries(meta2, keyVal.getKey(), val, session2);
-        }
-        
-        private static void postTimeSeries(DboTableMeta table, Object pkValue, Object value, NoSqlTypedSession typedSession) {
+    		//postTimeSeries(meta2, time, value, session2);
+			
+		}
+
+		private static void postTimeSeries(DboTableMeta table, Object pkValue, Object value, NoSqlTypedSession typedSession) {
 
     		if (log.isInfoEnabled())
     			log.info("writing to Timeseries, table name!!!!!!! = '" + table.getColumnFamily() + "'");
@@ -366,7 +375,12 @@ public class DatabusMapredTest extends Configured implements Tool
         ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
          // this will cause the predicate to be ignored in favor of scanning everything as a wide row
         ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
-        SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
+        //SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
+        SlicePredicate predicate = new SlicePredicate();
+        SliceRange sliceRange = new SliceRange();
+        sliceRange.setStart(new byte[0]);
+        sliceRange.setFinish(new byte[0]);
+        predicate.setSlice_range(sliceRange);
         ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 
         int rangebatchsize = 1024;
