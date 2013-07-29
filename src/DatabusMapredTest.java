@@ -196,6 +196,28 @@ public class DatabusMapredTest extends Configured implements Tool
 		private void transferOrdinary(NoSqlEntityManager sourceMgr2,
 				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
 			log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW!");
+			for (IColumn col:columns.values()) {    		
+    			byte[] namearray = new byte[col.name().remaining()];
+        		col.name().get(namearray);
+        		byte[] valuearray = new byte[col.value().remaining()];
+        		col.value().get(valuearray);
+    			System.err.println("    A column is "+ namearray+", value "+valuearray);
+    			Number n = null;
+    			try {
+    				n = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
+    			}
+    			catch (Exception e) {
+    				System.err.println(" -- got an exception trying to convert value to BD, it's not a BD!");
+    			}
+    			try {
+    				n = StandardConverters.convertFromBytes(BigInteger.class, valuearray);
+    			}
+    			catch (Exception e) {
+    				System.err.println(" -- got an exception trying to convert value to BI, it's not a BI!");
+    			}
+    			String colName = StandardConverters.convertFromBytes(String.class, namearray);  			
+    			System.err.println("    As strings, A (relational) column is "+ colName+", value "+n);
+    		}
 			
 		}
 
@@ -207,6 +229,7 @@ public class DatabusMapredTest extends Configured implements Tool
     				("time".equals(allColumns[1].getColumnName()) || "value".equals(allColumns[1].getColumnName()))) {
         		return true;
         	}
+        	log.info("table is not a stream, length is "+allColumns.length+", allColumns[0].getColumnName() is "+allColumns[0].getColumnName()+" [1] is "+allColumns[1].getColumnName());
         	return false;
 		}
 
