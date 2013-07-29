@@ -229,7 +229,11 @@ public class DatabusMapredTest extends Configured implements Tool
     				("time".equals(allColumns[1].getColumnName()) || "value".equals(allColumns[1].getColumnName()))) {
         		return true;
         	}
-        	log.info("table is not a stream, length is "+allColumns.length+", allColumns[0].getColumnName() is "+allColumns[0].getColumnName()+" [1] is "+allColumns[1].getColumnName());
+        	log.info("table is not a stream, length is "+allColumns.length);
+        	for (int i =0; i< allColumns.length; i++) {
+        		DboColumnMeta colmeta = allColumns[i];
+        		log.info("    colmeta["+i+"] is "+colmeta.getColumnName());
+        	}
         	return false;
 		}
 
