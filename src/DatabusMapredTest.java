@@ -181,6 +181,10 @@ public class DatabusMapredTest extends Configured implements Tool
         	//NoSqlSession raw = session.getRawSession();
     		//NoSqlSession raw2 = session2.getRawSession();
     		
+    		if (key.length==0) {
+    			log.error("GOT A KEY THAT IS SIZE 0!!  WHAT DOES THAT MEAN?");
+    			return;
+    		}
     		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
     		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
     		if (tableIsStream(meta, key)) {
@@ -249,7 +253,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
 		private void transferStream(NoSqlEntityManager sourceMgr2,
 				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
-    		System.err.println("columns size is "+columns.size());
+    		//System.err.println("columns size is "+columns.size());
     		String time = null;
     		String value = null;
     		
