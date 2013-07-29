@@ -192,10 +192,28 @@ public class DatabusMapredTest extends Configured implements Tool
     		
     		
         }
+        
+
+		private boolean tableIsStream(DboTableMeta meta) {
+    		DboColumnMeta[] allColumns = meta.getAllColumns().toArray(new DboColumnMeta[]{});
+
+    		String idColumnName = meta.getIdColumnMeta().getColumnName();
+
+        	if (allColumns.length==1 && "value".equals(allColumns[0].getColumnName()) && "time".equals(idColumnName)) 
+        		return true;
+
+        	log.info("table is not a stream, length is "+allColumns.length+" idcolname is "+idColumnName);
+        	
+        	for (int i =0; i< allColumns.length; i++) {
+        		DboColumnMeta colmeta = allColumns[i];
+        		log.info("    colmeta["+i+"] is "+colmeta.getColumnName());
+        	}
+        	return false;
+		}
 
 		private void transferOrdinary(NoSqlEntityManager sourceMgr2,
 				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
-			log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW!");
+			log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual);
 			for (IColumn col:columns.values()) {    		
     			byte[] namearray = new byte[col.name().remaining()];
         		col.name().get(namearray);
@@ -221,21 +239,6 @@ public class DatabusMapredTest extends Configured implements Tool
 			
 		}
 
-		private boolean tableIsStream(DboTableMeta meta) {
-    		DboColumnMeta[] allColumns = meta.getAllColumns().toArray(new DboColumnMeta[]{});
-
-        	if (allColumns.length==2 && !allColumns[0].getColumnName().equals(allColumns[1].getColumnName()) &&
-    				("time".equals(allColumns[0].getColumnName()) || "value".equals(allColumns[0].getColumnName())) &&
-    				("time".equals(allColumns[1].getColumnName()) || "value".equals(allColumns[1].getColumnName()))) {
-        		return true;
-        	}
-        	log.info("table is not a stream, length is "+allColumns.length);
-        	for (int i =0; i< allColumns.length; i++) {
-        		DboColumnMeta colmeta = allColumns[i];
-        		log.info("    colmeta["+i+"] is "+colmeta.getColumnName());
-        	}
-        	return false;
-		}
 
 		private void transferStream(NoSqlEntityManager sourceMgr2,
 				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
