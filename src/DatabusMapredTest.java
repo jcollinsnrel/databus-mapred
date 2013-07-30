@@ -421,6 +421,8 @@ public class DatabusMapredTest extends Configured implements Tool
         int rangebatchsize = 1024;
         log.info("setting rangeBatchSize to "+rangebatchsize);
         ConfigHelper.setRangeBatchSize(job.getConfiguration(), rangebatchsize);
+        ConfigHelper.setThriftMaxMessageLengthInMb(job.getConfiguration(), 50);
+        ConfigHelper.setThriftFramedTransportSizeInMb(job.getConfiguration(), 50);
 
         job.waitForCompletion(true);
         return 0;
