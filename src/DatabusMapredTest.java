@@ -97,7 +97,8 @@ public class DatabusMapredTest extends Configured implements Tool
 	//            List<Class> classes = Play.classloader.getAnnotatedClasses(NoSqlEntity.class);
 	//            List<Class> classEmbeddables = Play.classloader.getAnnotatedClasses(NoSqlEmbeddable.class);
 	//            classes.addAll(classEmbeddables);
-	            
+	            String CLASSES = "lib";
+	            String LIB = "lib";
 	    		List<URL> urls = new ArrayList<URL>();
 	            //urls.add(new File(CLASSES).toURL());
 	            //for (File f : new File(LIB).listFiles()) {
@@ -107,7 +108,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		URLClassLoader classloader =
 	                    new URLClassLoader(
 	                            urls.toArray(new URL[0]),
-	                            ClassLoader.getSystemClassLoader());
+	                            ClassLoader.getSystemClassLoader().getParent());
 	    		log.info(" ======  the classloader urls are "+Arrays.toString(classloader.getURLs()));
 	    		log.info("about to print resources for org.apache.thrift.transport.TTransport");
 	    		for (Enumeration<URL> resources = classloader.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
