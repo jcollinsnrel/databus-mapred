@@ -37,8 +37,8 @@
         	<exclude org="org.apache.cassandra" name="cassandra-thrift"/>
         </dependency>   
            
-        <dependency org="org.apache.cassandra" name="cassandra-all" rev="1.2.6"/>
-        <dependency org="org.apache.cassandra" name="cassandra-thrift" rev="1.2.6"/> 
+        <dependency org="org.apache.cassandra" name="cassandra-all" rev="1.2.6" force="true"/>
+        <dependency org="org.apache.cassandra" name="cassandra-thrift" rev="1.2.6" force="true"/> 
         
 
 <!-- 

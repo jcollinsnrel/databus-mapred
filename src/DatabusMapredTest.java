@@ -1,38 +1,25 @@
 
+import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.cassandra.db.IColumn;
 import org.apache.cassandra.hadoop.ColumnFamilyInputFormat;
 import org.apache.cassandra.hadoop.ConfigHelper;
-import org.apache.cassandra.thrift.Column;
-import org.apache.cassandra.thrift.ColumnOrSuperColumn;
-import org.apache.cassandra.thrift.Mutation;
 import org.apache.cassandra.thrift.SlicePredicate;
 import org.apache.cassandra.thrift.SliceRange;
-import org.apache.cassandra.utils.ByteBufferUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.SortedMapWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapred.join.TupleWritable;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -42,23 +29,6 @@ import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alvazan.orm.api.base.Bootstrap;
-import com.alvazan.orm.api.base.NoSqlEntityManager;
-import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
-import com.alvazan.orm.api.base.anno.NoSqlConverter;
-import com.alvazan.orm.api.z3api.NoSqlTypedSession;
-import com.alvazan.orm.api.z5api.NoSqlSession;
-import com.alvazan.orm.api.z8spi.KeyValue;
-import com.alvazan.orm.api.z8spi.conv.ByteArray;
-import com.alvazan.orm.api.z8spi.conv.Converter;
-import com.alvazan.orm.api.z8spi.conv.StandardConverters;
-import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
-import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
-import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
-import com.alvazan.orm.api.z8spi.meta.ReflectionUtil;
-import com.alvazan.orm.api.z8spi.meta.TypedColumn;
-import com.alvazan.orm.api.z8spi.meta.TypedRow;
-import com.alvazan.orm.layer9z.spi.db.inmemory.RowImpl;
 
 
 public class DatabusMapredTest extends Configured implements Tool
@@ -93,8 +63,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
         private ByteBuffer sourceColumn;
 
-        static private NoSqlEntityManager sourceMgr;
-        static private NoSqlEntityManager destMgr;     
+        static private PlayormContext playorm = null;
         static private boolean initialized = false;
         static private boolean initializing = false;
 
@@ -103,7 +72,7 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
-        	if (destMgr != null)
+        	if (playorm != null)
         		return;
         	while (initializing)
         		Thread.sleep(1);
@@ -128,29 +97,18 @@ public class DatabusMapredTest extends Configured implements Tool
 	//            List<Class> classEmbeddables = Play.classloader.getAnnotatedClasses(NoSqlEmbeddable.class);
 	//            classes.addAll(classEmbeddables);
 	            
-	    		Map<String, Object> props = new HashMap<String, Object>();
-	    		props.put(Bootstrap.TYPE, "cassandra");
-	    		props.put(Bootstrap.CASSANDRA_KEYSPACE, KEYSPACE);
-	    		props.put(Bootstrap.CASSANDRA_CLUSTERNAME, cluster1);
-	    		props.put(Bootstrap.CASSANDRA_SEEDS, seeds1);
-	    		props.put(Bootstrap.CASSANDRA_THRIFT_PORT, port1);
-	    		props.put(Bootstrap.AUTO_CREATE_KEY, "create");
-	    		//props.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
-	
-	    		NoSqlEntityManagerFactory factory1 = Bootstrap.create(props, Thread.currentThread().getContextClassLoader());  //that 'null' is a classloader that supposed to come from play...  does null work?
-	    		sourceMgr = factory1.createEntityManager();
-	    		
-	    		Map<String, Object> props2 = new HashMap<String, Object>();
-	    		props2.put(Bootstrap.TYPE, "cassandra");
-	    		props2.put(Bootstrap.CASSANDRA_KEYSPACE, KEYSPACE);
-	    		props2.put(Bootstrap.CASSANDRA_CLUSTERNAME, cluster2);
-	    		props2.put(Bootstrap.CASSANDRA_SEEDS, seeds2);
-	    		props2.put(Bootstrap.CASSANDRA_THRIFT_PORT, port2);
-	    		props2.put(Bootstrap.AUTO_CREATE_KEY, "create");
-	    		//props2.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
-	
-	    		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props2, Thread.currentThread().getContextClassLoader());  //that 'null' is a classloader that supposed to come from play...  does null work?
-	    		destMgr = factory2.createEntityManager();
+	    		List<URL> urls = new ArrayList<URL>();
+	            //urls.add(new File(CLASSES).toURL());
+	            //for (File f : new File(LIB).listFiles()) {
+	            //    urls.add(f.toURL());
+	            //}
+	            
+	    		URLClassLoader classloader =
+	                    new URLClassLoader(
+	                            urls.toArray(new URL[0]),
+	                            ClassLoader.getSystemClassLoader().getParent());
+	    		log.info(" ======  the classloader urls are "+Arrays.toString(classloader.getURLs()));
+	    		playorm = new PlayormContext(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	    		initialized = true;
 	    		initializing=false;
         	}
@@ -175,51 +133,27 @@ public class DatabusMapredTest extends Configured implements Tool
         	}
         	//super.map(key, columns, context);
 
-        	
-        	NoSqlTypedSession session = sourceMgr.getTypedSession();
-    		NoSqlTypedSession session2 = destMgr.getTypedSession();
-        	//NoSqlSession raw = session.getRawSession();
-    		//NoSqlSession raw2 = session2.getRawSession();
-    		
     		if (key.length==0) {
     			log.error("GOT A KEY THAT IS SIZE 0!!  WHAT DOES THAT MEAN?");
     			return;
     		}
-    		String tableNameIfVirtual = DboColumnIdMeta.fetchTableNameIfVirtual(key);
-    		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
-    		if (tableIsStream(meta, key)) {
-    			transferStream(sourceMgr, destMgr, meta, key, columns, tableNameIfVirtual, session2);
+    		String tableNameIfVirtual = playorm.getTableNameFromKey(key);
+    		
+    		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
+    			transferStream(key, columns, tableNameIfVirtual);
     		}
     		else {
-    			transferOrdinary(sourceMgr, destMgr, meta, key, columns, tableNameIfVirtual, session2);
+    			transferOrdinary(key, columns, tableNameIfVirtual);
     		}
     		
     		
         }
         
 
-		private boolean tableIsStream(DboTableMeta meta, byte[] key) {
-    		DboColumnMeta[] allColumns = meta.getAllColumns().toArray(new DboColumnMeta[]{});
-
-    		String idColumnName = meta.getIdColumnMeta().getColumnName();
-
-        	if (allColumns.length==1 && "value".equals(allColumns[0].getColumnName()) && "time".equals(idColumnName)) 
-        		return true;
-
-//        	log.info("table is not a stream, length is "+allColumns.length+" idcolname is "+idColumnName);
-//        	
-//        	for (int i =0; i< allColumns.length; i++) {
-//        		DboColumnMeta colmeta = allColumns[i];
-//        		log.info("    colmeta["+i+"] is "+colmeta.getColumnName());
-//        	}
-        	return false;
-		}
-
-		private void transferOrdinary(NoSqlEntityManager sourceMgr2,
-				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
-			byte[] nonvirtkey = meta.getIdColumnMeta().unformVirtRowKey(key);
-    		String idValue = ""+meta.getIdColumnMeta().convertFromStorage2(nonvirtkey);
-    		String idColName = ""+meta.getIdColumnMeta().getColumnName();
+		private void transferOrdinary(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual) {
+			
+    		String idValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
+    		String idColName = playorm.getSourceIdColumnName(tableNameIfVirtual);
 			log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
 		
 			for (IColumn col:columns.values()) {    		
@@ -228,8 +162,8 @@ public class DatabusMapredTest extends Configured implements Tool
         		byte[] valuearray = new byte[col.value().remaining()];
         		col.value().get(valuearray);
     			//Object n = null;
-    			String colName = StandardConverters.convertFromBytes(String.class, namearray); 
-    			Object objVal = meta.getColumnMeta(colName).convertFromStorage2(valuearray);
+    			String colName = playorm.bytesToString(namearray); 
+    			Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
 				
 
 //    			try {
@@ -251,108 +185,28 @@ public class DatabusMapredTest extends Configured implements Tool
 		}
 
 
-		private void transferStream(NoSqlEntityManager sourceMgr2,
-				NoSqlEntityManager destMgr2, DboTableMeta meta, byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, NoSqlTypedSession session2) {
-    		//System.err.println("columns size is "+columns.size());
-    		String time = null;
-    		String value = null;
+		private void transferStream(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual) {
+    		String time = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
+    		String valueAsString = null;
     		
-    		byte[] nonvirtkey = meta.getIdColumnMeta().unformVirtRowKey(key);
-    		time = ""+meta.getIdColumnMeta().convertFromStorage2(nonvirtkey);
-    		
+    		//we are only in here because this is a stream, there is only one column and it's name is "value":
     		for (IColumn col:columns.values()) {    		
     			byte[] namearray = new byte[col.name().remaining()];
         		col.name().get(namearray);
         		byte[] valuearray = new byte[col.value().remaining()];
         		col.value().get(valuearray);
-    			Number n = null;
-    			try {
-    				n = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
-    			}
-    			catch (Exception e) {
-    				System.err.println(" -- got an exception trying to convert value to BD, it's not a BD!");
-    			}
-    			try {
-    				n = StandardConverters.convertFromBytes(BigInteger.class, valuearray);
-    			}
-    			catch (Exception e) {
-    				System.err.println(" -- got an exception trying to convert value to BI, it's not a BI!");
-    			}
-    			String colName = StandardConverters.convertFromBytes(String.class, namearray);
-
-    			if ("value".equals(colName)) 
-    				value = ""+n;    			
-    			//log.info("    As strings, A column is "+ colName+", value "+n);
+        		valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
+    			
+        		//String colName = playorm.sourceColumnName(tableNameIfVirtual, namearray);
+    			//log.info("    As strings, A column is "+ colName+", value "+valueAsString);
     		}
-    		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test
-    		DboTableMeta meta2 = destMgr.find(DboTableMeta.class, tableNameIfVirtual+"Trans");
-            
-    		log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+value);
-    		//log.info("meta2 is "+meta2);
-    		//postTimeSeries(meta2, time, value, session2);
+    		log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+valueAsString);
+
+    		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test.  Remove the "Trans" when going to other cassandra instance!
+    		//postTimeSeries(tableNameIfVirtual+"Trans", time, value, session2);
 			
 		}
 
-		private static void postTimeSeries(DboTableMeta table, Object pkValue, Object value, NoSqlTypedSession typedSession) {
-
-    		if (log.isInfoEnabled())
-    			log.info("writing to Timeseries, table name!!!!!!! = '" + table.getColumnFamily() + "'");
-    		String cf = table.getColumnFamily();
-    		
-    		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
-    		//rowKey better be BigInteger
-    		if (log.isInfoEnabled())
-    			log.info("writing to '" + table.getColumnFamily() + "', pk is '" + pkValue + "'");
-    		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
-    		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
-    		BigInteger time = (BigInteger) timeStamp;
-    		long longTime = time.longValue();
-    		//find the partition
-    		Long partitionSize = table.getTimeSeriesPartionSize();
-    		long partitionKey = (longTime / partitionSize) * partitionSize;
-
-    		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
-    		row.setRowKey(new BigInteger(""+partitionKey));	
-    		
-    		Collection<DboColumnMeta> cols = table.getAllColumns();
-
-    		DboColumnMeta col = cols.iterator().next();
-    		if(value == null) {
-    			if (log.isWarnEnabled())
-    				log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and null was passed in");
-    			throw new RuntimeException("The table you are inserting requires column='"+col.getColumnName()+"' to be set and null is passed in");
-    		}
-    		
-    		Object newValue = convertToStorage(col, value);
-    		byte[] val = col.convertToStorage2(newValue);
-    		row.addColumn(colKey, val, null);
-
-    		//This method also indexes according to the meta data as well
-    		typedSession.put(cf, row);
-    	}
-        
-        public static Object convertToStorage(DboColumnMeta col, Object someVal) {
-    		try {
-    			if(someVal == null)
-    				return null;
-    			else if("null".equals(someVal))
-    				return null; //a fix for when they pass us "null" instead of null
-    			
-    			String val = ""+someVal;
-    			System.err.println("VALUE is "+val);
-    			if(val.length() == 0)
-    				val = null;
-    			return col.convertStringToType(val);
-    		} catch(Exception e) { 
-    			//Why javassist library throws a checked exception, I don't know as we can't catch a checked exception here
-    			if(e instanceof InvocationTargetException &&
-    					e.getCause() instanceof NumberFormatException) {
-    				if (log.isWarnEnabled())
-    	        		log.warn("Cannot convert value="+someVal+" for column="+col.getColumnName()+" table="+col.getOwner().getRealColumnFamily()+" as it needs to be type="+col.getClassType(), e.getCause());
-    			}
-    			throw new RuntimeException(e);
-    		}
-    	}
     }
 
     public static class ReducerToLogger extends Reducer<Text, IntWritable, Text, IntWritable>
