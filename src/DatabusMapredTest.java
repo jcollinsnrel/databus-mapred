@@ -106,9 +106,18 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		URLClassLoader classloader =
 	                    new URLClassLoader(
 	                            urls.toArray(new URL[0]),
-	                            ClassLoader.getSystemClassLoader().getParent());
+	                            ClassLoader.getSystemClassLoader());
 	    		log.info(" ======  the classloader urls are "+Arrays.toString(classloader.getURLs()));
-	    		playorm = new PlayormContext(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
+
+	    		try{
+	    			Class mainClass = classloader.loadClass("PlayormContext");
+	    			playorm = (PlayormContext) mainClass.newInstance();
+	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
+	    		}
+	    		catch (Exception e) {
+	    			e.printStackTrace();
+	    			log.error("got exception loading playorm!  "+e.getMessage());
+	    		}
 	    		initialized = true;
 	    		initializing=false;
         	}
