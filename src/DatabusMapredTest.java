@@ -107,7 +107,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		URLClassLoader classloader =
 	                    new URLClassLoader(
 	                            urls.toArray(new URL[0]),
-	                            ClassLoader.getSystemClassLoader());
+	                            ClassLoader.getSystemClassLoader().getParent());
 	    		log.info(" ======  the classloader urls are "+Arrays.toString(classloader.getURLs()));
 	    		log.info("about to print resources for org.apache.thrift.transport.TTransport");
 	    		for (Enumeration<URL> resources = classloader.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
@@ -116,8 +116,14 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		log.info("done printing resources");
 	    		
 	    		
-
+    			ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 	    		try{
+	    			log.info("about to try to load org.apache.thrift.transport.TTransport");
+		    		Class c = classloader.loadClass("org.apache.thrift.transport.TTransport");
+		    		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
+	    			
+	    			
+	    			Thread.currentThread().setContextClassLoader(classloader);
 	    			Class mainClass = classloader.loadClass("PlayormContext");
 	    			playorm = (PlayormContext) mainClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
@@ -125,6 +131,9 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		catch (Exception e) {
 	    			e.printStackTrace();
 	    			log.error("got exception loading playorm!  "+e.getMessage());
+	    		}
+	    		finally {
+	    			Thread.currentThread().setContextClassLoader(oldCl);
 	    		}
 	    		initialized = true;
 	    		initializing=false;
