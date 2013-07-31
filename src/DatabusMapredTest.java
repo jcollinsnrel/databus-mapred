@@ -6,6 +6,7 @@ import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -108,6 +109,11 @@ public class DatabusMapredTest extends Configured implements Tool
 	                            urls.toArray(new URL[0]),
 	                            ClassLoader.getSystemClassLoader());
 	    		log.info(" ======  the classloader urls are "+Arrays.toString(classloader.getURLs()));
+	    		for (Enumeration<URL> resources = classloader.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
+	    		       System.out.println(resources.nextElement());
+	    		}
+	    		
+	    		
 
 	    		try{
 	    			Class mainClass = classloader.loadClass("PlayormContext");
