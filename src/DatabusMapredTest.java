@@ -100,10 +100,10 @@ public class DatabusMapredTest extends Configured implements Tool
 	            String CLASSES = "lib";
 	            String LIB = "lib";
 	    		List<URL> urls = new ArrayList<URL>();
-	            //urls.add(new File(CLASSES).toURL());
-	            //for (File f : new File(LIB).listFiles()) {
-	            //    urls.add(f.toURL());
-	            //}
+	            urls.add(new File(CLASSES).toURL());
+	            for (File f : new File(LIB).listFiles()) {
+	                urls.add(f.toURL());
+	            }
 	            
 	    		URLClassLoader classloader =
 	                    new URLClassLoader(
