@@ -109,9 +109,11 @@ public class DatabusMapredTest extends Configured implements Tool
 	                            urls.toArray(new URL[0]),
 	                            ClassLoader.getSystemClassLoader());
 	    		log.info(" ======  the classloader urls are "+Arrays.toString(classloader.getURLs()));
+	    		log.info("about to print resources for org.apache.thrift.transport.TTransport")
 	    		for (Enumeration<URL> resources = classloader.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
-	    		       System.out.println(resources.nextElement());
+	    		       log.info("a resource is "+resources.nextElement());
 	    		}
+	    		log.info("done printing resources");
 	    		
 	    		
 
