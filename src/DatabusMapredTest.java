@@ -124,12 +124,16 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		List<URL> urls = new ArrayList<URL>();
 	    		URL location = src.getLocation();
 	            urls.add(location);
+	            log.info("******** location from codesource is "+location);
+	            File afile = new File(location.toString());
+	            log.info("******** afile is "+afile.getAbsolutePath());
+	            log.info("******** afile.listfiles() is "+Arrays.toString(afile.listFiles()));
 	            for (File f : new File(location.toString()).listFiles()) {
 	            	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"));
 	                	urls.add(f.toURL());
 	            }
 	            
-	            log.info("******** location from codesource is "+location);
+	            
 	            log.info("******** urls is: "+Arrays.toString(urls.toArray(new URL[]{})));
 	            
 	    		URLClassLoader classloader =
