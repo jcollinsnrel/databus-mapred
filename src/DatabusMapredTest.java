@@ -156,6 +156,9 @@ public class DatabusMapredTest extends Configured implements Tool
     			ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 	    		try{
 		    		Class interfaceclass = ClassLoader.getSystemClassLoader().loadClass("IPlayormContext");
+		    		log.info("system classloader is "+ClassLoader.getSystemClassLoader());
+		    		log.info("my new classloader is "+classloader);
+		    		log.info("the owner of interfaceclass is "+interfaceclass.getClassLoader());
 
 	    			log.info("about to try to load org.apache.thrift.transport.TTransport");
 		    		Class c = classloader.loadClass("org.apache.thrift.transport.TTransport");
