@@ -134,7 +134,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	            
 	            
 	            log.info("******** afile.listfiles() is "+Arrays.toString(afile.listFiles()));
-	            for (File f : new File(location.toString()).listFiles()) {
+	            for (File f : afile.listFiles()) {
 	            	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"));
 	                	urls.add(f.toURL());
 	            }
