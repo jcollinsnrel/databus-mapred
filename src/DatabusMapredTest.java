@@ -126,7 +126,13 @@ public class DatabusMapredTest extends Configured implements Tool
 	            urls.add(location);
 	            log.info("******** location from codesource is "+location);
 	            File afile = new File(location.toString());
-	            log.info("******** afile is "+afile.getAbsolutePath());
+	            log.info("******** afile absolute is "+afile.getAbsolutePath());
+	            log.info("******** afile tostring is "+afile);
+	            log.info("******** afile name is "+afile.getName());
+	            log.info("******** afile cannonical is "+afile.getCanonicalPath());
+
+	            
+	            
 	            log.info("******** afile.listfiles() is "+Arrays.toString(afile.listFiles()));
 	            for (File f : new File(location.toString()).listFiles()) {
 	            	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"));
