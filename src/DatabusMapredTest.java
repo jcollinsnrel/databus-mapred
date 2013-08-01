@@ -28,6 +28,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.StringUtils;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
@@ -121,13 +122,15 @@ public class DatabusMapredTest extends Configured implements Tool
 //	              /* Fail... */
 //	            }
 	    		List<URL> urls = new ArrayList<URL>();
-//	            urls.add(new File(CLASSES).toURL());
-//	            for (File f : new File(LIB).listFiles()) {
-//	                urls.add(f.toURL());
-//	            }
-	            URL location = src.getLocation();
+	    		URL location = src.getLocation();
+	            urls.add(location);
+	            for (File f : new File(location.toString()).listFiles()) {
+	            	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"));
+	                	urls.add(f.toURL());
+	            }
+	            
 	            log.info("******** location from codesource is "+location);
-	            //urls.add("");
+	            log.info("******** urls is: "+Arrays.toString(urls.toArray(new URL[]{})));
 	            
 	    		URLClassLoader classloader =
 	                    new URLClassLoader(
