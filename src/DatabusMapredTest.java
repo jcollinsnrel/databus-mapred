@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.cassandra.db.IColumn;
 import org.apache.cassandra.hadoop.ColumnFamilyInputFormat;
@@ -99,11 +102,32 @@ public class DatabusMapredTest extends Configured implements Tool
 	//            classes.addAll(classEmbeddables);
 	            String CLASSES = "lib";
 	            String LIB = "lib";
+	            
+	            CodeSource src = DatabusMapredTest.class.getProtectionDomain().getCodeSource();
+//	            if (src != null) {
+//	              URL jar = src.getLocation();
+//	              ZipInputStream zip = new ZipInputStream(jar.openStream());
+//	              ZipEntry ze = null;
+//	              List<String> list = new ArrayList<String>();
+//
+//	              while( ( ze = zip.getNextEntry() ) != null ) {
+//	                  String entryName = ze.getName();
+//	                  if( entryName.startsWith("images") &&  entryName.endsWith(".png") ) {
+//	                      list.add( entryName  );
+//	                  }
+//	              }
+//	            } 
+//	            else {
+//	              /* Fail... */
+//	            }
 	    		List<URL> urls = new ArrayList<URL>();
-	            urls.add(new File(CLASSES).toURL());
-	            for (File f : new File(LIB).listFiles()) {
-	                urls.add(f.toURL());
-	            }
+//	            urls.add(new File(CLASSES).toURL());
+//	            for (File f : new File(LIB).listFiles()) {
+//	                urls.add(f.toURL());
+//	            }
+	            URL location = src.getLocation();
+	            log.info("******** location from codesource is "+location);
+	            //urls.add("");
 	            
 	    		URLClassLoader classloader =
 	                    new URLClassLoader(
