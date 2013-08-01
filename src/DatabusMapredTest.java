@@ -125,7 +125,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		URL location = src.getLocation();
 	            urls.add(location);
 	            log.info("******** location from codesource is "+location);
-	            File afile = new File(location.getPath());
+	            File afile = new File(location.getPath()+"lib/");
 	            log.info("******** afile absolute is "+afile.getAbsolutePath());
 	            log.info("******** afile tostring is "+afile);
 	            log.info("******** afile name is "+afile.getName());
