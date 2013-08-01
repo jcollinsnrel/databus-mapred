@@ -122,6 +122,7 @@ public class DatabusMapredTest extends Configured implements Tool
 //	              /* Fail... */
 //	            }
 	    		List<URL> urls = new ArrayList<URL>();
+	    		List<URL> interfaceurl = new ArrayList<URL>();
 	    		URL location = src.getLocation();
 	            urls.add(location);
 	            log.info("******** location from codesource is "+location);
@@ -135,8 +136,13 @@ public class DatabusMapredTest extends Configured implements Tool
 	            
 	            log.info("******** afile.listfiles() is "+Arrays.toString(afile.listFiles()));
 	            for (File f : afile.listFiles()) {
-	            	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"));
+	            	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
 	                	urls.add(f.toURL());
+	            }
+	            
+	            for (File f : afile.listFiles()) {
+	            	if (f.getName().equals("IPlayormContext.class"))
+	            		interfaceurl.add(f.toURL());
 	            }
 	            
 	            
@@ -144,8 +150,12 @@ public class DatabusMapredTest extends Configured implements Tool
 	            
 	    		URLClassLoader classloader =
 	                    new URLClassLoader(
+	                    		interfaceurl.toArray(new URL[0]),
+	                            ClassLoader.getSystemClassLoader());
+	    		URLClassLoader playormcontextclassloader =
+	                    new URLClassLoader(
 	                            urls.toArray(new URL[0]),
-	                            ClassLoader.getSystemClassLoader().getParent());
+	                            classloader);
 	    		log.info(" ======  the classloader urls are "+Arrays.toString(classloader.getURLs()));
 	    		log.info("about to print resources for org.apache.thrift.transport.TTransport");
 	    		for (Enumeration<URL> resources = classloader.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
@@ -155,21 +165,27 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		
     			ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 	    		try{
-		    		Class interfaceclass = ClassLoader.getSystemClassLoader().getParent().loadClass("IPlayormContext");
 		    		log.info("system classloader is "+ClassLoader.getSystemClassLoader());
 		    		log.info("my new classloader is "+classloader);
+		    		log.info("the playormcontext classloader is "+playormcontextclassloader);
+
 		    		log.info("the current classloader is "+oldCl);
 		    		log.info("my new classloader parent is "+classloader.getParent());
+		    		log.info("the playormcontext classloader parent is "+playormcontextclassloader);
+
 		    		log.info("the current classloader parent is "+oldCl.getParent());
+		    		//ClassLoader.getSystemClassLoader().getParent()
+		    		Class interfaceclass = ClassLoader.getSystemClassLoader().loadClass("IPlayormContext");
+
 		    		log.info("the owner of interfaceclass is "+interfaceclass.getClassLoader());
 
 	    			log.info("about to try to load org.apache.thrift.transport.TTransport");
-		    		Class c = classloader.loadClass("org.apache.thrift.transport.TTransport");
+		    		Class c = playormcontextclassloader.loadClass("org.apache.thrift.transport.TTransport");
 		    		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
 	    			
 	    			
-	    			Thread.currentThread().setContextClassLoader(classloader);
-	    			Class mainClass = classloader.loadClass("PlayormContext");
+	    			Thread.currentThread().setContextClassLoader(playormcontextclassloader);
+	    			Class mainClass = playormcontextclassloader.loadClass("PlayormContext");
 	    			playorm = (IPlayormContext) mainClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	    		}
