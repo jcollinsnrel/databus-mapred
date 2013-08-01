@@ -68,7 +68,7 @@ public class DatabusMapredTest extends Configured implements Tool
 
         private ByteBuffer sourceColumn;
 
-        static private PlayormContext playorm = null;
+        static private IPlayormContext playorm = null;
         static private boolean initialized = false;
         static private boolean initializing = false;
 
@@ -153,9 +153,10 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		}
 	    		log.info("done printing resources");
 	    		
-	    		
     			ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 	    		try{
+		    		Class interfaceclass = ClassLoader.getSystemClassLoader().loadClass("IPlayormContext");
+
 	    			log.info("about to try to load org.apache.thrift.transport.TTransport");
 		    		Class c = classloader.loadClass("org.apache.thrift.transport.TTransport");
 		    		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
@@ -163,7 +164,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    			
 	    			Thread.currentThread().setContextClassLoader(classloader);
 	    			Class mainClass = classloader.loadClass("PlayormContext");
-	    			playorm = (PlayormContext) mainClass.newInstance();
+	    			playorm = (IPlayormContext) mainClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	    		}
 	    		catch (Exception e) {

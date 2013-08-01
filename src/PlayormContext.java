@@ -19,7 +19,7 @@ import com.alvazan.orm.api.z8spi.meta.TypedRow;
 
 
 
-public class PlayormContext {
+public class PlayormContext implements IPlayormContext {
 	
 	static final Logger log = LoggerFactory.getLogger(PlayormContext.class);
 
@@ -109,7 +109,7 @@ public class PlayormContext {
 		typedSession.put(cf, row);
 	}
     
-    public static Object convertToStorage(DboColumnMeta col, Object someVal) {
+    public Object convertToStorage(DboColumnMeta col, Object someVal) {
 		try {
 			if(someVal == null)
 				return null;
