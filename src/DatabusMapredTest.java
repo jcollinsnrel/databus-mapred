@@ -140,16 +140,11 @@ public class DatabusMapredTest extends Configured implements Tool
     			interfaceclurls.add(location);
     	        log.info("******** location from codesource is "+location);
     	        File libdir = new File(location.getPath()+"lib/");
-    	        File cassandra126libsdir = new File(location.getPath()+"classes/libcassandra1.2.6");
+
     	        log.info("******** libdir absolute is "+libdir.getAbsolutePath());
     	        log.info("******** libdir tostring is "+libdir);
     	        log.info("******** libdir name is "+libdir.getName());
     	        log.info("******** libdir cannonical is "+libdir.getCanonicalPath());
-    	        
-    	        log.info("******** cassandra126libdir absolute is "+cassandra126libsdir.getAbsolutePath());
-    	        log.info("******** cassandra126libdir tostring is "+cassandra126libsdir);
-    	        log.info("******** cassandra126libdir name is "+cassandra126libsdir.getName());
-    	        log.info("******** cassandra126libdir cannonical is "+cassandra126libsdir.getCanonicalPath());
     	
     	        
     	        
@@ -159,8 +154,9 @@ public class DatabusMapredTest extends Configured implements Tool
     	            	interfaceclurls.add(f.toURL());
     	        }
     	        
-    	        for (File f : cassandra126libsdir.listFiles()) {
-    	       		hadoopclurls.add(f.toURL());
+    	        for (File f : libdir.listFiles()) {
+    	        	if (f.getName().equals("cassandra-all-1.2.6.jar") || f.getName().equals("cassandra-thrift-1.2.6.jar"))
+    	            	hadoopclurls.add(f.toURL());
     	        }
     	        
     	        
