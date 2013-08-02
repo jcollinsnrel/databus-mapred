@@ -81,6 +81,7 @@
     	   </fileset>
     	</copy>
     	<!-- hack because of classloader incompatibility: -->
+    	<!--
     	<mkdir dir="${build.classes}/libcassandra1.2.6" />
     	<move todir="${build.classes}/libcassandra1.2.6">
     	   <fileset dir="${ivy.lib.dir}">
@@ -88,6 +89,7 @@
   	          <include name="**/cassandra-thrift-1.2.6.jar" />    	   	
     	   </fileset>
     	</move>
+    	-->
         <jar jarfile="${build.dir}/${final.name}.jar">
            <!--<fileset dir="${build.classes}" />-->
            <fileset dir="${build.classes}">
