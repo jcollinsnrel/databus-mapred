@@ -108,6 +108,8 @@ public class DatabusMapredTest extends Configured implements Tool
 	            	setupHadoopClassloader();
 
 	            	Class playorminterface = interfacecl.loadClass("IPlayormContext");
+	    			Thread.currentThread().setContextClassLoader(playormcontextcl);
+
 	    			Class mainClass = playormcontextcl.loadClass("PlayormContext");
 	    			playorm = (IPlayormContext) mainClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
@@ -204,10 +206,7 @@ public class DatabusMapredTest extends Configured implements Tool
     			log.info("about to try to load org.apache.thrift.transport.TTransport");
         		Class c = playormcontextcl.loadClass("org.apache.thrift.transport.TTransport");
         		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
-    			
-    			
-    			Thread.currentThread().setContextClassLoader(playormcontextcl);
-    			
+    			    			
     		}
     		catch (Exception e) {
     			e.printStackTrace();
