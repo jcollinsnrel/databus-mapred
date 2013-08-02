@@ -333,58 +333,96 @@ public class DatabusMapredTest extends Configured implements Tool
     
     public int run(String[] args) throws Exception
     {        
-    	
-        // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
-        ConfigHelper.setRangeBatchSize(getConf(), 99);
+		ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 
-        String columnName = "value";
+		try {
+			ClassLoader hadoopcl = setupHadoopClassloader();
+			Thread.currentThread().setContextClassLoader(hadoopcl);
+	        // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
+	        ConfigHelper.setRangeBatchSize(getConf(), 99);
+	
+	        String columnName = "value";
+	
+	        Job job = new Job(getConf(), "databusmapredtest");
+	        job.setJarByClass(DatabusMapredTest.class);
+	        job.setMapperClass(TokenizerMapper.class);
+	
+	        job.setCombinerClass(ReducerToLogger.class);
+	        job.setReducerClass(ReducerToLogger.class);
+	        
+	        job.setOutputKeyClass(Text.class);
+	        job.setOutputValueClass(IntWritable.class);
+	        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
+	        Configuration config = new Configuration();
+	    	FileSystem hdfs = FileSystem.get(config);
+	    	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
+	    	if (hdfs.exists(srcPath))
+	    		hdfs.delete(srcPath, true);
+	        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
+	        
+	        
+	
+	        job.setInputFormatClass(ColumnFamilyInputFormat.class);
+	        log.info("number of reduce tasks:  "+job.getNumReduceTasks());
+	        job.setNumReduceTasks(3);
+	        log.info("updated, now number of reduce tasks:  "+job.getNumReduceTasks());
+	
+	        ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
+	        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
+	        ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
+	         // this will cause the predicate to be ignored in favor of scanning everything as a wide row
+	        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
+	        //SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
+	        SlicePredicate predicate = new SlicePredicate();
+	        SliceRange sliceRange = new SliceRange();
+	        sliceRange.setStart(new byte[0]);
+	        sliceRange.setFinish(new byte[0]);
+	        predicate.setSlice_range(sliceRange);
+	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
+	
+	        int rangebatchsize = 1024;
+	        log.info("setting rangeBatchSize to "+rangebatchsize);
+	        ConfigHelper.setRangeBatchSize(job.getConfiguration(), rangebatchsize);
+	        //ConfigHelper.setThriftMaxMessageLengthInMb(job.getConfiguration(), 100);
+	        ConfigHelper.setThriftFramedTransportSizeInMb(job.getConfiguration(), 100);
+	
+	        job.waitForCompletion(true);
+	        return 0;
+		}
+		finally {
+    		Thread.currentThread().setContextClassLoader(oldCl);
 
-        Job job = new Job(getConf(), "databusmapredtest");
-        job.setJarByClass(DatabusMapredTest.class);
-        job.setMapperClass(TokenizerMapper.class);
-
-        job.setCombinerClass(ReducerToLogger.class);
-        job.setReducerClass(ReducerToLogger.class);
-        
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
-        Configuration config = new Configuration();
-    	FileSystem hdfs = FileSystem.get(config);
-    	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
-    	if (hdfs.exists(srcPath))
-    		hdfs.delete(srcPath, true);
-        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
-        
-        
-
-        job.setInputFormatClass(ColumnFamilyInputFormat.class);
-        log.info("number of reduce tasks:  "+job.getNumReduceTasks());
-        job.setNumReduceTasks(3);
-        log.info("updated, now number of reduce tasks:  "+job.getNumReduceTasks());
-
-        ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
-        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
-        ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
-         // this will cause the predicate to be ignored in favor of scanning everything as a wide row
-        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
-        //SlicePredicate predicate = new SlicePredicate().setColumn_names(Arrays.asList(ByteBufferUtil.bytes(columnName)));
-        SlicePredicate predicate = new SlicePredicate();
-        SliceRange sliceRange = new SliceRange();
-        sliceRange.setStart(new byte[0]);
-        sliceRange.setFinish(new byte[0]);
-        predicate.setSlice_range(sliceRange);
-        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
-
-        int rangebatchsize = 1024;
-        log.info("setting rangeBatchSize to "+rangebatchsize);
-        ConfigHelper.setRangeBatchSize(job.getConfiguration(), rangebatchsize);
-        //ConfigHelper.setThriftMaxMessageLengthInMb(job.getConfiguration(), 100);
-        ConfigHelper.setThriftFramedTransportSizeInMb(job.getConfiguration(), 100);
-
-        job.waitForCompletion(true);
-        return 0;
+		}
     }
+    
+    
+    private ClassLoader setupHadoopClassloader() {		
+		try{
+			CodeSource src = DatabusMapredTest.class.getProtectionDomain().getCodeSource();
+
+			List<URL> hadoopclurls = new ArrayList<URL>();
+			URL location = src.getLocation(); 
+	        File cassandra126libsdir = new File(location.getPath()+"classes/libcassandra1.2.6");
+	       
+	        for (File f : cassandra126libsdir.listFiles()) {
+	       		hadoopclurls.add(f.toURL());
+	        }
+	
+	        
+			URLClassLoader hadoopcl =
+	                new URLClassLoader(
+	                        hadoopclurls.toArray(new URL[0]),
+	                        ClassLoader.getSystemClassLoader());
+			return hadoopcl;
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.error("got exception loading playorm!  "+e.getMessage());
+			return null;
+		}
+    }
+
 
 
 }
