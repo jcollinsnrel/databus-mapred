@@ -336,8 +336,6 @@ public class DatabusMapredTest extends Configured implements Tool
 		ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 
 		try {
-			ClassLoader hadoopcl = setupHadoopClassloader();
-			Thread.currentThread().setContextClassLoader(hadoopcl);
 	        // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
 	        ConfigHelper.setRangeBatchSize(getConf(), 99);
 	
@@ -394,36 +392,5 @@ public class DatabusMapredTest extends Configured implements Tool
 
 		}
     }
-    
-    
-    private ClassLoader setupHadoopClassloader() {		
-		try{
-			CodeSource src = DatabusMapredTest.class.getProtectionDomain().getCodeSource();
-
-			List<URL> hadoopclurls = new ArrayList<URL>();
-			URL location = src.getLocation(); 
-	        File cassandra126libsdir = new File("jar:"+location.getPath());
-	        System.err.println("cassandra126libsdir is "+cassandra126libsdir.getPath());
-	       
-	        for (File f : cassandra126libsdir.listFiles()) {
-	       		hadoopclurls.add(f.toURL());
-	        }
-	
-	        
-			URLClassLoader hadoopcl =
-	                new URLClassLoader(
-	                        hadoopclurls.toArray(new URL[0]),
-	                        ClassLoader.getSystemClassLoader());
-			return hadoopcl;
-			
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			log.error("got exception loading playorm!  "+e.getMessage());
-			return null;
-		}
-    }
-
-
 
 }
