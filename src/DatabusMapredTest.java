@@ -114,6 +114,8 @@ public class DatabusMapredTest extends Configured implements Tool
 	    			
 	    			log.info("iplayormcontext interface classloader is "+playorminterface.getClassLoader()+" interfacecl is "+interfacecl);
 	    			log.info("playormcontext class classloader is "+playormClass.getClassLoader()+" playormcontextcl is "+playormcontextcl);
+	    			Object pormobj = playormClass.newInstance();
+	    			log.info("pormobj classloader is "+pormobj.getClass().getClassLoader());
 	    			playorm = (IPlayormContext) playormClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	    		}
