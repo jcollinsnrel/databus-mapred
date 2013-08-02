@@ -168,7 +168,7 @@ public class DatabusMapredTest extends Configured implements Tool
     			interfacecl =
     	                new URLClassLoader(
     	                		interfaceclurls.toArray(new URL[0]),
-    	                        ClassLoader.getSystemClassLoader());
+    	                        ClassLoader.getSystemClassLoader().getParent());
     			playormcontextcl =
     	                new URLClassLoader(
     	                        playormcontextclurls.toArray(new URL[0]),
