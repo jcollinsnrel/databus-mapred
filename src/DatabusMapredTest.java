@@ -403,6 +403,7 @@ public class DatabusMapredTest extends Configured implements Tool
 			List<URL> hadoopclurls = new ArrayList<URL>();
 			URL location = src.getLocation(); 
 	        File cassandra126libsdir = new File(location.getPath()+"classes/libcassandra1.2.6");
+	        System.err.println("cassandra126libsdir is "+cassandra126libsdir.getCanonicalPath());
 	       
 	        for (File f : cassandra126libsdir.listFiles()) {
 	       		hadoopclurls.add(f.toURL());
