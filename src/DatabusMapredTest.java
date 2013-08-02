@@ -107,6 +107,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		try{
 	            	setupHadoopClassloader();
 
+	            	Class playorminterface = interfacecl.loadClass("IPlayormContext");
 	    			Class mainClass = playormcontextcl.loadClass("PlayormContext");
 	    			playorm = (IPlayormContext) mainClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
