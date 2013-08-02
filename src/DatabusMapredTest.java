@@ -45,6 +45,10 @@ public class DatabusMapredTest extends Configured implements Tool
     static final String OUTPUT_REDUCER_VAR = "output_reducer";
     static final String OUTPUT_COLUMN_FAMILY = "output_words";
     private static final String OUTPUT_PATH_PREFIX = "/tmp/data_count2";
+    
+    static URLClassLoader interfacecl = null;
+	static URLClassLoader hadoopcl = null;
+	static URLClassLoader playormcontextcl = null;
 
 //    private static final String CONF_COLUMN_NAME = "columnname";
 
@@ -61,6 +65,7 @@ public class DatabusMapredTest extends Configured implements Tool
     public static class TokenizerMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, Text, IntWritable>
     {
     	static final Logger log = LoggerFactory.getLogger(DatabusMapredTest.class);
+    	
     	static long mapcounter=0;
     	
         private Text word = new Text();
@@ -97,95 +102,9 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		String cluster2 = "TestCluster";
 	    		String seeds2 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
 	    		String port2 = "9160";
-	
-	//            List<Class> classes = Play.classloader.getAnnotatedClasses(NoSqlEntity.class);
-	//            List<Class> classEmbeddables = Play.classloader.getAnnotatedClasses(NoSqlEmbeddable.class);
-	//            classes.addAll(classEmbeddables);
-	            String CLASSES = "lib";
-	            String LIB = "lib";
 	            
-	            CodeSource src = DatabusMapredTest.class.getProtectionDomain().getCodeSource();
-//	            if (src != null) {
-//	              URL jar = src.getLocation();
-//	              ZipInputStream zip = new ZipInputStream(jar.openStream());
-//	              ZipEntry ze = null;
-//	              List<String> list = new ArrayList<String>();
-//
-//	              while( ( ze = zip.getNextEntry() ) != null ) {
-//	                  String entryName = ze.getName();
-//	                  if( entryName.startsWith("images") &&  entryName.endsWith(".png") ) {
-//	                      list.add( entryName  );
-//	                  }
-//	              }
-//	            } 
-//	            else {
-//	              /* Fail... */
-//	            }
-	    		List<URL> urls = new ArrayList<URL>();
-	    		List<URL> interfaceurl = new ArrayList<URL>();
-	    		URL location = src.getLocation();
-	            urls.add(location);
-	            log.info("******** location from codesource is "+location);
-	            File afile = new File(location.getPath()+"lib/");
-	            log.info("******** afile absolute is "+afile.getAbsolutePath());
-	            log.info("******** afile tostring is "+afile);
-	            log.info("******** afile name is "+afile.getName());
-	            log.info("******** afile cannonical is "+afile.getCanonicalPath());
-
-	            
-	            
-	            log.info("******** afile.listfiles() is "+Arrays.toString(afile.listFiles()));
-	            for (File f : afile.listFiles()) {
-	            	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
-	                	urls.add(f.toURL());
-	            }
-	            
-	            for (File f : afile.listFiles()) {
-	            	if (f.getName().equals("IPlayormContext.class"))
-	            		interfaceurl.add(f.toURL());
-	            }
-	            
-	            
-	            log.info("******** urls is: "+Arrays.toString(urls.toArray(new URL[]{})));
-	            
-	    		URLClassLoader classloader =
-	                    new URLClassLoader(
-	                    		interfaceurl.toArray(new URL[0]),
-	                            ClassLoader.getSystemClassLoader());
-	    		URLClassLoader playormcontextclassloader =
-	                    new URLClassLoader(
-	                            urls.toArray(new URL[0]),
-	                            classloader);
-	    		log.info(" ======  the classloader urls are "+Arrays.toString(classloader.getURLs()));
-	    		log.info("about to print resources for org.apache.thrift.transport.TTransport");
-	    		for (Enumeration<URL> resources = classloader.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
-	    		       log.info("a resource is "+resources.nextElement());
-	    		}
-	    		log.info("done printing resources");
-	    		
-    			ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 	    		try{
-		    		log.info("system classloader is "+ClassLoader.getSystemClassLoader());
-		    		log.info("my new classloader is "+classloader);
-		    		log.info("the playormcontext classloader is "+playormcontextclassloader);
-
-		    		log.info("the current classloader is "+oldCl);
-		    		log.info("my new classloader parent is "+classloader.getParent());
-		    		log.info("the playormcontext classloader parent is "+playormcontextclassloader);
-
-		    		log.info("the current classloader parent is "+oldCl.getParent());
-		    		//ClassLoader.getSystemClassLoader().getParent()
-		    		Class interfaceclass = ClassLoader.getSystemClassLoader().loadClass("IPlayormContext");
-
-		    		log.info("the owner of interfaceclass is "+interfaceclass.getClassLoader());
-
-	    			log.info("about to try to load org.apache.thrift.transport.TTransport");
-		    		Class c = playormcontextclassloader.loadClass("org.apache.thrift.transport.TTransport");
-		    		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
-	    			
-	    			
-	    			Thread.currentThread().setContextClassLoader(playormcontextclassloader);
-	    			Class mainClass = playormcontextclassloader.loadClass("PlayormContext");
+	    			Class mainClass = playormcontextcl.loadClass("PlayormContext");
 	    			playorm = (IPlayormContext) mainClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	    		}
@@ -194,7 +113,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    			log.error("got exception loading playorm!  "+e.getMessage());
 	    		}
 	    		finally {
-	    			Thread.currentThread().setContextClassLoader(oldCl);
+	    			//Thread.currentThread().setContextClassLoader(interfacecl);
 	    		}
 	    		initialized = true;
 	    		initializing=false;
@@ -317,6 +236,8 @@ public class DatabusMapredTest extends Configured implements Tool
     
     public int run(String[] args) throws Exception
     {        
+    	
+    	setupHadoopClassloader();
         // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
         ConfigHelper.setRangeBatchSize(getConf(), 99);
 
@@ -368,5 +289,103 @@ public class DatabusMapredTest extends Configured implements Tool
         job.waitForCompletion(true);
         return 0;
     }
+
+
+	private void setupHadoopClassloader() {
+		ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+		
+		try{
+			CodeSource src = DatabusMapredTest.class.getProtectionDomain().getCodeSource();
+	
+			//interfacecl will be the parent of both the hadoopcl and the playormcontextcl, 
+			//it will have only the IPlayormContext class added to the bootstrap classloader
+			List<URL> playormcontextclurls = new ArrayList<URL>();
+			List<URL> interfaceclurls = new ArrayList<URL>();  
+			List<URL> hadoopclurls = new ArrayList<URL>();  
+	
+			URL location = src.getLocation();
+			interfaceclurls.add(location);
+	        log.info("******** location from codesource is "+location);
+	        File libdir = new File(location.getPath()+"lib/");
+	        File cassandra126libsdir = new File(location.getPath()+"classes/libcassandra1.2.6");
+	        log.info("******** libdir absolute is "+libdir.getAbsolutePath());
+	        log.info("******** libdir tostring is "+libdir);
+	        log.info("******** libdir name is "+libdir.getName());
+	        log.info("******** libdir cannonical is "+libdir.getCanonicalPath());
+	        
+	        log.info("******** cassandra126libdir absolute is "+cassandra126libsdir.getAbsolutePath());
+	        log.info("******** cassandra126libdir tostring is "+cassandra126libsdir);
+	        log.info("******** cassandra126libdir name is "+cassandra126libsdir.getName());
+	        log.info("******** cassandra126libdir cannonical is "+cassandra126libsdir.getCanonicalPath());
+	
+	        
+	        
+	        log.info("******** libdir.listfiles() is "+Arrays.toString(libdir.listFiles()));
+	        for (File f : libdir.listFiles()) {
+	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
+	            	interfaceclurls.add(f.toURL());
+	        }
+	        
+	        for (File f : cassandra126libsdir.listFiles()) {
+	       		hadoopclurls.add(f.toURL());
+	        }
+	        
+	        
+	        log.info("******** interfaceclurls is: "+Arrays.toString(interfaceclurls.toArray(new URL[]{})));
+	        log.info("******** hadoopclurls is: "+Arrays.toString(hadoopclurls.toArray(new URL[]{})));
+	        log.info("******** playormcontextclurls is: "+Arrays.toString(playormcontextclurls.toArray(new URL[]{})));
+	
+	        
+			interfacecl =
+	                new URLClassLoader(
+	                		interfaceclurls.toArray(new URL[0]),
+	                        ClassLoader.getSystemClassLoader());
+			playormcontextcl =
+	                new URLClassLoader(
+	                        playormcontextclurls.toArray(new URL[0]),
+	                        interfacecl);
+			hadoopcl =
+	                new URLClassLoader(
+	                        hadoopclurls.toArray(new URL[0]),
+	                        interfacecl);
+			log.info(" ======  the interfacecl (shared parent) urls are "+Arrays.toString(interfacecl.getURLs()));
+			log.info("about to print resources for org.apache.thrift.transport.TTransport");
+			for (Enumeration<URL> resources = interfacecl.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
+			       log.info("a resource is "+resources.nextElement());
+			}
+			log.info("done printing resources");
+		
+    		log.info("system classloader is "+ClassLoader.getSystemClassLoader());
+    		log.info("interfacecl classloader is "+interfacecl);
+    		log.info("the playormcontext classloader is "+playormcontextcl);
+    		log.info("the hadoop classloader is "+hadoopcl);
+
+    		log.info("the current classloader is "+oldCl);
+    		log.info("interfacecl classloader parent is "+interfacecl.getParent());
+    		log.info("the playormcontext classloader parent is (should be same as line above)"+playormcontextcl.getParent());
+    		log.info("the hadoop classloader parent is (should be the same as 2 lines above)"+hadoopcl.getParent());
+
+    		log.info("the current (old) classloader parent is "+oldCl.getParent());
+    		//ClassLoader.getSystemClassLoader().getParent()
+    		Class interfaceclass = interfacecl.loadClass("IPlayormContext");
+
+    		log.info("the owner of interfaceclass is (should be same as 3 lines above)"+interfaceclass.getClassLoader());
+
+			log.info("about to try to load org.apache.thrift.transport.TTransport");
+    		Class c = playormcontextcl.loadClass("org.apache.thrift.transport.TTransport");
+    		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
+			
+			
+			Thread.currentThread().setContextClassLoader(playormcontextcl);
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.error("got exception loading playorm!  "+e.getMessage());
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(oldCl);
+		}
+	}
 
 }
