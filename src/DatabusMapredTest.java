@@ -105,6 +105,8 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		String port2 = "9160";
 	            
 	    		try{
+	            	setupHadoopClassloader();
+
 	    			Class mainClass = playormcontextcl.loadClass("PlayormContext");
 	    			playorm = (IPlayormContext) mainClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
@@ -119,7 +121,6 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		initialized = true;
 	    		initializing=false;
         	}
-        	setupHadoopClassloader();
                 
         }
         
