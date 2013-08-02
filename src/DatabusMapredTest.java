@@ -110,11 +110,11 @@ public class DatabusMapredTest extends Configured implements Tool
 	            	Class playorminterface = interfacecl.loadClass("IPlayormContext");
 	    			Thread.currentThread().setContextClassLoader(playormcontextcl);
 
-	    			Class mainClass = playormcontextcl.loadClass("PlayormContext");
+	    			Class playormClass = playormcontextcl.loadClass("PlayormContext");
 	    			
-	    			log.info("iplayormcontext interface classloader is "+playorminterface.getClassLoader());
-	    			log.info("playormcontext class classloader is "+mainClass.getClassLoader());
-	    			playorm = (IPlayormContext) mainClass.newInstance();
+	    			log.info("iplayormcontext interface classloader is "+playorminterface.getClassLoader()+" interfacecl is "+interfacecl);
+	    			log.info("playormcontext class classloader is "+playormClass.getClassLoader()+" playormcontextcl is "+playormcontextcl);
+	    			playorm = (IPlayormContext) playormClass.newInstance();
 	    			playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	    		}
 	    		catch (Exception e) {
@@ -191,12 +191,13 @@ public class DatabusMapredTest extends Configured implements Tool
     			log.info("done printing resources");
     		
         		log.info("system classloader is "+ClassLoader.getSystemClassLoader());
-        		log.info("interfacecl classloader is "+interfacecl);
         		log.info("the playormcontext classloader is "+playormcontextcl);
         		log.info("the hadoop classloader is "+hadoopcl);
 
         		log.info("the current classloader is "+oldCl);
         		log.info("interfacecl classloader parent is "+interfacecl.getParent());
+        		
+        		log.info("interfacecl classloader is "+interfacecl);
         		log.info("the playormcontext classloader parent is (should be same as line above)"+playormcontextcl.getParent());
         		log.info("the hadoop classloader parent is (should be the same as 2 lines above)"+hadoopcl.getParent());
 
