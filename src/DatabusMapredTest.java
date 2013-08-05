@@ -130,6 +130,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		catch (Exception e) {
 	    			e.printStackTrace();
 	    			log.error("got exception loading playorm!  "+e.getMessage());
+	    			throw new RuntimeException(e);
 	    		}
 	    		finally {
 	    			//Thread.currentThread().setContextClassLoader(interfacecl);
@@ -189,6 +190,7 @@ public class DatabusMapredTest extends Configured implements Tool
     	            	hadoopclurls.add(f.toURL());
     	        }
     	        
+    	        playormcontextclurls.add(playormlibdir.toURL());
     	        for (File f : playormlibdir.listFiles()) {
     	        	playormcontextclurls.add(f.toURL());
     	        }
