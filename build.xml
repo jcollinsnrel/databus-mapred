@@ -82,16 +82,16 @@
     	</copy>
     	<!-- hack because of classloader incompatibility: -->
     	
-    	<mkdir dir="${build.classes}/libcassandra1.2.6" />
-    	<move todir="${build.classes}/libcassandra1.2.6">
+    	<mkdir dir="${ivy.jars.dir}/libcassandra1.2.6" />
+    	<move todir="${ivy.jars.dir}/libcassandra1.2.6">
     	   <fileset dir="${ivy.lib.dir}">
     	      <include name="**/cassandra-all-1.2.6.jar" />
   	          <include name="**/cassandra-thrift-1.2.6.jar" />    	   	
     	   </fileset>
     	</move>
     	
-    	<mkdir dir="${build.classes}/commonInterface" />
-    	<move todir="${build.classes}/commonInterface">
+    	<mkdir dir="${ivy.jars.dir}/commonInterface" />
+    	<move todir="${ivy.jars.dir}/commonInterface">
     	   <fileset dir="${build.classes}">
     	      <include name="**/IPlayormContext.class" />
     	   </fileset>

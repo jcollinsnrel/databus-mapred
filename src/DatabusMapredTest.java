@@ -156,6 +156,7 @@ public class DatabusMapredTest extends Configured implements Tool
     			interfaceclurls.add(location);
     	        log.info("******** location from codesource is "+location);
     	        File libdir = new File(location.getPath()+"lib/");
+    	        File interfacelibdir = new File(location.getPath()+"lib/commonInterface");
 
     	        log.info("******** libdir absolute is "+libdir.getAbsolutePath());
     	        log.info("******** libdir tostring is "+libdir);
@@ -168,6 +169,10 @@ public class DatabusMapredTest extends Configured implements Tool
     	        for (File f : libdir.listFiles()) {
     	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
     	            	interfaceclurls.add(f.toURL());
+    	        }
+    	        
+    	        for (File f : interfacelibdir.listFiles()) {
+    	            interfaceclurls.add(f.toURL());
     	        }
     	        
     	        for (File f : libdir.listFiles()) {
