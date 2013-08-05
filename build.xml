@@ -90,6 +90,13 @@
     	   </fileset>
     	</move>
     	
+    	<mkdir dir="${build.classes}/commonInterface" />
+    	<move todir="${build.classes}/commonInterface">
+    	   <fileset dir="${ivy.lib.dir}">
+    	      <include name="**/IPlayormContext.class" />
+    	   </fileset>
+    	</move>
+    	
         <jar jarfile="${build.dir}/${final.name}.jar">
            <!--<fileset dir="${build.classes}" />-->
            <fileset dir="${build.classes}">
