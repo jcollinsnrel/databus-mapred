@@ -157,6 +157,8 @@ public class DatabusMapredTest extends Configured implements Tool
     	        log.info("******** location from codesource is "+location);
     	        File libdir = new File(location.getPath()+"lib/");
     	        File interfacelibdir = new File(location.getPath()+"lib/commonInterface");
+    	        
+    	        File playormlibdir = new File(location.getPath()+"lib/playormLib");
 
     	        log.info("******** libdir absolute is "+libdir.getAbsolutePath());
     	        log.info("******** libdir tostring is "+libdir);
@@ -167,19 +169,30 @@ public class DatabusMapredTest extends Configured implements Tool
     	        log.info("******** interfacelibdir cannonical is "+interfacelibdir.getCanonicalPath());
     	        log.info("******** interfacelibdir exists is "+interfacelibdir.exists());
     	        log.info("******** interfacelibdir.listfiles() is "+Arrays.toString(interfacelibdir.listFiles()));
+    	        
+    	        log.info("******** playormlibdir cannonical is "+playormlibdir.getCanonicalPath());
+    	        log.info("******** playormlibdir exists is "+playormlibdir.exists());
+    	        log.info("******** playormlibdir.listfiles() is "+Arrays.toString(playormlibdir.listFiles()));
     	        for (File f : libdir.listFiles()) {
     	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
     	            	interfaceclurls.add(f.toURL());
     	        }
     	        
-    	        for (File f : interfacelibdir.listFiles()) {
-    	            interfaceclurls.add(f.toURL());
-    	        }
+    	        interfaceclurls.add(interfacelibdir.toURL());
+//    	        for (File f : interfacelibdir.listFiles()) {
+//    	            interfaceclurls.add(f.toURL());
+//    	        	
+//    	        }
     	        
     	        for (File f : libdir.listFiles()) {
     	        	if (f.getName().equals("cassandra-all-1.2.6.jar") || f.getName().equals("cassandra-thrift-1.2.6.jar"))
     	            	hadoopclurls.add(f.toURL());
     	        }
+    	        
+    	        for (File f : playormlibdir.listFiles()) {
+    	            interfaceclurls.add(f.toURL());
+    	        }
+    	        
     	        
     	        
     	        log.info("******** interfaceclurls is: "+Arrays.toString(interfaceclurls.toArray(new URL[]{})));

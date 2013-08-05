@@ -97,6 +97,13 @@
     	   </fileset>
     	</move>
     	
+    	<mkdir dir="${build.classes}/lib/playormLib" />
+    	<move todir="${build.classes}/lib/playormLib">
+    	   <fileset dir="${build.classes}">
+    	      <include name="**/playorm.jar" />
+    	   </fileset>
+    	</move>
+    	
         <jar jarfile="${build.dir}/${final.name}.jar">
            <!--<fileset dir="${build.classes}" />-->
            <fileset dir="${build.classes}">
