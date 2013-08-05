@@ -119,7 +119,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    			Class playormClass = playormcontextcl.loadClass("PlayormContext");
 	    			
 	    			log.info("iplayormcontext interface classloader is "+playorminterface.getClassLoader()+" interfacecl is "+interfacecl);
-	    			log.info("iplayormcontext interface FROM CONSTANT is classloader is "+IPlayormContext.class.getClassLoader()+" interfacecl is "+interfacecl);
+	    			//log.info("iplayormcontext interface FROM CONSTANT is classloader is "+IPlayormContext.class.getClassLoader()+" interfacecl is "+interfacecl);
 	    			log.info("playormcontext class classloader is "+playormClass.getClassLoader()+" playormcontextcl is "+playormcontextcl);
 	    			Object pormobj = playormClass.newInstance();
 	    			
@@ -190,7 +190,7 @@ public class DatabusMapredTest extends Configured implements Tool
     	        }
     	        
     	        for (File f : playormlibdir.listFiles()) {
-    	            interfaceclurls.add(f.toURL());
+    	        	playormcontextclurls.add(f.toURL());
     	        }
     	        
     	        
