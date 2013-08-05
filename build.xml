@@ -100,7 +100,7 @@
     	<mkdir dir="${build.classes}/lib/playormLib" />
     	<move todir="${build.classes}/lib/playormLib">
     	   <fileset dir="${build.classes}">
-    	      <include name="**/playorm.jar" />
+    	      <include name="lib/playorm.jar" />
     	   </fileset>
     	</move>
     	
