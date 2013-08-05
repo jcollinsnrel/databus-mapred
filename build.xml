@@ -92,7 +92,7 @@
     	
     	<mkdir dir="${build.classes}/commonInterface" />
     	<move todir="${build.classes}/commonInterface">
-    	   <fileset dir="${ivy.lib.dir}">
+    	   <fileset dir="${build.classes}">
     	      <include name="**/IPlayormContext.class" />
     	   </fileset>
     	</move>
