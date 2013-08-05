@@ -413,17 +413,17 @@ public class DatabusMapredTest extends Configured implements Tool
 	
 			URL location = src.getLocation();
 			interfaceclurls.add(location);
-	        log.info("******** location from codesource is "+location);
+	        log.info("-------- location from codesource is "+location);
 	        File libdir = new File(location.getPath()+"lib/");
 
-	        log.info("******** libdir absolute is "+libdir.getAbsolutePath());
-	        log.info("******** libdir tostring is "+libdir);
-	        log.info("******** libdir name is "+libdir.getName());
-	        log.info("******** libdir cannonical is "+libdir.getCanonicalPath());
+	        log.info("-------- libdir absolute is "+libdir.getAbsolutePath());
+	        log.info("-------- libdir tostring is "+libdir);
+	        log.info("-------- libdir name is "+libdir.getName());
+	        log.info("-------- libdir cannonical is "+libdir.getCanonicalPath());
 	
 	        
 	        
-	        log.info("******** libdir.listfiles() is "+Arrays.toString(libdir.listFiles()));
+	        log.info("-------- libdir.listfiles() is "+Arrays.toString(libdir.listFiles()));
 	        for (File f : libdir.listFiles()) {
 	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar")
 	        			&& !f.getName().equals("PlayormContext.class") && !f.getName().equals("playorm.jar"))
@@ -436,8 +436,8 @@ public class DatabusMapredTest extends Configured implements Tool
 	        }
 	        
 	        
-	        log.info("******** interfaceclurls is: "+Arrays.toString(interfaceclurls.toArray(new URL[]{})));
-	        log.info("******** hadoopclurls is: "+Arrays.toString(hadoopclurls.toArray(new URL[]{})));
+	        log.info("-------- interfaceclurls is: "+Arrays.toString(interfaceclurls.toArray(new URL[]{})));
+	        log.info("-------- hadoopclurls is: "+Arrays.toString(hadoopclurls.toArray(new URL[]{})));
 	
 	        
 			URLClassLoader interfacecl =
@@ -448,35 +448,35 @@ public class DatabusMapredTest extends Configured implements Tool
 	                new URLClassLoader(
 	                        hadoopclurls.toArray(new URL[0]),
 	                        interfacecl);
-			log.info(" ======  the interfacecl (shared parent) urls are "+Arrays.toString(interfacecl.getURLs()));
-			log.info("about to print resources for org.apache.thrift.transport.TTransport");
+			log.info("--------  the interfacecl (shared parent) urls are "+Arrays.toString(interfacecl.getURLs()));
+			log.info("--------about to print resources for org.apache.thrift.transport.TTransport");
 			for (Enumeration<URL> resources = interfacecl.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
-			       log.info("a resource is "+resources.nextElement());
+			       log.info("--------a resource is "+resources.nextElement());
 			}
-			log.info("done printing resources");
+			log.info("--------done printing resources");
 		
-    		log.info("system classloader is "+ClassLoader.getSystemClassLoader());
-    		log.info("the hadoop classloader is "+hadoopcl);
+    		log.info("--------system classloader is "+ClassLoader.getSystemClassLoader());
+    		log.info("--------the hadoop classloader is "+hadoopcl);
 
-    		log.info("interfacecl classloader parent is "+interfacecl.getParent());
+    		log.info("--------interfacecl classloader parent is "+interfacecl.getParent());
     		
-    		log.info("interfacecl classloader is "+interfacecl);
-    		log.info("the hadoop classloader parent is (should be the same as 2 lines above)"+hadoopcl.getParent());
+    		log.info("--------interfacecl classloader is "+interfacecl);
+    		log.info("--------the hadoop classloader parent is (should be the same as 2 lines above)"+hadoopcl.getParent());
 
-    		log.info("the current (old) classloader parent is "+ClassLoader.getSystemClassLoader().getParent());
+    		log.info("--------the current (old) classloader parent is "+ClassLoader.getSystemClassLoader().getParent());
     		//ClassLoader.getSystemClassLoader().getParent()
     		Class interfaceclass = interfacecl.loadClass("IPlayormContext");
 
-    		log.info("the owner of interfaceclass is (should be same as 3 lines above)"+interfaceclass.getClassLoader());
+    		log.info("--------the owner of interfaceclass is (should be same as 3 lines above)"+interfaceclass.getClassLoader());
 
-			log.info("about to try to load org.apache.thrift.transport.TTransport");
+			log.info("--------about to try to load org.apache.thrift.transport.TTransport");
     		Class c = hadoopcl.loadClass("org.apache.thrift.transport.TTransport");
-    		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
+    		log.info("--------loaded org.apache.thrift.transport.TTransport, class is "+c);
 			return hadoopcl; 			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			log.error("got exception loading playorm!  "+e.getMessage());
+			log.error("--------got exception loading playorm!  "+e.getMessage());
 		}
 		return null;
 		
