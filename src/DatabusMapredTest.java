@@ -219,9 +219,9 @@ public class DatabusMapredTest extends Configured implements Tool
 
         		log.info("the current (old) classloader parent is "+oldCl.getParent());
         		//ClassLoader.getSystemClassLoader().getParent()
-        		Class interfaceclass = interfacecl.loadClass("IPlayormContext");
+        		//Class interfaceclass = interfacecl.loadClass("IPlayormContext");
 
-        		log.info("the owner of interfaceclass is (should be same as 3 lines above)"+interfaceclass.getClassLoader());
+        		//log.info("the owner of interfaceclass is (should be same as 3 lines above)"+interfaceclass.getClassLoader());
 
     			log.info("about to try to load org.apache.thrift.transport.TTransport");
         		Class c = playormcontextcl.loadClass("org.apache.thrift.transport.TTransport");
