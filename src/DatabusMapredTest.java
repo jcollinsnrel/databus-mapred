@@ -341,6 +341,7 @@ public class DatabusMapredTest extends Configured implements Tool
 		ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 
 		ClassLoader hadoopcl = setupRunClassloader();
+		System.out.println("-------- settting the classloader to 'hadoopcl' "+hadoopcl);
 		Thread.currentThread().setContextClassLoader(hadoopcl);
 		try {
 	        // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
