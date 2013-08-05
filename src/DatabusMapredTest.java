@@ -83,6 +83,13 @@ public class DatabusMapredTest extends Configured implements Tool
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
+        	try{
+            	setupHadoopClassloader();
+        	}
+        	catch (Exception e) {
+        		e.printStackTrace();
+        		log.error("failed setting up HadoopClassloader()");
+        	}
         	if (playorm != null)
         		return;
         	while (initializing)
@@ -105,7 +112,6 @@ public class DatabusMapredTest extends Configured implements Tool
 	    		String port2 = "9160";
 	            
 	    		try{
-	            	setupHadoopClassloader();
 
 	            	Class playorminterface = interfacecl.loadClass("IPlayormContext");
 	    			Thread.currentThread().setContextClassLoader(playormcontextcl);
