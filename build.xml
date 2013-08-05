@@ -82,23 +82,25 @@
     	</copy>
     	<!-- hack because of classloader incompatibility: -->
     	
-    	<mkdir dir="${build.classes}/lib/libcassandra1.2.6" />
-    	<move todir="${build.classes}/lib/libcassandra1.2.6">
+    	<mkdir dir="${build.classes}/libvar" />
+    	
+    	<mkdir dir="${build.classes}/libvar/libcassandra1.2.6" />
+    	<move todir="${build.classes}/libvar/libcassandra1.2.6">
     	   <fileset dir="${ivy.lib.dir}">
     	      <include name="**/cassandra-all-1.2.6.jar" />
   	          <include name="**/cassandra-thrift-1.2.6.jar" />    	   	
     	   </fileset>
     	</move>
     	
-    	<mkdir dir="${build.classes}/lib/commonInterface" />
-    	<move todir="${build.classes}/lib/commonInterface">
+    	<mkdir dir="${build.classes}/libvar/commonInterface" />
+    	<move todir="${build.classes}/libvar/commonInterface">
     	   <fileset dir="${build.classes}">
     	      <include name="**/IPlayormContext.class" />
     	   </fileset>
     	</move>
     	
-    	<mkdir dir="${build.classes}/lib/playormLib" />
-    	<move todir="${build.classes}/lib/playormLib">
+    	<mkdir dir="${build.classes}/libvar/playormLib" />
+    	<move todir="${build.classes}/libvar/playormLib">
     	   <fileset dir="${build.classes}/lib">
     	      <include name="playorm.jar" />
     	   </fileset>

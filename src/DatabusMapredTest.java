@@ -155,10 +155,10 @@ public class DatabusMapredTest extends Configured implements Tool
     			URL location = src.getLocation();
     			interfaceclurls.add(location);
     	        log.info("******** location from codesource is "+location);
-    	        File libdir = new File(location.getPath()+"lib/");
-    	        File interfacelibdir = new File(location.getPath()+"lib/commonInterface");
+    	        File libdir = new File(location.getPath()+"libvar/");
+    	        File interfacelibdir = new File(location.getPath()+"libvar/commonInterface");
     	        
-    	        File playormlibdir = new File(location.getPath()+"lib/playormLib");
+    	        File playormlibdir = new File(location.getPath()+"libvar/playormLib");
 
     	        log.info("******** libdir absolute is "+libdir.getAbsolutePath());
     	        log.info("******** libdir tostring is "+libdir);
