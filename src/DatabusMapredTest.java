@@ -162,10 +162,11 @@ public class DatabusMapredTest extends Configured implements Tool
     	        log.info("******** libdir tostring is "+libdir);
     	        log.info("******** libdir name is "+libdir.getName());
     	        log.info("******** libdir cannonical is "+libdir.getCanonicalPath());
-    	
-    	        
-    	        
     	        log.info("******** libdir.listfiles() is "+Arrays.toString(libdir.listFiles()));
+    	        
+    	        log.info("******** interfacelibdir cannonical is "+interfacelibdir.getCanonicalPath());
+    	        log.info("******** interfacelibdir exists is "+interfacelibdir.exists());
+    	        log.info("******** interfacelibdir.listfiles() is "+Arrays.toString(interfacelibdir.listFiles()));
     	        for (File f : libdir.listFiles()) {
     	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
     	            	interfaceclurls.add(f.toURL());
