@@ -236,9 +236,9 @@ public class DatabusMapredTest extends Configured implements Tool
 
         		//log.info("the owner of interfaceclass is (should be same as 3 lines above)"+interfaceclass.getClassLoader());
 
-    			log.info("about to try to load org.apache.thrift.transport.TTransport");
-        		Class c = playormcontextcl.loadClass("org.apache.thrift.transport.TTransport");
-        		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
+    			//log.info("about to try to load org.apache.thrift.transport.TTransport");
+        		//Class c = playormcontextcl.loadClass("org.apache.thrift.transport.TTransport");
+        		//log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
     			    			
     		}
     		catch (Exception e) {

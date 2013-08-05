@@ -105,6 +105,11 @@
     	      <include name="playorm.jar" />
     	   </fileset>
     	</move>
+    	<move todir="${build.classes}/libvar/playormLib">
+    	   <fileset dir="${build.classes}">
+    	      <include name="**/PlayormContext.class" />
+    	   </fileset>
+    	</move>
     	
         <jar jarfile="${build.dir}/${final.name}.jar">
            <!--<fileset dir="${build.classes}" />-->
