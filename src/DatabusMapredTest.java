@@ -113,7 +113,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	            
 	    		try{
 
-	            	Class playorminterface = interfacecl.loadClass("IPlayormContext");
+	            	Class playorminterface = playormcontextcl.loadClass("IPlayormContext");
 	    			Thread.currentThread().setContextClassLoader(playormcontextcl);
 
 	    			Class playormClass = playormcontextcl.loadClass("PlayormContext");
