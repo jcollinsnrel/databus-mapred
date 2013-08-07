@@ -24,7 +24,12 @@ public class DatabusCopyMapperImpl {
 		String cluster2 = "TestCluster";
 		String seeds2 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
 		String port2 = "9160";
-		
+		try{
+			Class c = Thread.currentThread().getContextClassLoader().loadClass("PlayormContext");
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
 		playorm = new PlayormContext();
 		playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	}
