@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.SortedMap;
 
@@ -26,14 +27,18 @@ public class DatabusCopyMapperImpl {
 		String port2 = "9160";
 		try{
 			System.out.println("the current contextclassloader is "+Thread.currentThread().getContextClassLoader()+" this thread is "+Thread.currentThread());
-			Class c = Thread.currentThread().getContextClassLoader().loadClass("PlayormContext");
-			System.out.println("loaded the class for PlayormContext it is "+c);
+			Class playormcontextClass = Thread.currentThread().getContextClassLoader().loadClass("PlayormContext");
+			System.out.println("loaded the class for PlayormContext it is "+playormcontextClass);
+			Object playormContextObj = playormcontextClass.newInstance();
+			Method initmethod = playormcontextClass.getDeclaredMethod("initialize", String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class);
+			initmethod.invoke(playormContextObj, KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 		}
 		catch (Exception e){
 			e.printStackTrace();
 		}
-		playorm = new PlayormContext();
-		playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
+
+		//playorm = new PlayormContext();
+		//playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	}
 
 	
