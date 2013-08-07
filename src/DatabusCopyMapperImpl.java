@@ -32,6 +32,7 @@ public class DatabusCopyMapperImpl {
 			Object playormContextObj = playormcontextClass.newInstance();
 			Method initmethod = playormcontextClass.getDeclaredMethod("initialize", String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class);
 			initmethod.invoke(playormContextObj, KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
+			playorm = (IPlayormContext)playormContextObj;
 		}
 		catch (Exception e){
 			e.printStackTrace();
