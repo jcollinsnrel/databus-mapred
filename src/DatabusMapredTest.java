@@ -1,8 +1,6 @@
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +18,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -54,6 +51,7 @@ public class DatabusMapredTest extends Configured implements Tool
     
     public int run(String[] args) throws Exception
     {        
+    	
 		ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 
 		//ClassLoader hadoopcl = setupRunClassloader();
@@ -152,12 +150,12 @@ public class DatabusMapredTest extends Configured implements Tool
 	        log.info("-------- hadoopclurls is: "+Arrays.toString(hadoopclurls.toArray(new URL[]{})));
 	
 	        
-			URLClassLoader interfacecl =
-	                new URLClassLoader(
+	        TestClassloader interfacecl =
+	                new TestClassloader(
 	                		interfaceclurls.toArray(new URL[0]),
 	                        ClassLoader.getSystemClassLoader().getParent());
-			URLClassLoader hadoopcl =
-	                new URLClassLoader(
+	        TestClassloader hadoopcl =
+	                new TestClassloader(
 	                        hadoopclurls.toArray(new URL[0]),
 	                        interfacecl);
 			log.info("--------  the interfacecl (shared parent) urls are "+Arrays.toString(interfacecl.getURLs()));
