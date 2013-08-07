@@ -31,9 +31,9 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         private static Object delegate = null;
         private static Class delegateClass = null;
         
-        static URLClassLoader interfacecl = null;
-    	static URLClassLoader hadoopcl = null;
-    	static URLClassLoader playormcontextcl = null;
+        static TestClassloader interfacecl = null;
+    	static TestClassloader hadoopcl = null;
+    	static TestClassloader playormcontextcl = null;
 
         
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
@@ -137,15 +137,15 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	
     	        
     			interfacecl =
-    	                new URLClassLoader(
+    	                new TestClassloader(
     	                		interfaceclurls.toArray(new URL[0]),
     	                        ClassLoader.getSystemClassLoader());
     			playormcontextcl =
-    	                new URLClassLoader(
+    	                new TestClassloader(
     	                        playormcontextclurls.toArray(new URL[0]),
     	                        interfacecl);
     			hadoopcl =
-    	                new URLClassLoader(
+    	                new TestClassloader(
     	                        hadoopclurls.toArray(new URL[0]),
     	                        interfacecl);
     			log.info(" ======  the interfacecl (shared parent) urls are "+Arrays.toString(interfacecl.getURLs()));
