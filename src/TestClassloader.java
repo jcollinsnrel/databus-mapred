@@ -27,5 +27,10 @@ public class TestClassloader extends URLClassLoader {
 		System.out.println("calling loadClass boolean with class "+name+".  I am "+this);
 		return super.loadClass(name, resolve);
 	}
+	
+	@Override
+	public String toString() {
+		return "TestClassloader"+super.toString();
+	}
 
 }
