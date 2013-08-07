@@ -175,12 +175,12 @@ public class DatabusMapredTest extends Configured implements Tool
     	        log.info("******** playormlibdir cannonical is "+playormlibdir.getCanonicalPath());
     	        log.info("******** playormlibdir exists is "+playormlibdir.exists());
     	        log.info("******** playormlibdir.listfiles() is "+Arrays.toString(playormlibdir.listFiles()));
-    	        for (File f : libdir.listFiles()) {
-    	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
-    	            	interfaceclurls.add(f.toURL());
-    	        }
-    	        
-    	        interfaceclurls.add(interfacelibdir.toURL());
+//    	        for (File f : libdir.listFiles()) {
+//    	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
+//    	            	interfaceclurls.add(f.toURL());
+//    	        }
+//    	        
+//    	        interfaceclurls.add(interfacelibdir.toURL());
 //    	        for (File f : interfacelibdir.listFiles()) {
 //    	            interfaceclurls.add(f.toURL());
 //    	        	
@@ -206,7 +206,7 @@ public class DatabusMapredTest extends Configured implements Tool
     			interfacecl =
     	                new URLClassLoader(
     	                		interfaceclurls.toArray(new URL[0]),
-    	                        ClassLoader.getSystemClassLoader().getParent());
+    	                        ClassLoader.getSystemClassLoader());
     			playormcontextcl =
     	                new URLClassLoader(
     	                        playormcontextclurls.toArray(new URL[0]),

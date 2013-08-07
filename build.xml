@@ -92,13 +92,14 @@
     	   </fileset>
     	</move>
     	
+    	<!--
     	<mkdir dir="${build.classes}/libvar/commonInterface" />
     	<move todir="${build.classes}/libvar/commonInterface">
     	   <fileset dir="${build.classes}">
     	      <include name="**/IPlayormContext.class" />
     	   </fileset>
     	</move>
-    	
+    	-->
     	<mkdir dir="${build.classes}/libvar/playormLib" />
     	<move todir="${build.classes}/libvar/playormLib">
     	   <fileset dir="${build.classes}/lib">
