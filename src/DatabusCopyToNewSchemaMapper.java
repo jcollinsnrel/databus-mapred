@@ -145,7 +145,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	                new TestClassloader(
     	                        playormcontextclurls.toArray(new URL[0]),
     	                        interfacecl);
-    			interfacecl.setName("playormclassloader");
+    			playormcontextcl.setName("playormclassloader");
     			hadoopcl =
     	                new TestClassloader(
     	                        hadoopclurls.toArray(new URL[0]),
