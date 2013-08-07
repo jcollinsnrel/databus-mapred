@@ -17,21 +17,30 @@ public class TestClassloader extends URLClassLoader {
 	protected Class<?> findClass(final String name)
         throws ClassNotFoundException {
 		System.out.println("calling findClass with class "+name+".  I am "+this);
-		return super.findClass(name);
+		Class<?> ret = super.findClass(name);
+		System.out.println("found class "+name+" I am "+name+" it's classloader is "+ret.getClassLoader());
+		return ret;
 	}
 	
 	public Class<?> loadClass(String name)
 	         throws ClassNotFoundException
 	{
 		System.out.println("calling loadClass with class "+name+".  I am "+this);
-		return super.loadClass(name);
+		Class<?> ret =  super.loadClass(name);		
+		System.out.println("found class "+name+".  I am "+this+" it's classloader is "+ret.getClassLoader());
+
+		
+		return ret;
 	}
 	
 	public Class<?> loadClass(String name, boolean resolve)
 	         throws ClassNotFoundException
 	{
 		System.out.println("calling loadClass boolean with class "+name+".  I am "+this);
-		return super.loadClass(name, resolve);
+		Class<?> ret = super.loadClass(name, resolve);
+		System.out.println("found class "+name+".  I am "+this+" it's classloader is "+ret.getClassLoader());
+
+		return ret;
 	}
 	
 	@Override
