@@ -208,8 +208,5 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         		throw new RuntimeException(e);
         	}
         }
-        
-
-		
 
     }
