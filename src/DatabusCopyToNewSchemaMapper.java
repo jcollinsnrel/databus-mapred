@@ -150,7 +150,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	                new TestClassloader(
     	                        hadoopclurls.toArray(new URL[0]),
     	                        interfacecl);
-    			interfacecl.setName("hadoopclassloader");
+    			hadoopcl.setName("hadoopclassloader");
     			log.info(" ======  the interfacecl (shared parent) urls are "+Arrays.toString(interfacecl.getURLs()));
     			log.info("about to print resources for org.apache.thrift.transport.TTransport");
     			for (Enumeration<URL> resources = interfacecl.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
