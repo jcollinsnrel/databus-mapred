@@ -35,20 +35,8 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	static URLClassLoader hadoopcl = null;
     	static URLClassLoader playormcontextcl = null;
 
-
-    	protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
-        throws IOException, InterruptedException
-        {
-        	try{
-            	setupHadoopClassloader();
-        	}
-        	catch (Exception e) {
-        		e.printStackTrace();
-        		log.error("failed setting up HadoopClassloader()");
-        	}
-        }
         
-        protected void setupold(org.apache.hadoop.mapreduce.Mapper.Context context)
+        protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
         	if (delegate != null)
