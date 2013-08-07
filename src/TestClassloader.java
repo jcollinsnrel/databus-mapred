@@ -27,7 +27,7 @@ public class TestClassloader extends URLClassLoader {
 	{
 		System.out.println("calling loadClass with class "+name+".  I am "+this);
 		Class<?> ret =  super.loadClass(name);		
-		System.out.println("found class "+name+".  I am "+this+" it's classloader is "+ret.getClassLoader());
+		System.out.println("found class "+name+".  I am "+this+" it's classloader is "+ret.getClassLoader()+" it's codesource it "+ret.getProtectionDomain().getCodeSource());
 
 		
 		return ret;
@@ -38,7 +38,7 @@ public class TestClassloader extends URLClassLoader {
 	{
 		System.out.println("calling loadClass boolean with class "+name+".  I am "+this);
 		Class<?> ret = super.loadClass(name, resolve);
-		System.out.println("found class "+name+".  I am "+this+" it's classloader is "+ret.getClassLoader());
+		System.out.println("found class "+name+".  I am "+this+" it's classloader is "+ret.getClassLoader()+" it's codesource it "+ret.getProtectionDomain().getCodeSource());
 
 		return ret;
 	}
