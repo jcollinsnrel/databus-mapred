@@ -30,7 +30,7 @@ public class PlayormContext implements IPlayormContext {
     	
     }
     
-    public void initialize(Object keyspace, Object cluster1, Object seeds1, Object port1, Object keyspace2, Object cluster2, Object seeds2, Object port2) {
+    public void initialize(String keyspace, String cluster1, String seeds1, String port1, String keyspace2, String cluster2, String seeds2, String port2) {
     	Map<String, Object> props = new HashMap<String, Object>();
 		props.put(Bootstrap.TYPE, "cassandra");
 		props.put(Bootstrap.CASSANDRA_KEYSPACE, keyspace);

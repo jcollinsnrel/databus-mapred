@@ -4,7 +4,7 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 
 public interface IPlayormContext {
 
-    public void initialize(Object keyspace, Object cluster1, Object seeds1, Object port1, Object keyspace2, Object cluster2, Object seeds2, Object port2);
+    public void initialize(String keyspace, String cluster1, String seeds1, String port1, String keyspace2, String cluster2, String seeds2, String port2);
     public String getTableNameFromKey(byte[] key);
     public boolean sourceTableIsStream(String tableNameIfVirtual, byte[] key);
     public void postTimeSeries(String tableNameIfVirtual, Object pkValue, Object value, NoSqlTypedSession typedSession);
