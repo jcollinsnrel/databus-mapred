@@ -3,9 +3,15 @@ import java.net.URLClassLoader;
 
 
 public class TestClassloader extends URLClassLoader {
+	
+	private String name = "";
 
 	public TestClassloader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
+	}
+	
+	public void setName(String name) {
+		this.name=name;
 	}
 	
 	protected Class<?> findClass(final String name)
@@ -30,7 +36,7 @@ public class TestClassloader extends URLClassLoader {
 	
 	@Override
 	public String toString() {
-		return "TestClassloader"+super.toString();
+		return "TestClassloader named "+name+" super: "+super.toString();
 	}
 
 }
