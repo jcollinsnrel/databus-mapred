@@ -25,8 +25,9 @@ public class DatabusCopyMapperImpl {
 		String seeds2 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
 		String port2 = "9160";
 		try{
-			System.out.println("the current contextclassloader is "+Thread.currentThread().getContextClassLoader());
+			System.out.println("the current contextclassloader is "+Thread.currentThread().getContextClassLoader()+" this thread is "+Thread.currentThread());
 			Class c = Thread.currentThread().getContextClassLoader().loadClass("PlayormContext");
+			System.out.println("loaded the class for PlayormContext it is "+c);
 		}
 		catch (Exception e){
 			e.printStackTrace();

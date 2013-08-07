@@ -57,6 +57,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
 
 	        	try{
 	            	setupHadoopClassloader();
+	            	System.out.println("setting the current thread classloader to "+playormcontextcl+" this thread is "+Thread.currentThread());
 	            	Thread.currentThread().setContextClassLoader(playormcontextcl);
 	            	delegateClass = playormcontextcl.loadClass("DatabusCopyMapperImpl");
 	            	delegate = delegateClass.newInstance();
