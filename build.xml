@@ -94,6 +94,8 @@
     	-->
     	<delete file="${ivy.lib.dir}/cassandra-all-1.2.6.jar"/>
     	<delete file="${ivy.lib.dir}/cassandra-thrift-1.2.6.jar"/>
+    	<delete file="${ivy.lib.dir}/libthrift-0.7.0.jar"/>
+
 
     	<!--
     	<mkdir dir="${build.classes}/libvar/commonInterface" />
