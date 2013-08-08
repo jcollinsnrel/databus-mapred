@@ -19,7 +19,7 @@
 <ivy-module version="2.0">
     <info organisation="gov.nrel" module="databus-mapred"/>
     <dependencies>
-        <dependency org="org.apache.hadoop" name="hadoop-core" rev="1.2.0"/>
+        <dependency org="org.apache.hadoop" name="hadoop-core" rev="0.20.2"/>
         <dependency org="commons-configuration" name="commons-configuration" rev="1.6"/>
         <dependency org="xerces" name="xercesImpl" rev="2.11.0"/>
         
