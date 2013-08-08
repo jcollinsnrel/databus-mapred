@@ -19,7 +19,7 @@
 <ivy-module version="2.0">
     <info organisation="gov.nrel" module="databus-mapred"/>
     <dependencies>
-        <dependency org="org.apache.hadoop" name="hadoop-core" rev="0.20.2"/>
+        <dependency org="org.apache.hadoop" name="hadoop-core" rev="1.0.0"/>
         <dependency org="commons-configuration" name="commons-configuration" rev="1.6"/>
         <dependency org="xerces" name="xercesImpl" rev="2.11.0"/>
         
@@ -37,8 +37,8 @@
         	<exclude org="org.apache.cassandra" name="cassandra-thrift"/>
         </dependency>   
            
-        <dependency org="org.apache.cassandra" name="cassandra-all" rev="1.2.5" force="true"/>
-        <dependency org="org.apache.cassandra" name="cassandra-thrift" rev="1.2.5" force="true"/> 
+        <dependency org="org.apache.cassandra" name="cassandra-all" rev="1.2.6" force="true"/>
+        <dependency org="org.apache.cassandra" name="cassandra-thrift" rev="1.2.6" force="true"/> 
         
 
 <!-- 
