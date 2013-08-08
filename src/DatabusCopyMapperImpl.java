@@ -45,6 +45,18 @@ public class DatabusCopyMapperImpl {
 	
 	public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
     {
+		
+		log.info("about to try to load org.apache.thrift.transport.TTransport");
+		try{
+		Class c = Thread.currentThread().getContextClassLoader().loadClass("org.apache.thrift.transport.TTransport");
+		//Class c = Thread.currentThread().getContextClassLoader().loadClass("org.apache.thrift.transport.TTransport");
+
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
+		
 		byte[] key = new byte[keyData.remaining()];
 		keyData.get(key);
 		
