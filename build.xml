@@ -83,7 +83,7 @@
     	<!-- hack because of classloader incompatibility: -->
     	
     	<mkdir dir="${build.classes}/libvar" />
-    	
+    	<!--
     	<mkdir dir="${build.classes}/libvar/libcassandra1.2.6" />
     	<move todir="${build.classes}/libvar/libcassandra1.2.6">
     	   <fileset dir="${ivy.lib.dir}">
@@ -91,7 +91,10 @@
   	          <include name="**/cassandra-thrift-1.2.6.jar" />    	   	
     	   </fileset>
     	</move>
-    	
+    	-->
+    	<delete file="${ivy.lib.dir}/cassandra-all-1.2.6.jar"/>
+    	<delete file="${ivy.lib.dir}/cassandra-thrift-1.2.6.jar"/>
+
     	<!--
     	<mkdir dir="${build.classes}/libvar/commonInterface" />
     	<move todir="${build.classes}/libvar/commonInterface">
