@@ -37,10 +37,27 @@ public class TestClassloader extends URLClassLoader {
 	         throws ClassNotFoundException
 	{
 		System.out.println("calling loadClass boolean with class "+name+".  I am "+this);
-		Class<?> ret = super.loadClass(name, resolve);
-		System.out.println("found class "+name+".  I am "+this+" it's classloader is "+ret.getClassLoader()+" it's codesource it "+ret.getProtectionDomain().getCodeSource());
+		
+		
+		
+		// reverse the logic.  try myself first, then delgate:
+		 Class c = findLoadedClass(name);
+		 if (c == null) {
+			 c = findClass(name);
+			 if (c == null) {
+				 System.out.println("No!  classloader"+this+" didn't have "+name+" delegating to parent!");
+				 c = super.loadClass(name, resolve);
+			 }
+			 else {
+				 System.out.println("Yes!  classloader"+this+" did have "+name);
+			 }
+		 }
+		 if (resolve) {
+		     resolveClass(c);
+		 }
+		 System.out.println("found class "+name+".  I am "+this+" it's classloader is "+c.getClassLoader()+" it's codesource it "+c.getProtectionDomain().getCodeSource());
 
-		return ret;
+		 return c;
 	}
 	
 	@Override
