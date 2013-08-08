@@ -106,6 +106,12 @@
     	      <include name="playorm.jar" />
     	   </fileset>
     	</move>
+    	<move todir="${build.classes}/libvar/playormLib">
+    	   <fileset dir="${lib.dir}">
+			 <include name="cassandra-all-1.2.2.jar" />
+			 <include name="cassandra-thrift-1.2.2.jar" />
+    	   </fileset>
+    	</move>
     	<copy todir="${build.classes}/libvar/playormLib">
     	   <fileset dir="${build.classes}/lib">
     	      <include name="**/astyanax-*.jar" />
