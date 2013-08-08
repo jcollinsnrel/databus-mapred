@@ -68,6 +68,8 @@
     </target>
 
     <target name="jar" depends="build">
+    	<delete file="${ivy.lib.dir}/libthrift-0.7.0.jar"/>
+
         <mkdir dir="${build.classes}/META-INF" />
         <mkdir dir="${build.classes}/lib" />
     	<copy todir="${build.classes}/lib">
@@ -94,7 +96,6 @@
     	-->
     	<delete file="${ivy.lib.dir}/cassandra-all-1.2.6.jar"/>
     	<delete file="${ivy.lib.dir}/cassandra-thrift-1.2.6.jar"/>
-    	<delete file="${ivy.lib.dir}/libthrift-0.7.0.jar"/>
 
 
     	<!--
