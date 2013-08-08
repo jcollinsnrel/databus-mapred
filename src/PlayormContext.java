@@ -143,11 +143,11 @@ public class PlayormContext implements IPlayormContext {
 		return meta.getIdColumnMeta().getColumnName();
 	}
 
-	public Number sourceConvertFromBytes(String tableNameIfVirtual, String columnName,
+	public Object sourceConvertFromBytes(String tableNameIfVirtual, String columnName,
 			byte[] valuearray) {
 		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
 		DboColumnMeta columnMeta = meta.getColumnMeta(columnName);
-		return (Number)columnMeta.convertFromStorage2(valuearray);
+		return columnMeta.convertFromStorage2(valuearray);
 	}
 	
 	public String bytesToString(byte[] namearray) {

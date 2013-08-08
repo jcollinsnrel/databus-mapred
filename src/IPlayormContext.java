@@ -11,6 +11,6 @@ public interface IPlayormContext {
     public Object convertToStorage(DboColumnMeta col, Object someVal);
     public String getSourceIdColumnValue(String tableNameIfVirtual, byte[] key);
 	public String getSourceIdColumnName(String tableNameIfVirtual);
-	public Number sourceConvertFromBytes(String tableNameIfVirtual, String columnName, byte[] valuearray);
+	public Object sourceConvertFromBytes(String tableNameIfVirtual, String columnName, byte[] valuearray);
 	public String bytesToString(byte[] namearray);
 }
