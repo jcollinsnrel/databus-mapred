@@ -26,9 +26,9 @@ public class DatabusCopyMapperImpl {
 		String seeds2 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
 		String port2 = "9160";
 		try{
-			System.out.println("the current contextclassloader is "+Thread.currentThread().getContextClassLoader()+" this thread is "+Thread.currentThread());
+//			System.out.println("the current contextclassloader is "+Thread.currentThread().getContextClassLoader()+" this thread is "+Thread.currentThread());
 			Class playormcontextClass = Thread.currentThread().getContextClassLoader().loadClass("PlayormContext");
-			System.out.println("loaded the class for PlayormContext it is "+playormcontextClass);
+//			System.out.println("loaded the class for PlayormContext it is "+playormcontextClass);
 			Object playormContextObj = playormcontextClass.newInstance();
 			Method initmethod = playormcontextClass.getDeclaredMethod("initialize", String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class);
 			initmethod.invoke(playormContextObj, KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
@@ -47,11 +47,11 @@ public class DatabusCopyMapperImpl {
     {
 		
 		try{
-		log.info("about to try to load org.apache.thrift.transport.TTransport");
-		Class c = Thread.currentThread().getContextClassLoader().loadClass("org.apache.thrift.transport.TTransport");
-		Class c2 = Thread.currentThread().getContextClassLoader().loadClass("org.apache.cassandra.thrift.TBinaryProtocol");
-		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
-		log.info("loaded org.apache.cassandra.thrift.TBinaryProtocol, class is "+c2);
+//		log.info("about to try to load org.apache.thrift.transport.TTransport");
+//		Class c = Thread.currentThread().getContextClassLoader().loadClass("org.apache.thrift.transport.TTransport");
+//		Class c2 = Thread.currentThread().getContextClassLoader().loadClass("org.apache.cassandra.thrift.TBinaryProtocol");
+//		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
+//		log.info("loaded org.apache.cassandra.thrift.TBinaryProtocol, class is "+c2);
 
 
 		}
@@ -72,6 +72,7 @@ public class DatabusCopyMapperImpl {
     	}
     	//super.map(key, columns, context);
 
+    	log.info("performing a map, mapcounter is "+mapcounter);
 		if (key.length==0) {
 			log.error("GOT A KEY THAT IS SIZE 0!!  WHAT DOES THAT MEAN?");
 			return;
