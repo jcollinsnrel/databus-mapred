@@ -68,8 +68,6 @@
     </target>
 
     <target name="jar" depends="build">
-    	<delete file="${ivy.lib.dir}/jars/libthrift-0.7.0.jar"/>
-
         <mkdir dir="${build.classes}/META-INF" />
         <mkdir dir="${build.classes}/lib" />
     	<copy todir="${build.classes}/lib">
