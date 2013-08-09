@@ -1,12 +1,5 @@
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.security.CodeSource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
 
 import org.apache.cassandra.hadoop.ColumnFamilyInputFormat;
 import org.apache.cassandra.hadoop.ConfigHelper;
@@ -20,7 +13,6 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -35,8 +27,6 @@ public class DatabusMapredTest extends Configured implements Tool
     static final String KEYSPACE = "databus5";
     static final String COLUMN_FAMILY = "nreldata";
 
-    static final String OUTPUT_REDUCER_VAR = "output_reducer";
-    static final String OUTPUT_COLUMN_FAMILY = "output_words";
     private static final String OUTPUT_PATH_PREFIX = "/tmp/data_count2";
     
     public static void main(String[] args) throws Exception
@@ -69,12 +59,13 @@ public class DatabusMapredTest extends Configured implements Tool
 	        job.setJarByClass(DatabusMapredTest.class);
 	        job.setMapperClass(DatabusCopyToNewSchemaMapper.class);
 	
-	        //job.setCombinerClass(ReducerToLogger.class);
-	        job.setReducerClass(ReducerToFilesystem.class);
+	        //these setting as specific to this debugger reducer that just ouputs a count of all tables written to:
+	        job.setCombinerClass(ReducerToFilesystem.class);
+            job.setReducerClass(ReducerToFilesystem.class);
+            job.setOutputKeyClass(Text.class);
+            job.setOutputValueClass(IntWritable.class);
+            FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
 	        
-	        job.setOutputKeyClass(Text.class);
-	        job.setOutputValueClass(IntWritable.class);
-	        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
 	        Configuration config = new Configuration();
 	    	FileSystem hdfs = FileSystem.get(config);
 	    	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
