@@ -1,5 +1,6 @@
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -67,7 +70,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	        job.setMapperClass(DatabusCopyToNewSchemaMapper.class);
 	
 	        //job.setCombinerClass(ReducerToLogger.class);
-	        //job.setReducerClass(ReducerToLogger.class);
+	        job.setReducerClass(ReducerToFilesystem.class);
 	        
 	        job.setOutputKeyClass(Text.class);
 	        job.setOutputValueClass(IntWritable.class);
@@ -82,7 +85,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	        
 	
 	        job.setInputFormatClass(ColumnFamilyInputFormat.class);
-	        //job.setNumReduceTasks(3);
+	        //job.setNumReduceTasks(1);
 	
 	        ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
 	        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
@@ -111,85 +114,15 @@ public class DatabusMapredTest extends Configured implements Tool
 		}
     }
     
-    private ClassLoader setupRunClassloader() {
-		
-		try{
-			CodeSource src = DatabusMapredTest.class.getProtectionDomain().getCodeSource();
-	
-			//interfacecl will be the parent of both the hadoopcl and the playormcontextcl, 
-			//it will have only the IPlayormContext class added to the bootstrap classloader
-			List<URL> interfaceclurls = new ArrayList<URL>();  
-			List<URL> hadoopclurls = new ArrayList<URL>();  
-	
-			URL location = src.getLocation();
-			interfaceclurls.add(location);
-	        log.info("-------- location from codesource is "+location);
-	        File libdir = new File(location.getPath()+"lib/");
-
-	        log.info("-------- libdir absolute is "+libdir.getAbsolutePath());
-	        log.info("-------- libdir tostring is "+libdir);
-	        log.info("-------- libdir name is "+libdir.getName());
-	        log.info("-------- libdir cannonical is "+libdir.getCanonicalPath());
-	
-	        
-	        
-	        log.info("-------- libdir.listfiles() is "+Arrays.toString(libdir.listFiles()));
-	        for (File f : libdir.listFiles()) {
-	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar")
-	        			&& !f.getName().equals("PlayormContext.class") && !f.getName().equals("playorm.jar"))
-	            	interfaceclurls.add(f.toURL());
-	        }
-	        
-	        for (File f : libdir.listFiles()) {
-	        	if (f.getName().equals("cassandra-all-1.2.6.jar") || f.getName().equals("cassandra-thrift-1.2.6.jar"))
-	            	hadoopclurls.add(f.toURL());
-	        }
-	        
-	        
-	        log.info("-------- interfaceclurls is: "+Arrays.toString(interfaceclurls.toArray(new URL[]{})));
-	        log.info("-------- hadoopclurls is: "+Arrays.toString(hadoopclurls.toArray(new URL[]{})));
-	
-	        
-	        TestClassloader interfacecl =
-	                new TestClassloader(
-	                		interfaceclurls.toArray(new URL[0]),
-	                        ClassLoader.getSystemClassLoader().getParent());
-	        TestClassloader hadoopcl =
-	                new TestClassloader(
-	                        hadoopclurls.toArray(new URL[0]),
-	                        interfacecl);
-			log.info("--------  the interfacecl (shared parent) urls are "+Arrays.toString(interfacecl.getURLs()));
-			log.info("--------about to print resources for org.apache.thrift.transport.TTransport");
-			for (Enumeration<URL> resources = interfacecl.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
-			       log.info("--------a resource is "+resources.nextElement());
-			}
-			log.info("--------done printing resources");
-		
-    		log.info("--------system classloader is "+ClassLoader.getSystemClassLoader());
-    		log.info("--------the hadoop classloader is "+hadoopcl);
-
-    		log.info("--------interfacecl classloader parent is "+interfacecl.getParent());
-    		
-    		log.info("--------interfacecl classloader is "+interfacecl);
-    		log.info("--------the hadoop classloader parent is (should be the same as 2 lines above)"+hadoopcl.getParent());
-
-    		log.info("--------the current (old) classloader parent is "+ClassLoader.getSystemClassLoader().getParent());
-    		//ClassLoader.getSystemClassLoader().getParent()
-    		Class interfaceclass = interfacecl.loadClass("IPlayormContext");
-
-    		log.info("--------the owner of interfaceclass is (should be same as 3 lines above)"+interfaceclass.getClassLoader());
-
-			log.info("--------about to try to load org.apache.thrift.transport.TTransport");
-    		Class c = hadoopcl.loadClass("org.apache.thrift.transport.TTransport");
-    		log.info("--------loaded org.apache.thrift.transport.TTransport, class is "+c);
-			return hadoopcl; 			
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			log.error("--------got exception loading playorm!  "+e.getMessage());
-		}
-		return null;
-		
+    public static class ReducerToFilesystem extends Reducer<Text, IntWritable, Text, IntWritable>
+    {
+        public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException
+        {
+            int sum = 0;
+            for (IntWritable val : values)
+                sum += val.get();
+            context.write(key, new IntWritable(sum));
+        }
     }
 
 }

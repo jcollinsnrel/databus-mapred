@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.SortedMap;
 
 import org.apache.cassandra.db.IColumn;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,9 @@ public class DatabusCopyMapperImpl {
 	static private IPlayormContext playorm = null;
 	static long mapcounter=0;
 	static final String KEYSPACE = "databus5";
+	
+	private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
 
 
 	public DatabusCopyMapperImpl () {
@@ -46,7 +51,7 @@ public class DatabusCopyMapperImpl {
 	public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
     {
 		
-		try{
+//		try{
 //		log.info("about to try to load org.apache.thrift.transport.TTransport");
 //		Class c = Thread.currentThread().getContextClassLoader().loadClass("org.apache.thrift.transport.TTransport");
 //		Class c2 = Thread.currentThread().getContextClassLoader().loadClass("org.apache.cassandra.thrift.TBinaryProtocol");
@@ -54,10 +59,10 @@ public class DatabusCopyMapperImpl {
 //		log.info("loaded org.apache.cassandra.thrift.TBinaryProtocol, class is "+c2);
 
 
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
 		
 		byte[] key = new byte[keyData.remaining()];
 		keyData.get(key);
@@ -80,17 +85,17 @@ public class DatabusCopyMapperImpl {
 		String tableNameIfVirtual = playorm.getTableNameFromKey(key);
 		
 		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
-			transferStream(key, columns, tableNameIfVirtual);
+			transferStream(key, columns, tableNameIfVirtual, context);
 		}
 		else {
-			transferOrdinary(key, columns, tableNameIfVirtual);
+			transferOrdinary(key, columns, tableNameIfVirtual, context);
 		}
 		
 		
     }
     
 
-	private void transferOrdinary(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual) {
+	private void transferOrdinary(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, Context context) throws IOException, InterruptedException {
 		
 		String idValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 		String idColName = playorm.getSourceIdColumnName(tableNameIfVirtual);
@@ -120,12 +125,14 @@ public class DatabusCopyMapperImpl {
 //			}
 			
 			log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
+			word.set(tableNameIfVirtual);
+            context.write(word, one);
 		}
 		
 	}
 
 
-	private void transferStream(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual) {
+	private void transferStream(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, Context context) throws IOException, InterruptedException {
 		String time = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 		String valueAsString = null;
 		
@@ -144,7 +151,8 @@ public class DatabusCopyMapperImpl {
 
 		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test.  Remove the "Trans" when going to other cassandra instance!
 		//postTimeSeries(tableNameIfVirtual+"Trans", time, value, session2);
-		
+		word.set(tableNameIfVirtual);
+        context.write(word, one);
 	}
 
 }
