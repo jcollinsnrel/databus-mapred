@@ -90,6 +90,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     			interfaceclurls.add(location);
     	        log.info("******** location from codesource is "+location);
     	        File libdir = new File(location.getPath()+"lib/");
+    	        interfaceclurls.add(libdir.toURL());
 
     	        File interfacelibdir = new File(location.getPath()+"libvar/commonInterface");
     	        
