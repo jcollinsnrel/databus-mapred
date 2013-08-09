@@ -78,6 +78,7 @@
     	<copy todir="${build.classes}/lib">
     	   <fileset dir="${lib.dir}">
     	      <include name="**/*.jar" />
+    	   	  <include name="**/*.properties" />
     	   </fileset>
     	</copy>
     	<!-- hack because of classloader incompatibility: -->
