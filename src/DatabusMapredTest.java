@@ -60,14 +60,14 @@ public class DatabusMapredTest extends Configured implements Tool
 		try {
 	        // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
 			//getConf().setClassLoader(hadoopcl);
-	        ConfigHelper.setRangeBatchSize(getConf(), 99);
+	        //ConfigHelper.setRangeBatchSize(getConf(), 99);
 		
 	        Job job = new Job(getConf(), "databusmapredtest");
 	        job.setJarByClass(DatabusMapredTest.class);
 	        job.setMapperClass(DatabusCopyToNewSchemaMapper.class);
 	
-	        job.setCombinerClass(ReducerToLogger.class);
-	        job.setReducerClass(ReducerToLogger.class);
+	        //job.setCombinerClass(ReducerToLogger.class);
+	        //job.setReducerClass(ReducerToLogger.class);
 	        
 	        job.setOutputKeyClass(Text.class);
 	        job.setOutputValueClass(IntWritable.class);
@@ -82,7 +82,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	        
 	
 	        job.setInputFormatClass(ColumnFamilyInputFormat.class);
-	        job.setNumReduceTasks(3);
+	        //job.setNumReduceTasks(3);
 	
 	        ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
 	        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
