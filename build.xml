@@ -73,6 +73,7 @@
     	<copy todir="${build.classes}/lib">
     	   <fileset dir="${ivy.jars.dir}">
     	      <include name="**/*.jar" />
+    	   	  <include name="**/*.properties" />
            </fileset>
     	</copy>
     	<copy todir="${build.classes}/lib">
