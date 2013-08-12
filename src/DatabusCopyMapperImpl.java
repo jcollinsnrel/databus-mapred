@@ -68,7 +68,10 @@ public class DatabusCopyMapperImpl {
 		
 		byte[] key = new byte[keyData.remaining()];
 		keyData.get(key);
-		
+		if (key.length==0) {
+			log.error("GOT A KEY THAT IS SIZE 0!!  WHAT DOES THAT MEAN?");
+			return;
+		}
     	mapcounter++;
     	String tableNameIfVirtual = playorm.getTableNameFromKey(key);
     	//only do every 10th one for testing:
@@ -84,10 +87,6 @@ public class DatabusCopyMapperImpl {
     	//super.map(key, columns, context);
 
     	log.info("performing a map, mapcounter is "+mapcounter+" key is "+playorm.bytesToString(key));
-		if (key.length==0) {
-			log.error("GOT A KEY THAT IS SIZE 0!!  WHAT DOES THAT MEAN?");
-			return;
-		}
 		
 		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
 			transferStream(key, columns, tableNameIfVirtual, context);
