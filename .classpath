@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="lib/playorm.jar"/>
 	<classpathentry kind="lib" path="build/lib/jars/cassandra-all-1.2.6.jar"/>
 	<classpathentry kind="lib" path="build/lib/jars/cassandra-thrift-1.2.6.jar"/>
+	<classpathentry kind="lib" path="build/lib/jars/commons-codec-1.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
