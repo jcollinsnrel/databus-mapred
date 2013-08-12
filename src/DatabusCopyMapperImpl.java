@@ -10,6 +10,9 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
+
+
 public class DatabusCopyMapperImpl {
 	static final Logger log = LoggerFactory.getLogger(DatabusCopyMapperImpl.class);
 
@@ -48,7 +51,21 @@ public class DatabusCopyMapperImpl {
 
 	
 	public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
-    {	
+    {
+		
+//		try{
+//		log.info("about to try to load org.apache.thrift.transport.TTransport");
+//		Class c = Thread.currentThread().getContextClassLoader().loadClass("org.apache.thrift.transport.TTransport");
+//		Class c2 = Thread.currentThread().getContextClassLoader().loadClass("org.apache.cassandra.thrift.TBinaryProtocol");
+//		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
+//		log.info("loaded org.apache.cassandra.thrift.TBinaryProtocol, class is "+c2);
+
+
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
 		byte[] key = new byte[keyData.remaining()];
 		keyData.get(key);
 		if (key.length==0) {
