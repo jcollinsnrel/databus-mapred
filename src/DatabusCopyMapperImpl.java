@@ -10,6 +10,8 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
+
 
 public class DatabusCopyMapperImpl {
 	static final Logger log = LoggerFactory.getLogger(DatabusCopyMapperImpl.class);
@@ -77,7 +79,7 @@ public class DatabusCopyMapperImpl {
     	}
     	//super.map(key, columns, context);
 
-    	log.info("performing a map, mapcounter is "+mapcounter);
+    	log.info("performing a map, mapcounter is "+mapcounter+" key is "+StandardConverters.convertToString(key));
 		if (key.length==0) {
 			log.error("GOT A KEY THAT IS SIZE 0!!  WHAT DOES THAT MEAN?");
 			return;
