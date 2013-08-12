@@ -6,7 +6,6 @@ import java.nio.charset.Charset;
 
 import org.apache.cassandra.hadoop.ColumnFamilyInputFormat;
 import org.apache.cassandra.hadoop.ConfigHelper;
-import org.apache.cassandra.hadoop.cql3.CqlPagingInputFormat;
 import org.apache.cassandra.thrift.SlicePredicate;
 import org.apache.cassandra.thrift.SliceRange;
 import org.apache.hadoop.conf.Configuration;
@@ -66,7 +65,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));    
 	
 	        //job.setInputFormatClass(ColumnFamilyInputFormat.class);
-	        job.setInputFormatClass(CqlPagingInputFormat.class);
+	        job.setInputFormatClass(ColumnFamilyInputFormat.class);
 
 	        
 	        ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
