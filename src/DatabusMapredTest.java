@@ -1,5 +1,9 @@
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.Arrays;
 
 import org.apache.cassandra.hadoop.ColumnFamilyInputFormat;
@@ -90,8 +94,10 @@ public class DatabusMapredTest extends Configured implements Tool
 //	        sliceRange.setFinish(new byte[0]);
 //	        predicate.setSlice_range(sliceRange);
 //	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
-	        predicate.setColumn_names(Arrays.asList(new String[]{"time", "value"}));
-	        ConfigHelper.setSlicePredicate(job.getConfiguration(), predicate);
+	        Charset charset = Charset.forName("UTF-8");
+	        CharsetEncoder encoder = charset.newEncoder();
+	        predicate.setColumn_names(Arrays.asList(str_to_bb("time"), str_to_bb("value")));
+	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 	
 	        int rangebatchsize = 1024;
 	        log.info("setting rangeBatchSize to "+rangebatchsize);
@@ -106,6 +112,15 @@ public class DatabusMapredTest extends Configured implements Tool
     		Thread.currentThread().setContextClassLoader(oldCl);
 
 		}
+    }
+    
+    public static Charset charset = Charset.forName("UTF-8");
+
+    public static ByteBuffer str_to_bb(String msg){
+      try{
+        return charset.newEncoder().encode(CharBuffer.wrap(msg));
+      }catch(Exception e){e.printStackTrace();}
+      return null;
     }
     
     public static class ReducerToFilesystem extends Reducer<Text, IntWritable, Text, IntWritable>
