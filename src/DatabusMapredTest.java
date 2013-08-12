@@ -34,10 +34,6 @@ public class DatabusMapredTest extends Configured implements Tool
     
     public static void main(String[] args) throws Exception
     {
-    	log.info("printing params111!!!!!!!");
-    	for (String s:args)
-    		System.out.println(s +"111!!!!!!!");
-        // Let ToolRunner handle generic command-line options
         ToolRunner.run(new Configuration(), new DatabusMapredTest(), args);
         System.exit(0);
     }
@@ -47,13 +43,9 @@ public class DatabusMapredTest extends Configured implements Tool
     
     public int run(String[] args) throws Exception
     {        
-    	
 		ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-
 	
 		try {
-	       
-		
 	        Job job = new Job(getConf(), "databusmapredtest");
 	        job.setJarByClass(DatabusMapredTest.class);
 	        job.setMapperClass(DatabusCopyToNewSchemaMapper.class);
@@ -73,13 +65,12 @@ public class DatabusMapredTest extends Configured implements Tool
 	        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));    
 	
 	        job.setInputFormatClass(ColumnFamilyInputFormat.class);
-	        //job.setNumReduceTasks(1);
 	
 	        ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
 	        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
 	        ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
 	         // this will cause the predicate to be ignored in favor of scanning everything as a wide row
-	        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
+	        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, false);
 	        SlicePredicate predicate = new SlicePredicate();
 	        SliceRange sliceRange = new SliceRange();
 	        sliceRange.setStart(new byte[0]);

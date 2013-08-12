@@ -10,9 +10,6 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alvazan.orm.api.z8spi.conv.StandardConverters;
-
-
 public class DatabusCopyMapperImpl {
 	static final Logger log = LoggerFactory.getLogger(DatabusCopyMapperImpl.class);
 
