@@ -195,7 +195,6 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         	try {
         		Method mapMethod = delegateClass.getDeclaredMethod("map", ByteBuffer.class, SortedMap.class, Context.class);
         		mapMethod.invoke(delegate, keyData, columns, context);
-        		super.map(keyData, columns, context);
         	}
         	catch (Exception e) {
         		e.printStackTrace();

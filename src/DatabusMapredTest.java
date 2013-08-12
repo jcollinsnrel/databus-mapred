@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.cassandra.hadoop.ColumnFamilyInputFormat;
 import org.apache.cassandra.hadoop.ConfigHelper;
@@ -84,11 +85,13 @@ public class DatabusMapredTest extends Configured implements Tool
 	         // this will cause the predicate to be ignored in favor of scanning everything as a wide row
 	        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
 	        SlicePredicate predicate = new SlicePredicate();
-	        SliceRange sliceRange = new SliceRange();
-	        sliceRange.setStart(new byte[0]);
-	        sliceRange.setFinish(new byte[0]);
-	        predicate.setSlice_range(sliceRange);
-	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
+//	        SliceRange sliceRange = new SliceRange();
+//	        sliceRange.setStart(new byte[0]);
+//	        sliceRange.setFinish(new byte[0]);
+//	        predicate.setSlice_range(sliceRange);
+//	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
+	        predicate.setColumn_names(Arrays.asList(new String[]{"time", "value")));
+	        ConfigHelper.setSlicePredicate(job.getConfiguration(), predicate);
 	
 	        int rangebatchsize = 1024;
 	        log.info("setting rangeBatchSize to "+rangebatchsize);
