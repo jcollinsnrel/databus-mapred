@@ -3,8 +3,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.util.Arrays;
 
 import org.apache.cassandra.hadoop.ColumnFamilyInputFormat;
 import org.apache.cassandra.hadoop.ConfigHelper;
@@ -89,14 +87,13 @@ public class DatabusMapredTest extends Configured implements Tool
 	         // this will cause the predicate to be ignored in favor of scanning everything as a wide row
 	        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
 	        SlicePredicate predicate = new SlicePredicate();
-//	        SliceRange sliceRange = new SliceRange();
-//	        sliceRange.setStart(new byte[0]);
-//	        sliceRange.setFinish(new byte[0]);
-//	        predicate.setSlice_range(sliceRange);
-//	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
-	        Charset charset = Charset.forName("UTF-8");
-	        CharsetEncoder encoder = charset.newEncoder();
-	        predicate.setColumn_names(Arrays.asList(str_to_bb("time"), str_to_bb("value")));
+	        SliceRange sliceRange = new SliceRange();
+	        sliceRange.setStart(new byte[0]);
+	        sliceRange.setFinish(new byte[0]);
+	        predicate.setSlice_range(sliceRange);
+//	        Charset charset = Charset.forName("UTF-8");
+//	        CharsetEncoder encoder = charset.newEncoder();
+//	        predicate.setColumn_names(Arrays.asList(str_to_bb("time"), str_to_bb("value")));
 	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 	
 	        int rangebatchsize = 1024;
