@@ -86,7 +86,7 @@ public class DatabusCopyMapperImpl {
     	}
     	//super.map(key, columns, context);
 
-    	log.info("performing a map, mapcounter is "+mapcounter+" key is "+playorm.bytesToString(key));
+    	//log.info("performing a map, mapcounter is "+mapcounter+" key is "+playorm.bytesToString(key));
 		
 		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
 			transferStream(key, columns, tableNameIfVirtual, context);
@@ -94,7 +94,6 @@ public class DatabusCopyMapperImpl {
 		else {
 			transferOrdinary(key, columns, tableNameIfVirtual, context);
 		}
-		
 		
     }
     
@@ -110,23 +109,8 @@ public class DatabusCopyMapperImpl {
     		col.name().get(namearray);
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
-			//Object n = null;
 			String colName = playorm.bytesToString(namearray); 
 			Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
-			
-
-//			try {
-//				n = StandardConverters.convertFromBytes(BigDecimal.class, valuearray);
-//			}
-//			catch (Exception e) {
-//				System.err.println(" -- got an exception trying to convert value to BD, it's not a BD!");
-//			}
-//			try {
-//				n = StandardConverters.convertFromBytes(BigInteger.class, valuearray);
-//			}
-//			catch (Exception e) {
-//				System.err.println(" -- got an exception trying to convert value to BI, it's not a BI!");
-//			}
 			
 			log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
 			word.set(tableNameIfVirtual);
@@ -151,7 +135,7 @@ public class DatabusCopyMapperImpl {
     		//String colName = playorm.sourceColumnName(tableNameIfVirtual, namearray);
 			//log.info("    As strings, A column is "+ colName+", value "+valueAsString);
 		}
-		log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+valueAsString);
+		log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
 		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test.  Remove the "Trans" when going to other cassandra instance!
 		//postTimeSeries(tableNameIfVirtual+"Trans", time, value, session2);
