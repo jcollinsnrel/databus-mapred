@@ -110,7 +110,7 @@ public class DatabusMapredTest extends Configured implements Tool
             for (IntWritable val : values)
                 sum += val.get();
             context.write(key, new IntWritable(sum));
-            log.info("reducing:  key="+key+" sum = "+sum);
+            //log.info("reducing:  key="+key+" sum = "+sum);
         }
     }
 

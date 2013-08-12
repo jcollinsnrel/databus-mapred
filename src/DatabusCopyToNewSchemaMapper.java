@@ -19,6 +19,8 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fromporm.conv.StandardConverters;
+
 public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<ByteBuffer, IColumn>, Text, IntWritable>
     {
     	static final Logger log = LoggerFactory.getLogger(DatabusCopyToNewSchemaMapper.class);
@@ -62,9 +64,11 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         	for (Entry<ByteBuffer, IColumn> entry:columns.entrySet()) {
         		byte[] thiskey = new byte[entry.getKey().remaining()];
         		entry.getKey().get(thiskey);
+        		String keystring = fetchTableNameIfVirtual(thiskey);
         		byte[] thisvalue = new byte[entry.getValue().name().remaining()];
         		entry.getValue().name().get(thisvalue);
-        		columnString = columnString+"key="+thiskey+",columnName="+thisvalue+":";
+        		String colunmstring = StandardConverters.convertFromBytes(String.class, thisvalue);
+        		columnString = columnString+"key="+keystring+",columnName="+colunmstring+":";
         	}
     		log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+key+", mapcounter is "+mapcounter+" columnString is "+columnString);
 			word.set(tableNameIfVirtual);
