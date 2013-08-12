@@ -79,7 +79,7 @@ public class DatabusCopyMapperImpl {
     	}
     	//super.map(key, columns, context);
 
-    	log.info("performing a map, mapcounter is "+mapcounter+" key is "+StandardConverters.convertToString(key));
+    	log.info("performing a map, mapcounter is "+mapcounter+" key is "+playorm.bytesToString(key));
 		if (key.length==0) {
 			log.error("GOT A KEY THAT IS SIZE 0!!  WHAT DOES THAT MEAN?");
 			return;
