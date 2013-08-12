@@ -90,7 +90,7 @@ public class DatabusMapredTest extends Configured implements Tool
 //	        sliceRange.setFinish(new byte[0]);
 //	        predicate.setSlice_range(sliceRange);
 //	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
-	        predicate.setColumn_names(Arrays.asList(new String[]{"time", "value")));
+	        predicate.setColumn_names(Arrays.asList(new String[]{"time", "value"}));
 	        ConfigHelper.setSlicePredicate(job.getConfiguration(), predicate);
 	
 	        int rangebatchsize = 1024;
