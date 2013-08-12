@@ -72,7 +72,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
 	        ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
 	         // this will cause the predicate to be ignored in favor of scanning everything as a wide row
-	        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, false);
+	        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, true);
 	        SlicePredicate predicate = new SlicePredicate();
 	        SliceRange sliceRange = new SliceRange();
 	        sliceRange.setStart(new byte[0]);
@@ -110,6 +110,7 @@ public class DatabusMapredTest extends Configured implements Tool
             for (IntWritable val : values)
                 sum += val.get();
             context.write(key, new IntWritable(sum));
+            log.info("reducing:  key="+key+" sum = "+sum);
         }
     }
 
