@@ -127,6 +127,7 @@ public class DatabusMapredTest extends Configured implements Tool
             int sum = 0;
             for (IntWritable val : values)
                 sum += val.get();
+            log.info("reducing:  key="+key+" sum = "+sum);
             context.write(key, new IntWritable(sum));
         }
     }
