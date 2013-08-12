@@ -50,13 +50,9 @@ public class DatabusMapredTest extends Configured implements Tool
     	
 		ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
 
-		//ClassLoader hadoopcl = setupRunClassloader();
-		//System.out.println("-------- settting the classloader to 'hadoopcl' "+hadoopcl);
-		//Thread.currentThread().setContextClassLoader(hadoopcl);
+	
 		try {
-	        // use a smaller page size that doesn't divide the row count evenly to exercise the paging logic better
-			//getConf().setClassLoader(hadoopcl);
-	        //ConfigHelper.setRangeBatchSize(getConf(), 99);
+	       
 		
 	        Job job = new Job(getConf(), "databusmapredtest");
 	        job.setJarByClass(DatabusMapredTest.class);
@@ -74,9 +70,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	    	Path srcPath = new Path(OUTPUT_PATH_PREFIX);
 	    	if (hdfs.exists(srcPath))
 	    		hdfs.delete(srcPath, true);
-	        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));
-	        
-	        
+	        FileOutputFormat.setOutputPath(job, new Path(OUTPUT_PATH_PREFIX));    
 	
 	        job.setInputFormatClass(ColumnFamilyInputFormat.class);
 	        //job.setNumReduceTasks(1);
@@ -91,15 +85,10 @@ public class DatabusMapredTest extends Configured implements Tool
 	        sliceRange.setStart(new byte[0]);
 	        sliceRange.setFinish(new byte[0]);
 	        predicate.setSlice_range(sliceRange);
-//	        Charset charset = Charset.forName("UTF-8");
-//	        CharsetEncoder encoder = charset.newEncoder();
-//	        predicate.setColumn_names(Arrays.asList(str_to_bb("time"), str_to_bb("value")));
 	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 	
 	        int rangebatchsize = 1024;
 	        log.info("setting rangeBatchSize to "+rangebatchsize);
-	        //ConfigHelper.setRangeBatchSize(job.getConfiguration(), rangebatchsize);
-	        //ConfigHelper.setThriftMaxMessageLengthInMb(job.getConfiguration(), 100);
 	        ConfigHelper.setThriftFramedTransportSizeInMb(job.getConfiguration(), 100);
 	
 	        job.waitForCompletion(true);
