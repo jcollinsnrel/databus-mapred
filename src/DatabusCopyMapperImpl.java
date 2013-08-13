@@ -45,27 +45,11 @@ public class DatabusCopyMapperImpl {
 			e.printStackTrace();
 		}
 
-		//playorm = new PlayormContext();
-		//playorm.initialize(KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
 	}
 
 	
 	public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
     {
-		
-//		try{
-//		log.info("about to try to load org.apache.thrift.transport.TTransport");
-//		Class c = Thread.currentThread().getContextClassLoader().loadClass("org.apache.thrift.transport.TTransport");
-//		Class c2 = Thread.currentThread().getContextClassLoader().loadClass("org.apache.cassandra.thrift.TBinaryProtocol");
-//		log.info("loaded org.apache.thrift.transport.TTransport, class is "+c);
-//		log.info("loaded org.apache.cassandra.thrift.TBinaryProtocol, class is "+c2);
-
-
-//		}
-//		catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		
 		byte[] key = new byte[keyData.remaining()];
 		keyData.get(key);
 		if (key.length==0) {
@@ -82,11 +66,10 @@ public class DatabusCopyMapperImpl {
     	}
     	if (mapcounter%1000 == 1) {
     		log.info("called map "+mapcounter+" times.");
+    		//when this was writing to context instead of doing the copy directly in the map phase it was 
+    		//timing out, this prevents that.  Now that we are copying the data in the map phase it is not needed:
     		//context.progress();
     	}
-    	//super.map(key, columns, context);
-
-    	//log.info("performing a map, mapcounter is "+mapcounter+" key is "+playorm.bytesToString(key));
 		
 		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
 			transferStream(key, columns, tableNameIfVirtual, context);
@@ -131,14 +114,11 @@ public class DatabusCopyMapperImpl {
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
     		valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
-			
-    		//String colName = playorm.sourceColumnName(tableNameIfVirtual, namearray);
-			//log.info("    As strings, A column is "+ colName+", value "+valueAsString);
 		}
-		log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
+		//log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
 		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test.  Remove the "Trans" when going to other cassandra instance!
-		//postTimeSeries(tableNameIfVirtual+"Trans", time, value, session2);
+		playorm.postTimeSeriesToDest(tableNameIfVirtual+"Trans", time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
 	}

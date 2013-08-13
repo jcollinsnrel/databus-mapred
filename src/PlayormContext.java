@@ -70,8 +70,9 @@ public class PlayormContext implements IPlayormContext {
     	return false;
 	}
     
-    public void postTimeSeries(String tableNameIfVirtual, Object pkValue, Object value, NoSqlTypedSession typedSession) {
+    public void postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, Object value) {
 
+    	NoSqlTypedSession typedSession = destMgr.getTypedSession();
     	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
 		if (log.isInfoEnabled())
 			log.info("writing to Timeseries, table name!!!!!!! = '" + table.getColumnFamily() + "'");
