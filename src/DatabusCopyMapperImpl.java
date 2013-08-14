@@ -30,8 +30,8 @@ public class DatabusCopyMapperImpl {
 		String port1 = "9160";
 		
 		String cluster2 = "TestCluster";
-		String seeds2 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
-		String port2 = "9160";
+		String seeds2 = "sdi-prod-01:9158,sdi-prod-02:9158,sdi-prod-03:9158,sdi-prod-04:9158";
+		String port2 = "9158";
 		try{
 //			System.out.println("the current contextclassloader is "+Thread.currentThread().getContextClassLoader()+" this thread is "+Thread.currentThread());
 			Class playormcontextClass = Thread.currentThread().getContextClassLoader().loadClass("PlayormContext");
@@ -118,7 +118,7 @@ public class DatabusCopyMapperImpl {
 		//log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
 		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test.  Remove the "Trans" when going to other cassandra instance!
-		playorm.postTimeSeriesToDest(tableNameIfVirtual+"Trans", time, valueAsString);
+		playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
 	}

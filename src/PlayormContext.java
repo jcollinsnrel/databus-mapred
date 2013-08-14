@@ -1,7 +1,9 @@
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -11,6 +13,8 @@ import com.alvazan.orm.api.base.Bootstrap;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
 import com.alvazan.orm.api.z3api.NoSqlTypedSession;
+import com.alvazan.orm.api.z5api.NoSqlSession;
+import com.alvazan.orm.api.z8spi.action.Column;
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
@@ -70,44 +74,99 @@ public class PlayormContext implements IPlayormContext {
     	return false;
 	}
     
-    public void postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, Object value) {
+//    public void postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, Object value) {
+//
+//    	NoSqlTypedSession typedSession = destMgr.getTypedSession();
+//    	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
+//		if (log.isInfoEnabled())
+//			log.info("writing to Timeseries, table name!!!!!!! = '" + table.getColumnFamily() + "'");
+//		String cf = table.getColumnFamily();
+//		
+//		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
+//		//rowKey better be BigInteger
+//		if (log.isInfoEnabled())
+//			log.info("writing to '" + table.getColumnFamily() + "', pk is '" + pkValue + "'");
+//		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
+//		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
+//		BigInteger time = (BigInteger) timeStamp;
+//		long longTime = time.longValue();
+//		//find the partition
+//		Long partitionSize = table.getTimeSeriesPartionSize();
+//		long partitionKey = (longTime / partitionSize) * partitionSize;
+//
+//		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
+//		row.setRowKey(new BigInteger(""+partitionKey));	
+//		
+//		Collection<DboColumnMeta> cols = table.getAllColumns();
+//
+//		DboColumnMeta col = cols.iterator().next();
+//		if(value == null) {
+//			if (log.isWarnEnabled())
+//				log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and null was passed in");
+//			throw new RuntimeException("The table you are inserting requires column='"+col.getColumnName()+"' to be set and null is passed in");
+//		}
+//		
+//		Object newValue = convertToStorage(col, value);
+//		byte[] val = col.convertToStorage2(newValue);
+//		row.addColumn(colKey, val, null);
+//
+//		//This method also indexes according to the meta data as well
+//		typedSession.put(cf, row);
+//	}
+//    
+    public void postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, String valueAsString) {
 
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
     	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
 		if (log.isInfoEnabled())
 			log.info("writing to Timeseries, table name!!!!!!! = '" + table.getColumnFamily() + "'");
 		String cf = table.getColumnFamily();
-		
+
 		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
 		//rowKey better be BigInteger
-		if (log.isInfoEnabled())
-			log.info("writing to '" + table.getColumnFamily() + "', pk is '" + pkValue + "'");
 		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
 		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
 		BigInteger time = (BigInteger) timeStamp;
 		long longTime = time.longValue();
 		//find the partition
 		Long partitionSize = table.getTimeSeriesPartionSize();
-		long partitionKey = (longTime / partitionSize) * partitionSize;
+		long partitionKey = calculatePartitionId(longTime, partitionSize);
 
 		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
-		row.setRowKey(new BigInteger(""+partitionKey));	
+		BigInteger rowKey = new BigInteger(""+partitionKey);
+		row.setRowKey(rowKey);
+
+		DboTableMeta meta = destMgr.find(DboTableMeta.class, "partitions");
+		byte[] partitionsRowKey = StandardConverters.convertToBytes(table.getColumnFamily());
+		byte[] partitionBytes = StandardConverters.convertToBytes(rowKey);
+		Column partitionIdCol = new Column(partitionBytes, null);
+		NoSqlSession session = destMgr.getSession();
+		List<Column> columns = new ArrayList<Column>();
+		columns.add(partitionIdCol);
+		session.put(meta, partitionsRowKey, columns);
 		
 		Collection<DboColumnMeta> cols = table.getAllColumns();
-
 		DboColumnMeta col = cols.iterator().next();
-		if(value == null) {
-			if (log.isWarnEnabled())
-				log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and null was passed in");
-			throw new RuntimeException("The table you are inserting requires column='"+col.getColumnName()+"' to be set and null is passed in");
-		}
-		
-		Object newValue = convertToStorage(col, value);
+		Object newValue = convertToStorage(col, valueAsString);
+
 		byte[] val = col.convertToStorage2(newValue);
 		row.addColumn(colKey, val, null);
 
 		//This method also indexes according to the meta data as well
 		typedSession.put(cf, row);
+	}
+    
+    public long calculatePartitionId(long longTime, Long partitionSize) {
+		long partitionId = (longTime / partitionSize) * partitionSize;
+		if(partitionId < 0) {
+			//if partitionId is less than 0, it incorrectly ends up in the higher partition -20/50*50 = 0 and 20/50*50=0 when -20/50*50 needs to be -50 partitionId
+			if(Long.MIN_VALUE+partitionSize >= partitionId)
+				partitionId = Long.MIN_VALUE;
+			else
+				partitionId -= partitionSize; //subtract one partition size off of the id
+		}
+
+		return partitionId;
 	}
     
     public Object convertToStorage(DboColumnMeta col, Object someVal) {
@@ -118,7 +177,6 @@ public class PlayormContext implements IPlayormContext {
 				return null; //a fix for when they pass us "null" instead of null
 			
 			String val = ""+someVal;
-			System.err.println("VALUE is "+val);
 			if(val.length() == 0)
 				val = null;
 			return col.convertStringToType(val);
