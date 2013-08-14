@@ -19,6 +19,7 @@ public class DatabusCopyMapperImpl {
 	static private IPlayormContext playorm = null;
 	static long mapcounter=0;
 	static final String KEYSPACE = "databus5";
+	static final String KEYSPACE2 = "databus";
 	
 	private final static IntWritable one = new IntWritable(1);
     private Text word = new Text();
@@ -38,11 +39,12 @@ public class DatabusCopyMapperImpl {
 //			System.out.println("loaded the class for PlayormContext it is "+playormcontextClass);
 			Object playormContextObj = playormcontextClass.newInstance();
 			Method initmethod = playormcontextClass.getDeclaredMethod("initialize", String.class, String.class, String.class, String.class, String.class, String.class, String.class, String.class);
-			initmethod.invoke(playormContextObj, KEYSPACE, cluster1, seeds1, port1, KEYSPACE, cluster2, seeds2, port2);
+			initmethod.invoke(playormContextObj, KEYSPACE, cluster1, seeds1, port1, KEYSPACE2, cluster2, seeds2, port2);
 			playorm = (IPlayormContext)playormContextObj;
 		}
 		catch (Exception e){
 			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 	}

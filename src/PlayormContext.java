@@ -119,7 +119,7 @@ public class PlayormContext implements IPlayormContext {
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
     	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
 		if (log.isInfoEnabled())
-			log.info("writing to Timeseries, table name!!!!!!! = '" + table.getColumnFamily() + "'");
+			log.info("writing to Timeseries, table name!!!!!!! = '" + tableNameIfVirtual + "' table is "+ table);
 		String cf = table.getColumnFamily();
 
 		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
