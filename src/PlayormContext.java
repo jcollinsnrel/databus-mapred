@@ -60,6 +60,21 @@ public class PlayormContext implements IPlayormContext {
 		destMgr = factory2.createEntityManager();
     }
     
+    public String getSrcTableDesc(String tableNameIfVirtual) {
+    	DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	String tableDesc = "";
+    	tableDesc = tableNameIfVirtual+": "+meta.toString()+", isTimeSeries:"+meta.isTimeSeries()+", partitionSize: "+meta.getTimeSeriesPartionSize();
+    	return tableDesc;
+    }
+    
+    public String getDestTableDesc(String tableNameIfVirtual) {
+    	DboTableMeta meta = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	String tableDesc = "";
+    	tableDesc = tableNameIfVirtual+": "+meta.toString()+", isTimeSeries:"+meta.isTimeSeries()+", partitionSize: "+meta.getTimeSeriesPartionSize();
+    	return tableDesc;
+    }
+
+    
     public String getTableNameFromKey(byte[] key) {
     	return DboColumnIdMeta.fetchTableNameIfVirtual(key);
     }

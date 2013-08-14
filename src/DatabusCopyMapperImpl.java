@@ -26,11 +26,11 @@ public class DatabusCopyMapperImpl {
 
 
 	public DatabusCopyMapperImpl () {
-		String cluster1 = "TestCluster";
+		String cluster1 = "QACluster";
 		String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
 		String port1 = "9160";
 		
-		String cluster2 = "TestCluster";
+		String cluster2 = "QAClusterB";
 		String seeds2 = "sdi-prod-01:9158,sdi-prod-02:9158,sdi-prod-03:9158,sdi-prod-04:9158";
 		String port2 = "9158";
 		try{
@@ -117,7 +117,7 @@ public class DatabusCopyMapperImpl {
     		col.value().get(valuearray);
     		valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
 		}
-		//log.info("posting to timeseries table='"+ tableNameIfVirtual +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
+		log.info("posting to timeseries from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
 		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test.  Remove the "Trans" when going to other cassandra instance!
 		playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
