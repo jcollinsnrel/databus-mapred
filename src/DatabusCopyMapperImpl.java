@@ -120,7 +120,7 @@ public class DatabusCopyMapperImpl {
 		log.info("posting to timeseries from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
 		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test.  Remove the "Trans" when going to other cassandra instance!
-		playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
+		playorm.postTimeSeriesToDest(tableNameIfVirtual+"jsc", time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
 	}
