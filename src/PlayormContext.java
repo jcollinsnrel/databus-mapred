@@ -169,7 +169,8 @@ public class PlayormContext implements IPlayormContext {
 
 		//This method also indexes according to the meta data as well
 		typedSession.put(cf, row);
-		destMgr.flush();
+		session.flush();
+		typedSession.flush();
 	}
     
     public long calculatePartitionId(long longTime, Long partitionSize) {
