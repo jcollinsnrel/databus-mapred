@@ -70,6 +70,7 @@ fi
 
 OUTPUT_REDUCER=logger
 
+export hadoopstarttime=`date`
 echo classpath is $CLASSPATH
 echo libs is $LIBS
 export HADOOP_CLASSPATH=$CLASSPATH
@@ -79,4 +80,7 @@ export HADOOP_CLASSPATH=$CLASSPATH
 #hadoop jar build/databus-mapred.jar DatabusMapredTest -conf /home/hduser/hadoop-0.20.2/conf/mapred-site.xml output_reducer=logger
 #hadoop --config /home/hduser/hadoop-0.20.2 jar build/databus-mapred.jar DatabusMapredTest -libjars $LIBS -conf /home/hduser/hadoop-0.20.2/conf/mapred-site.xml output_reducer=logger
 hadoop --config /home/hduser/hadoop-0.20.2 jar build/databus-mapred.jar DatabusMapredTest -conf /home/hduser/hadoop-0.20.2/conf/mapred-site.xml output_reducer=logger
+export hadoopendtime=`date`
 
+echo 'job started at '$hadoopstarttime
+echo `job ended at `$hadoopendtime
