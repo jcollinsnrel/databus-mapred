@@ -61,11 +61,11 @@ public class DatabusCopyMapperImpl {
     	mapcounter++;
     	String tableNameIfVirtual = playorm.getTableNameFromKey(key);
     	//only do every 10th one for testing:
-    	if (mapcounter%10!=1) {
-    		word.set(tableNameIfVirtual);
-            context.write(word, one);
-    		return;
-    	}
+//    	if (mapcounter%10!=1) {
+//    		word.set(tableNameIfVirtual);
+//            context.write(word, one);
+//    		return;
+//    	}
     	if (mapcounter%1000 == 1) {
     		log.info("called map "+mapcounter+" times.");
     		//when this was writing to context instead of doing the copy directly in the map phase it was 
@@ -87,7 +87,7 @@ public class DatabusCopyMapperImpl {
 		
 		String idValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 		String idColName = playorm.getSourceIdColumnName(tableNameIfVirtual);
-		log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
+		//log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
 	
 		for (IColumn col:columns.values()) {    		
 			byte[] namearray = new byte[col.name().remaining()];
@@ -97,7 +97,7 @@ public class DatabusCopyMapperImpl {
 			String colName = playorm.bytesToString(namearray); 
 			Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
 			
-			log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
+			//log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
 			word.set(tableNameIfVirtual);
             context.write(word, one);
 		}
@@ -120,7 +120,6 @@ public class DatabusCopyMapperImpl {
 		}
 		log.info("posting to timeseries from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
-		//TODO!!!!!!  this is just for transfering to the SAME cassandra as a test.  Remove the "Trans" when going to other cassandra instance!
 		playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);

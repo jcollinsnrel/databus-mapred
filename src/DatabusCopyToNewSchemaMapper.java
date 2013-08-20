@@ -87,7 +87,6 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	
     			URL location = src.getLocation();
     			interfaceclurls.add(location);
-    	        log.info("******** location from codesource is "+location);
     	        File libdir = new File(location.getPath()+"lib/");
     	        interfaceclurls.add(libdir.toURL());
 
@@ -95,19 +94,6 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	        
     	        File playormlibdir = new File(location.getPath()+"libvar/playormLib");
 
-    	        log.info("******** libdir absolute is "+libdir.getAbsolutePath());
-    	        log.info("******** libdir tostring is "+libdir);
-    	        log.info("******** libdir name is "+libdir.getName());
-    	        log.info("******** libdir cannonical is "+libdir.getCanonicalPath());
-    	        log.info("******** libdir.listfiles() is "+Arrays.toString(libdir.listFiles()));
-    	        
-    	        log.info("******** interfacelibdir cannonical is "+interfacelibdir.getCanonicalPath());
-    	        log.info("******** interfacelibdir exists is "+interfacelibdir.exists());
-    	        log.info("******** interfacelibdir.listfiles() is "+Arrays.toString(interfacelibdir.listFiles()));
-    	        
-    	        log.info("******** playormlibdir cannonical is "+playormlibdir.getCanonicalPath());
-    	        log.info("******** playormlibdir exists is "+playormlibdir.exists());
-    	        log.info("******** playormlibdir.listfiles() is "+Arrays.toString(playormlibdir.listFiles()));
 //    	        for (File f : libdir.listFiles()) {
 //    	        	if (f.getName().contains(".jar") && !f.getName().equals("cassandra-all-1.2.6.jar") && !f.getName().equals("cassandra-thrift-1.2.6.jar"))
 //    	            	interfaceclurls.add(f.toURL());
@@ -129,13 +115,6 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	        	playormcontextclurls.add(f.toURL());
     	        }
     	        
-    	        
-    	        
-    	        log.info("******** interfaceclurls is: "+Arrays.toString(interfaceclurls.toArray(new URL[]{})));
-    	        log.info("******** hadoopclurls is: "+Arrays.toString(hadoopclurls.toArray(new URL[]{})));
-    	        log.info("******** playormcontextclurls is: "+Arrays.toString(playormcontextclurls.toArray(new URL[]{})));
-    	
-    	        
     			interfacecl =
     	                new TestClassloader(
     	                		interfaceclurls.toArray(new URL[0]),
@@ -151,25 +130,11 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	                        hadoopclurls.toArray(new URL[0]),
     	                        interfacecl);
     			hadoopcl.setName("hadoopclassloader");
-    			log.info(" ======  the interfacecl (shared parent) urls are "+Arrays.toString(interfacecl.getURLs()));
-    			log.info("about to print resources for org.apache.thrift.transport.TTransport");
+
     			for (Enumeration<URL> resources = interfacecl.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
     			       log.info("a resource is "+resources.nextElement());
     			}
-    			log.info("done printing resources");
-    		
-        		log.info("system classloader is "+ClassLoader.getSystemClassLoader());
-        		log.info("the playormcontext classloader is "+playormcontextcl);
-        		log.info("the hadoop classloader is "+hadoopcl);
 
-        		log.info("the current classloader is "+oldCl);
-        		log.info("interfacecl classloader parent is "+interfacecl.getParent());
-        		
-        		log.info("interfacecl classloader is "+interfacecl);
-        		log.info("the playormcontext classloader parent is (should be same as line above)"+playormcontextcl.getParent());
-        		log.info("the hadoop classloader parent is (should be the same as 2 lines above)"+hadoopcl.getParent());
-
-        		log.info("the current (old) classloader parent is "+oldCl.getParent());
         		//ClassLoader.getSystemClassLoader().getParent()
         		//Class interfaceclass = interfacecl.loadClass("IPlayormContext");
 
