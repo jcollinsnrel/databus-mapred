@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedMap;
 
 import org.apache.cassandra.db.IColumn;
@@ -9,8 +11,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 
 
 public class DatabusCopyMapperImpl {
@@ -89,6 +89,7 @@ public class DatabusCopyMapperImpl {
 		String idColName = playorm.getSourceIdColumnName(tableNameIfVirtual);
 		//log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
 	
+		Map<String, Object> values = new HashMap<String, Object>();
 		for (IColumn col:columns.values()) {    		
 			byte[] namearray = new byte[col.name().remaining()];
     		col.name().get(namearray);
@@ -96,12 +97,14 @@ public class DatabusCopyMapperImpl {
     		col.value().get(valuearray);
 			String colName = playorm.bytesToString(namearray); 
 			Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
-			
+			values.put(colName, objVal);
 			//log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
-			word.set(tableNameIfVirtual);
-            context.write(word, one);
 		}
-		//don't actually write teh relational row for now while debugging stream to timeseries...
+		String pkValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
+
+		playorm.postNormalTable(values, tableNameIfVirtual, pkValue);
+		word.set(tableNameIfVirtual);
+        context.write(word, one);
 		
 	}
 
@@ -121,7 +124,7 @@ public class DatabusCopyMapperImpl {
 		
 		log.info("posting to timeseries from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
-		playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
+		//playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
 	}

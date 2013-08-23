@@ -20,6 +20,7 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
+import com.alvazan.play.NoSql;
 
 
 
@@ -88,47 +89,45 @@ public class PlayormContext implements IPlayormContext {
     		return true;
     	return false;
 	}
+
+    @Override
+    public void postNormalTable(Map<String, Object> values, String tableNameIfVirtual, Object pkValue) {
+    	NoSqlTypedSession typedSession = destMgr.getTypedSession();
+    	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	
+    	if (log.isInfoEnabled())
+			log.info("normal table name = '" + table.getColumnFamily() + "'");
+		
+		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
+		Object rowKey = convertToStorage(idColumnMeta, pkValue);
+		String cf = table.getColumnFamily();
+
+		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
+		row.setRowKey(rowKey);			
+
+		Collection<DboColumnMeta> cols = table.getAllColumns();
+		
+		long timestamp = System.currentTimeMillis();
+		for(DboColumnMeta col : cols) {
+			Object node = values.get(col.getColumnName());
+			if(node == null) {
+				if (log.isWarnEnabled())
+	        		log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in source data");
+				throw new RuntimeException("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in source data");
+			}
+
+			addColumnData(row, col, node, timestamp);
+		}
+		
+		//This method also indexes according to the meta data as well
+		typedSession.put(cf, row);
+	}
     
-//    public void postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, Object value) {
-//
-//    	NoSqlTypedSession typedSession = destMgr.getTypedSession();
-//    	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
-//		if (log.isInfoEnabled())
-//			log.info("writing to Timeseries, table name!!!!!!! = '" + table.getColumnFamily() + "'");
-//		String cf = table.getColumnFamily();
-//		
-//		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
-//		//rowKey better be BigInteger
-//		if (log.isInfoEnabled())
-//			log.info("writing to '" + table.getColumnFamily() + "', pk is '" + pkValue + "'");
-//		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
-//		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
-//		BigInteger time = (BigInteger) timeStamp;
-//		long longTime = time.longValue();
-//		//find the partition
-//		Long partitionSize = table.getTimeSeriesPartionSize();
-//		long partitionKey = (longTime / partitionSize) * partitionSize;
-//
-//		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
-//		row.setRowKey(new BigInteger(""+partitionKey));	
-//		
-//		Collection<DboColumnMeta> cols = table.getAllColumns();
-//
-//		DboColumnMeta col = cols.iterator().next();
-//		if(value == null) {
-//			if (log.isWarnEnabled())
-//				log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and null was passed in");
-//			throw new RuntimeException("The table you are inserting requires column='"+col.getColumnName()+"' to be set and null is passed in");
-//		}
-//		
-//		Object newValue = convertToStorage(col, value);
-//		byte[] val = col.convertToStorage2(newValue);
-//		row.addColumn(colKey, val, null);
-//
-//		//This method also indexes according to the meta data as well
-//		typedSession.put(cf, row);
-//	}
-//    
+    private void addColumnData(TypedRow row, DboColumnMeta col, Object node, long time) {
+		Object newValue = convertToStorage(col, node);
+		row.addColumn(col.getColumnName(), newValue);
+	}
+    
     public void postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, String valueAsString) {
 
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
