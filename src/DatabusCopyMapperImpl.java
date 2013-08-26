@@ -105,7 +105,6 @@ public class DatabusCopyMapperImpl {
 		playorm.postNormalTable(values, tableNameIfVirtual, pkValue);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
-		
 	}
 
 
