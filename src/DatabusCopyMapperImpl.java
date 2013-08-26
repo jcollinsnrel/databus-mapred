@@ -60,6 +60,7 @@ public class DatabusCopyMapperImpl {
 		}
     	mapcounter++;
     	String tableNameIfVirtual = playorm.getTableNameFromKey(key);
+    	log.info("tableNameIfVirtual is "+tableNameIfVirtual);
     	//only do every 10th one for testing:
 //    	if (mapcounter%10!=1) {
 //    		word.set(tableNameIfVirtual);
@@ -87,7 +88,7 @@ public class DatabusCopyMapperImpl {
 		
 		String idValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 		String idColName = playorm.getSourceIdColumnName(tableNameIfVirtual);
-		//log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
+		log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
 	
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (IColumn col:columns.values()) {    		
@@ -98,10 +99,11 @@ public class DatabusCopyMapperImpl {
 			String colName = playorm.bytesToString(namearray); 
 			Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
 			values.put(colName, objVal);
-			//log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
+			log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
 		}
 		String pkValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 
+		log.info("ABOUT TO SAVE RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
 		playorm.postNormalTable(values, tableNameIfVirtual, pkValue);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
@@ -119,6 +121,13 @@ public class DatabusCopyMapperImpl {
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
     		valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
+		}
+		
+		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
+			log.info("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
+			word.set(tableNameIfVirtual+" not written because MAX_VALUE");
+	        context.write(word, one);
+	        return;
 		}
 		
 		log.info("posting to timeseries from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
