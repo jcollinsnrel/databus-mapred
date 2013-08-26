@@ -132,7 +132,7 @@ public class DatabusCopyMapperImpl {
 		
 		log.info("posting to timeseries from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
-		//playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
+		playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
 	}

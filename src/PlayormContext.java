@@ -121,6 +121,7 @@ public class PlayormContext implements IPlayormContext {
 		
 		//This method also indexes according to the meta data as well
 		typedSession.put(cf, row);
+		typedSession.flush();
 	}
     
     private void addColumnData(TypedRow row, DboColumnMeta col, Object node, long time) {
