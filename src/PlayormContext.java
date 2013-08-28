@@ -133,6 +133,11 @@ public class PlayormContext implements IPlayormContext {
 
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
     	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	if (table == null) {
+    		if (log.isInfoEnabled()) 
+    			log.info("--- owning table "+tableNameIfVirtual+" on dest side does not exist, this probably means that the row we are copying belongs to a table taht did not get ported... skipping row.");
+    		return;
+    	}
 		if (log.isInfoEnabled())
 			log.info("writing to Timeseries, table name!!!!!!! = '" + tableNameIfVirtual + "' table is "+ table);
 		String cf = table.getColumnFamily();
