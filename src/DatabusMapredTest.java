@@ -82,7 +82,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	        //job.setNumReduceTasks(1);
 	
 	        ConfigHelper.setInputRpcPort(job.getConfiguration(), "9160");
-	        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "sdi-prod-01");
+	        ConfigHelper.setInputInitialAddress(job.getConfiguration(), "a1.bigde.nrel.gov");
 	        ConfigHelper.setInputPartitioner(job.getConfiguration(), "RandomPartitioner");
 	         // this will cause the predicate to be ignored in favor of scanning everything as a wide row
 	        ConfigHelper.setInputColumnFamily(job.getConfiguration(), KEYSPACE, COLUMN_FAMILY, false);
