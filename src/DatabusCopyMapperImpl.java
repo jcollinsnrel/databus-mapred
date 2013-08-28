@@ -124,7 +124,16 @@ public class DatabusCopyMapperImpl {
     		col.name().get(namearray);
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
-    		valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
+    		String colName = "";
+    		try {
+    			colName = playorm.bytesToString(namearray);
+    			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
+    		}
+    		catch (Exception e) {
+    			log.error("failed getting value from bytes!!!!! column is "+colName);
+    			System.err.println("failed getting value from bytes!!!!! column is "+colName);
+    			throw new RuntimeException(e);
+    		}
 		}
 		
 		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
