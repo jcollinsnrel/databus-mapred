@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import fromporm.conv.StandardConverters;
 
 
 public class DatabusCopyMapperImpl {
@@ -130,8 +133,10 @@ public class DatabusCopyMapperImpl {
     			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
     		}
     		catch (Exception e) {
-    			log.error("failed getting value from bytes!!!!! column is "+colName);
-    			System.err.println("failed getting value from bytes!!!!! column is "+colName);
+    			log.error("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
+    			System.err.println("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
+    			
+    			
     			throw new RuntimeException(e);
     		}
 		}
