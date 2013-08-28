@@ -7,8 +7,6 @@ import java.util.Map;
 
 import fromporm.conv.Converters.BaseConverter;
 
-
-
 @SuppressWarnings("rawtypes")
 public class StandardConverters {
 
