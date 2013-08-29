@@ -30,6 +30,8 @@ public class PlayormContext implements IPlayormContext {
 
 	private NoSqlEntityManager sourceMgr;
     private NoSqlEntityManager destMgr;
+    private static final int BATCH_SIZE=500;
+    private int batchCount = 0;
     
     public PlayormContext() {
     	
@@ -122,7 +124,11 @@ public class PlayormContext implements IPlayormContext {
 		
 		//This method also indexes according to the meta data as well
 		typedSession.put(cf, row);
-		typedSession.flush();
+		batchCount++;
+		if (batchCount >= BATCH_SIZE) {
+			typedSession.flush();
+			batchCount = 0;
+		}
 	}
     
     private void addColumnData(TypedRow row, DboColumnMeta col, Object node, long time) {
@@ -173,10 +179,14 @@ public class PlayormContext implements IPlayormContext {
 		byte[] val = col.convertToStorage2(newValue);
 		row.addColumn(colKey, val, null);
 
-		//This method also indexes according to the meta data as well
-		typedSession.put(cf, row);
-		session.flush();
-		typedSession.flush();
+		batchCount++;
+		if (batchCount >= BATCH_SIZE) {
+			//This method also indexes according to the meta data as well
+			typedSession.put(cf, row);
+			session.flush();
+			typedSession.flush();
+			batchCount = 0;
+		}
 	}
     
     public long calculatePartitionId(long longTime, Long partitionSize) {
@@ -234,6 +244,15 @@ public class PlayormContext implements IPlayormContext {
 	
 	public String bytesToString(byte[] namearray) {
 		return StandardConverters.convertFromBytes(String.class, namearray);
+	}
+	
+	public void flushAll() {
+    	NoSqlTypedSession typedSession = destMgr.getTypedSession();
+		NoSqlSession session = destMgr.getSession();
+
+		session.flush();
+		typedSession.flush();
+		batchCount = 0;
 	}
 
 }

@@ -18,5 +18,7 @@ public interface IPlayormContext {
 	
     public String getSrcTableDesc(String tableNameIfVirtual);
     public String getDestTableDesc(String tableNameIfVirtual);
+	public void flushAll();
+
 
 }

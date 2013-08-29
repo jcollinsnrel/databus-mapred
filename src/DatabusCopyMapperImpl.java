@@ -154,5 +154,9 @@ public class DatabusCopyMapperImpl {
 		word.set(tableNameIfVirtual);
         context.write(word, one);
 	}
+	
+	public void cleanup() {
+		playorm.flushAll();
+	}
 
 }
