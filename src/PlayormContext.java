@@ -111,9 +111,10 @@ public class PlayormContext implements IPlayormContext {
 		for(DboColumnMeta col : cols) {
 			Object node = values.get(col.getColumnName());
 			if(node == null) {
-				if (log.isWarnEnabled())
-	        		log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in source data");
-				throw new RuntimeException("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in source data");
+//				if (log.isWarnEnabled())
+//	        		log.warn("The table you are inserting '"+tableNameIfVirtual+"' requires column='"+col.getColumnName()+"' to be set and is not found in source data");
+//				throw new RuntimeException("The table you are inserting '"+tableNameIfVirtual+"' requires column='"+col.getColumnName()+"' to be set and is not found in source data");
+				continue;
 			}
 
 			addColumnData(row, col, node, timestamp);
