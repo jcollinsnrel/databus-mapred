@@ -31,6 +31,7 @@ public class DatabusCopyMapperImpl {
 
 
 	public DatabusCopyMapperImpl () {
+		System.err.println("version 1");
 		//String cluster1 = "QACluster";
 		String cluster1 = "DatabusCluster";
 		//String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
@@ -78,12 +79,12 @@ public class DatabusCopyMapperImpl {
     		//context.progress();
     	}
 		
-		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
-			transferStream(key, columns, tableNameIfVirtual, context);
-		}
-		else {
-			transferOrdinary(key, columns, tableNameIfVirtual, context);
-		}
+//		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
+//			transferStream(key, columns, tableNameIfVirtual, context);
+//		}
+//		else {
+//			transferOrdinary(key, columns, tableNameIfVirtual, context);
+//		}
 		
 		
     }
