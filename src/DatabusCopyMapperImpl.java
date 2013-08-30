@@ -99,6 +99,10 @@ public class DatabusCopyMapperImpl {
     		col.name().get(namearray);
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
+    		word.set("relnamesize"+namearray.length);
+            context.write(word, one);
+            word.set("relvaluesize"+valuearray.length);
+            context.write(word, one);
 			//String colName = playorm.bytesToString(namearray); 
 			//Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
 			//values.put(colName, objVal);
@@ -121,6 +125,10 @@ public class DatabusCopyMapperImpl {
     		col.name().get(namearray);
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
+    		word.set("namesize"+namearray.length);
+            context.write(word, one);
+            word.set("valuesize"+valuearray.length);
+            context.write(word, one);
 //    		String colName = "";
 //    		try {
 //    			colName = playorm.bytesToString(namearray);
