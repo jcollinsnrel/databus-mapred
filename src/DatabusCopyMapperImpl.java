@@ -97,14 +97,14 @@ public class DatabusCopyMapperImpl {
 	
 		Map<String, Object> values = new HashMap<String, Object>();
 		for (IColumn col:columns.values()) {    		
-			byte[] namearray = new byte[col.name().remaining()];
-    		col.name().get(namearray);
-    		byte[] valuearray = new byte[col.value().remaining()];
-    		col.value().get(valuearray);
-    		word.set("relnamesize"+namearray.length);
-            context.write(word, one);
-            word.set("relvaluesize"+valuearray.length);
-            context.write(word, one);
+//			byte[] namearray = new byte[col.name().remaining()];
+//    		col.name().get(namearray);
+//    		byte[] valuearray = new byte[col.value().remaining()];
+//    		col.value().get(valuearray);
+//    		word.set("relnamesize"+namearray.length);
+//            context.write(word, one);
+//            word.set("relvaluesize"+valuearray.length);
+//            context.write(word, one);
 			//String colName = playorm.bytesToString(namearray); 
 			//Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
 			//values.put(colName, objVal);
@@ -124,23 +124,20 @@ public class DatabusCopyMapperImpl {
 		//we are only in here because this is a stream, there is only one column and it's name is "value":
 		int index = 0;
 		for (IColumn col:columns.values()) {
+			index++;
 			//EXPERIMENTAL!  'time' should always be the first col.  I don't want to read it to find out because that slows us down, 
 			//so try just assuming that it actually is always first and skip it:
-			if (index ==0)
+			if (index == 1)
 				continue;
 			
-			//byte[] namearray = new byte[col.name().remaining()];
-    		//col.name().get(namearray);
-    		byte[] valuearray = new byte[col.value().remaining()];
-    		col.value().get(valuearray);
-    		//word.set("namesize"+namearray.length);
-            //context.write(word, one);
-            word.set("valuesize"+valuearray.length);
-            context.write(word, one);
+//    		byte[] valuearray = new byte[col.value().remaining()];
+//    		col.value().get(valuearray);
+//            word.set("valuesize"+valuearray.length);
+//            context.write(word, one);
 
 //    		String colName;
 //    		try {
-//    			colName = streamColNames[index];
+//    			colName = streamColNames[index-1];
 //    			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
 //    		}
 //    		catch (Exception e) {
