@@ -59,7 +59,8 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
 	        	log.info("in reducerToCassandra setup11!!!!!!!");
 
 	        	try{
-	            	setupHadoopClassloader();
+	        		if (interfacecl == null)
+	        			setupHadoopClassloader();
 	            	System.out.println("setting the current thread classloader to "+playormcontextcl+" this thread is "+Thread.currentThread());
 	            	Thread.currentThread().setContextClassLoader(playormcontextcl);
 	            	context.getConfiguration().setClassLoader(playormcontextcl);
@@ -78,10 +79,9 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
               
         }
         
-        private void setupHadoopClassloader() {
-    		ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-    		
+        private void setupHadoopClassloader() {    		
     		try{
+    			log.info("running setupHadoopClassloader.  This should only happen once per class, not once per task");
     			CodeSource src = DatabusMapredTest.class.getProtectionDomain().getCodeSource();
     	
     			//interfacecl will be the parent of both the hadoopcl and the playormcontextcl, 
@@ -149,9 +149,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     		catch (Exception e) {
     			e.printStackTrace();
     			log.error("got exception loading playorm!  "+e.getMessage());
-    		}
-    		finally {
-    			Thread.currentThread().setContextClassLoader(oldCl);
+    			throw new RuntimeException(e);
     		}
         }
 
