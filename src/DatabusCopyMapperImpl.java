@@ -76,12 +76,12 @@ public class DatabusCopyMapperImpl {
     		//context.progress();
     	}
 		
-//		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
-//			transferStream(key, columns, tableNameIfVirtual, context);
-//		}
-//		else {
-//			transferOrdinary(key, columns, tableNameIfVirtual, context);
-//		}
+		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
+			transferStream(key, columns, tableNameIfVirtual, context);
+		}
+		else {
+			transferOrdinary(key, columns, tableNameIfVirtual, context);
+		}
 		
 		
     }
@@ -107,7 +107,7 @@ public class DatabusCopyMapperImpl {
 		String pkValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 
 		//log.info("ABOUT TO SAVE RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
-		playorm.postNormalTable(values, tableNameIfVirtual, pkValue);
+		//playorm.postNormalTable(values, tableNameIfVirtual, pkValue);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
 	}
@@ -130,9 +130,7 @@ public class DatabusCopyMapperImpl {
     		}
     		catch (Exception e) {
     			log.error("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
-    			System.err.println("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
-    			
-    			
+    			System.err.println("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");	
     			throw new RuntimeException(e);
     		}
 		}
@@ -146,7 +144,7 @@ public class DatabusCopyMapperImpl {
 		
 		//log.info("posting to timeseries from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 
-		playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
+		//playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
 	}
