@@ -89,8 +89,8 @@ public class DatabusCopyMapperImpl {
 
 	private void transferOrdinary(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, Context context) throws IOException, InterruptedException {
 		
-		String idValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
-		String idColName = playorm.getSourceIdColumnName(tableNameIfVirtual);
+		//String idValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
+		//String idColName = playorm.getSourceIdColumnName(tableNameIfVirtual);
 		//log.info("HOW EXCITING!!!  WE GOT A RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
 	
 		Map<String, Object> values = new HashMap<String, Object>();
@@ -99,23 +99,21 @@ public class DatabusCopyMapperImpl {
     		col.name().get(namearray);
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
-			String colName = playorm.bytesToString(namearray); 
-			Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
-			values.put(colName, objVal);
-			//log.info("    "+tableNameIfVirtual+", as strings, A (relational) column is "+ colName+", value "+objVal);
+			//String colName = playorm.bytesToString(namearray); 
+			//Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
+			//values.put(colName, objVal);
 		}
-		String pkValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
+		//String pkValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 
-		//log.info("ABOUT TO SAVE RELATIONAL ROW! for table "+tableNameIfVirtual+" keyColumn = "+idColName+" value="+idValue);
 		//playorm.postNormalTable(values, tableNameIfVirtual, pkValue);
-		word.set(tableNameIfVirtual);
-        context.write(word, one);
+		//word.set(tableNameIfVirtual);
+        //context.write(word, one);
 	}
 
 
 	private void transferStream(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, Context context) throws IOException, InterruptedException {
-		String time = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
-		String valueAsString = null;
+		//String time = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
+		//String valueAsString = null;
 		
 		//we are only in here because this is a stream, there is only one column and it's name is "value":
 		for (IColumn col:columns.values()) {    		
@@ -123,30 +121,28 @@ public class DatabusCopyMapperImpl {
     		col.name().get(namearray);
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
-    		String colName = "";
-    		try {
-    			colName = playorm.bytesToString(namearray);
-    			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
-    		}
-    		catch (Exception e) {
-    			log.error("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
-    			System.err.println("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");	
-    			throw new RuntimeException(e);
-    		}
+//    		String colName = "";
+//    		try {
+//    			colName = playorm.bytesToString(namearray);
+//    			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
+//    		}
+//    		catch (Exception e) {
+//    			log.error("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
+//    			System.err.println("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");	
+//    			throw new RuntimeException(e);
+//    		}
 		}
 		
-		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
-			log.info("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
-			word.set(tableNameIfVirtual+" not written because MAX_VALUE");
-	        context.write(word, one);
-	        return;
-		}
+//		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
+//			log.info("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
+//			word.set(tableNameIfVirtual+" not written because MAX_VALUE");
+//	        context.write(word, one);
+//	        return;
+//		}
 		
-		//log.info("posting to timeseries from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
-
 		//playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
-		word.set(tableNameIfVirtual);
-        context.write(word, one);
+		//word.set(tableNameIfVirtual);
+        //context.write(word, one);
 	}
 	
 	public void cleanup() {
