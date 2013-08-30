@@ -159,14 +159,14 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         @Override
         public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
-//        	try {
-//        		Method mapMethod = delegateClass.getDeclaredMethod("map", ByteBuffer.class, SortedMap.class, Context.class);
-//        		mapMethod.invoke(delegate, keyData, columns, context);
-//        	}
-//        	catch (Exception e) {
-//        		e.printStackTrace();
-//        		throw new RuntimeException(e);
-//        	}
+        	try {
+        		Method mapMethod = delegateClass.getDeclaredMethod("map", ByteBuffer.class, SortedMap.class, Context.class);
+        		mapMethod.invoke(delegate, keyData, columns, context);
+        	}
+        	catch (Exception e) {
+        		e.printStackTrace();
+        		throw new RuntimeException(e);
+        	}
         }
         
         @Override
