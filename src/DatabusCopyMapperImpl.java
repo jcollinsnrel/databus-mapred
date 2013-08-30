@@ -26,6 +26,8 @@ public class DatabusCopyMapperImpl {
 	
 	private final static IntWritable one = new IntWritable(1);
     private Text word = new Text();
+    
+    private String[] streamColNames=new String[]{"time", "value"};
 
 
 	public DatabusCopyMapperImpl () {
@@ -116,22 +118,29 @@ public class DatabusCopyMapperImpl {
 
 
 	private void transferStream(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, Context context) throws IOException, InterruptedException {
-		//String time = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
-		//String valueAsString = null;
+//		String time = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
+//		String valueAsString = null;
 		
 		//we are only in here because this is a stream, there is only one column and it's name is "value":
-		for (IColumn col:columns.values()) {    		
-			byte[] namearray = new byte[col.name().remaining()];
-    		col.name().get(namearray);
+		int index = 0;
+		for (IColumn col:columns.values()) {
+			//EXPERIMENTAL!  'time' should always be the first col.  I don't want to read it to find out because that slows us down, 
+			//so try just assuming that it actually is always first and skip it:
+			if (index ==0)
+				continue;
+			
+			//byte[] namearray = new byte[col.name().remaining()];
+    		//col.name().get(namearray);
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
-    		word.set("namesize"+namearray.length);
-            context.write(word, one);
+    		//word.set("namesize"+namearray.length);
+            //context.write(word, one);
             word.set("valuesize"+valuearray.length);
             context.write(word, one);
-//    		String colName = "";
+
+//    		String colName;
 //    		try {
-//    			colName = playorm.bytesToString(namearray);
+//    			colName = streamColNames[index];
 //    			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
 //    		}
 //    		catch (Exception e) {
