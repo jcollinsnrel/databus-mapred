@@ -30,6 +30,8 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         static private boolean initializing = false;
         private static Object delegate = null;
         private static Class delegateClass = null;
+		Method mapMethod = null;
+
         
         static TestClassloader interfacecl = null;
     	static TestClassloader hadoopcl = null;
@@ -39,7 +41,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
-        	/*
+        	
         	if (delegate != null)
         		return;
         	
@@ -62,6 +64,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
 	            	Thread.currentThread().setContextClassLoader(playormcontextcl);
 	            	context.getConfiguration().setClassLoader(playormcontextcl);
 	            	delegateClass = playormcontextcl.loadClass("DatabusCopyMapperImpl");
+	        		mapMethod = delegateClass.getDeclaredMethod("map", ByteBuffer.class, SortedMap.class, Context.class);
 	            	delegate = delegateClass.newInstance();
 	            	
 	        	}
@@ -72,7 +75,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
 	    		initialized = true;
 	    		initializing=false;
         	}
-              */ 
+              
         }
         
         private void setupHadoopClassloader() {
@@ -133,10 +136,6 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
     	                        interfacecl);
     			hadoopcl.setName("hadoopclassloader");
 
-    			for (Enumeration<URL> resources = interfacecl.findResources("org.apache.thrift.transport.TTransport"); resources.hasMoreElements();) {
-    			       log.info("a resource is "+resources.nextElement());
-    			}
-
         		//ClassLoader.getSystemClassLoader().getParent()
         		//Class interfaceclass = interfacecl.loadClass("IPlayormContext");
 
@@ -160,7 +159,6 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
         	try {
-        		Method mapMethod = delegateClass.getDeclaredMethod("map", ByteBuffer.class, SortedMap.class, Context.class);
         		mapMethod.invoke(delegate, keyData, columns, context);
         	}
         	catch (Exception e) {
