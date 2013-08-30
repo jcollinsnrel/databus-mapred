@@ -39,6 +39,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
+        	/*
         	if (delegate != null)
         		return;
         	
@@ -71,7 +72,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
 	    		initialized = true;
 	    		initializing=false;
         	}
-               
+              */ 
         }
         
         private void setupHadoopClassloader() {

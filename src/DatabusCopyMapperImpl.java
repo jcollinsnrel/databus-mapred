@@ -59,6 +59,7 @@ public class DatabusCopyMapperImpl {
 	
 	public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
     {
+		/*
 		byte[] key = new byte[keyData.remaining()];
 		keyData.get(key);
 		if (key.length==0) {
@@ -67,13 +68,7 @@ public class DatabusCopyMapperImpl {
 		}
     	mapcounter++;
     	String tableNameIfVirtual = playorm.getTableNameFromKey(key);
-    	//log.info("tableNameIfVirtual is "+tableNameIfVirtual);
-    	//only do every 10th one for testing:
-//    	if (mapcounter%10!=1) {
-//    		word.set(tableNameIfVirtual);
-//            context.write(word, one);
-//    		return;
-//    	}
+    	
     	if (mapcounter%1000 == 1) {
     		log.info("called map "+mapcounter+" times.");
     		//when this was writing to context instead of doing the copy directly in the map phase it was 
@@ -87,6 +82,7 @@ public class DatabusCopyMapperImpl {
 		else {
 			transferOrdinary(key, columns, tableNameIfVirtual, context);
 		}
+		*/
 		
     }
     
