@@ -61,7 +61,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
 	            	Thread.currentThread().setContextClassLoader(playormcontextcl);
 	            	context.getConfiguration().setClassLoader(playormcontextcl);
 	            	delegateClass = playormcontextcl.loadClass("DatabusCopyMapperImpl");
-	            	//delegate = delegateClass.newInstance();
+	            	delegate = delegateClass.newInstance();
 	            	
 	        	}
 	        	catch (Exception e) {
