@@ -39,39 +39,39 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
         throws IOException, InterruptedException
         {
-        	if (delegate != null)
-        		return;
-        	
-        	
-        	while (initializing)
-        		Thread.sleep(1);
-        	//manual thread locking!  Why not.
-        	if (!initialized) {
-        		if (initializing) {
-        			while(initializing) Thread.sleep(2);
-        			return;
-        		}
-        		initializing=true;
-	            //outputKey = ByteBufferUtil.bytes(context.getConfiguration().get(CONF_COLUMN_NAME));
-	        	log.info("in reducerToCassandra setup11!!!!!!!");
-
-	        	try{
-	            	setupHadoopClassloader();
-	            	System.out.println("setting the current thread classloader to "+playormcontextcl+" this thread is "+Thread.currentThread());
-	            	Thread.currentThread().setContextClassLoader(playormcontextcl);
-	            	context.getConfiguration().setClassLoader(playormcontextcl);
-	            	delegateClass = playormcontextcl.loadClass("DatabusCopyMapperImpl");
-	            	delegate = delegateClass.newInstance();
-	            	
-	        	}
-	        	catch (Exception e) {
-	        		e.printStackTrace();
-	        		log.error("failed setting up HadoopClassloader()");
-	        	}
-	    		initialized = true;
-	    		initializing=false;
-        	}
-                
+//        	if (delegate != null)
+//        		return;
+//        	
+//        	
+//        	while (initializing)
+//        		Thread.sleep(1);
+//        	//manual thread locking!  Why not.
+//        	if (!initialized) {
+//        		if (initializing) {
+//        			while(initializing) Thread.sleep(2);
+//        			return;
+//        		}
+//        		initializing=true;
+//	            //outputKey = ByteBufferUtil.bytes(context.getConfiguration().get(CONF_COLUMN_NAME));
+//	        	log.info("in reducerToCassandra setup11!!!!!!!");
+//
+//	        	try{
+//	            	setupHadoopClassloader();
+//	            	System.out.println("setting the current thread classloader to "+playormcontextcl+" this thread is "+Thread.currentThread());
+//	            	Thread.currentThread().setContextClassLoader(playormcontextcl);
+//	            	context.getConfiguration().setClassLoader(playormcontextcl);
+//	            	delegateClass = playormcontextcl.loadClass("DatabusCopyMapperImpl");
+//	            	delegate = delegateClass.newInstance();
+//	            	
+//	        	}
+//	        	catch (Exception e) {
+//	        		e.printStackTrace();
+//	        		log.error("failed setting up HadoopClassloader()");
+//	        	}
+//	    		initialized = true;
+//	    		initializing=false;
+//        	}
+//                
         }
         
         private void setupHadoopClassloader() {
@@ -158,14 +158,14 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         @Override
         public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
-        	try {
-        		//Method mapMethod = delegateClass.getDeclaredMethod("map", ByteBuffer.class, SortedMap.class, Context.class);
-        		//mapMethod.invoke(delegate, keyData, columns, context);
-        	}
-        	catch (Exception e) {
-        		e.printStackTrace();
-        		throw new RuntimeException(e);
-        	}
+//        	try {
+//        		Method mapMethod = delegateClass.getDeclaredMethod("map", ByteBuffer.class, SortedMap.class, Context.class);
+//        		mapMethod.invoke(delegate, keyData, columns, context);
+//        	}
+//        	catch (Exception e) {
+//        		e.printStackTrace();
+//        		throw new RuntimeException(e);
+//        	}
         }
         
         @Override
