@@ -59,7 +59,7 @@ public class DatabusCopyMapperImpl {
 	
 	public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
     {
-		/*
+		
 		byte[] key = new byte[keyData.remaining()];
 		keyData.get(key);
 		if (key.length==0) {
@@ -76,13 +76,13 @@ public class DatabusCopyMapperImpl {
     		//context.progress();
     	}
 		
-		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
-			transferStream(key, columns, tableNameIfVirtual, context);
-		}
-		else {
-			transferOrdinary(key, columns, tableNameIfVirtual, context);
-		}
-		*/
+//		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
+//			transferStream(key, columns, tableNameIfVirtual, context);
+//		}
+//		else {
+//			transferOrdinary(key, columns, tableNameIfVirtual, context);
+//		}
+		
 		
     }
     
