@@ -84,6 +84,10 @@ public class PlayormContext implements IPlayormContext {
     
     public boolean sourceTableIsStream(String tableNameIfVirtual, byte[] key) {
     	DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	if(meta == null) {
+    		throw new RuntimeException("table="+tableNameIfVirtual+" was not found");
+    	}
+    	
 		DboColumnMeta[] allColumns = meta.getAllColumns().toArray(new DboColumnMeta[]{});
 
 		String idColumnName = meta.getIdColumnMeta().getColumnName();
