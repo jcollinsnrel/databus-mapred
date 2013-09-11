@@ -157,8 +157,8 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
         public void map(ByteBuffer keyData, SortedMap<ByteBuffer, IColumn> columns, Context context) throws IOException, InterruptedException
         {
         	try {
-        		System.err.println("del="+delegate+" k="+keyData);
-        		log.error("del="+delegate+" k="+keyData);
+        		if(delegate == null)
+        			throw new NullPointerException("avoid java's obscure nullpointer which really means the delegate here is null which is not allowed");
         		mapMethod.invoke(delegate, keyData, columns, context);
         	}
         	catch (Exception e) {
