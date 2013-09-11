@@ -132,6 +132,9 @@ public class DatabusCopyMapperImpl {
     		String colName = streamColNames[index-1];
     		try {
     			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
+    			//try to account for every case of 'null' or empty we can think of:
+    			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString))
+    				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray);
     		}
     		catch (Exception e) {
     			log.error("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
