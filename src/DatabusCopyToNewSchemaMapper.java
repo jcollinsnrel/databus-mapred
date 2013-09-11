@@ -72,6 +72,7 @@ public class DatabusCopyToNewSchemaMapper extends Mapper<ByteBuffer, SortedMap<B
 	        	catch (Exception e) {
 	        		e.printStackTrace();
 	        		log.error("failed setting up HadoopClassloader()");
+	        		throw new RuntimeException(e);
 	        	}
 	    		initialized = true;
 	    		initializing=false;
