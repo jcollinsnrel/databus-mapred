@@ -195,35 +195,29 @@ public class PlayormContext implements IPlayormContext {
 			log.warn("GOT A NULL OR EMPTY byte[] value posting to timeseries!  val is '"+val+"' newValue is "+newValue+" valueAsString is "+valueAsString+
 				" tableNameIfVirtual is "+tableNameIfVirtual+" partitionKey is "+partitionKey+" col is "+col.getColumnName());
 		row.addColumn(colKey, val, null);
-
+		typedSession.put(cf, row);
+		
 		batchCount++;
 		if (batchCount >= BATCH_SIZE) {
-			//This method also indexes according to the meta data as well
-			typedSession.put(cf, row);
 			session.flush();
 			typedSession.flush();
 			logPoints();
 			batchCount = 0;
 		}
 		
-		if(writeCounter > 60000) {
-			logPoints();
-			typedSession.flush();
-		}
-
 		if(writeCounter % 1000 == 0)
 			log.info("we wrote number of rows="+writeCounter);
 		return true;
 	}
     
     private void logPoints() {
-    	String msg = "points=\n";
-    	for(Point p : points) {
-    		msg += p+"\n";
-    	}
-    	log.info(msg);
-    	
-    	points.clear();
+//    	String msg = "points=\n";
+//    	for(Point p : points) {
+//    		msg += p+"\n";
+//    	}
+//    	log.info(msg);
+//    	
+//    	points.clear();
 	}
 
 	public long calculatePartitionId(long longTime, Long partitionSize) {
@@ -287,6 +281,8 @@ public class PlayormContext implements IPlayormContext {
 		log.info("flush all other records");
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
 		NoSqlSession session = destMgr.getSession();
+
+		logPoints();
 
 		session.flush();
 		typedSession.flush();
