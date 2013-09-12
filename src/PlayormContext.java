@@ -33,6 +33,7 @@ public class PlayormContext implements IPlayormContext {
     private static final int BATCH_SIZE=500;
     private int batchCount = 0;
     
+    private List<Point> points = new ArrayList<Point>();
     private int writeCounter = 0;
 
     public PlayormContext() {
@@ -152,6 +153,8 @@ public class PlayormContext implements IPlayormContext {
     		return false;
     	}
     	
+    	points.add(new Point(tableNameIfVirtual, pkValue, valueAsString));
+
     	this.writeCounter++;
 		//if (log.isInfoEnabled())
 		//	log.info("writing to Timeseries, table name!!!!!!! = '" + tableNameIfVirtual + "' table is "+ table);
@@ -199,11 +202,16 @@ public class PlayormContext implements IPlayormContext {
 			typedSession.put(cf, row);
 			session.flush();
 			typedSession.flush();
+			log.info("points="+points);
+			points.clear();
 			batchCount = 0;
 		}
 		
-		if(writeCounter > 60000)
+		if(writeCounter > 60000) {
+			log.info("points="+points);
+			points.clear();
 			typedSession.flush();
+		}
 
 		if(writeCounter % 1000 == 0)
 			log.info("we wrote number of rows="+writeCounter);
