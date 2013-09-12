@@ -127,6 +127,7 @@ public class DatabusCopyMapperImpl {
 				continue;
 			
     		byte[] valuearray = new byte[col.value().remaining()];
+    		log.info("time="+time+" value array len="+valuearray.length);
     		col.value().get(valuearray);
 
     		String colName = streamColNames[index-1];
