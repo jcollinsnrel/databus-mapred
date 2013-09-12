@@ -117,6 +117,8 @@ public class DatabusCopyMapperImpl {
 		String time = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 		String valueAsString = null;
 		
+		log.info("processing row time="+time);
+		System.out.println("SSprocessing row time="+time);
 		//we are only in here because this is a stream, there is only one column and it's name is "value":
 		int index = 0;
 		for (IColumn col:columns.values()) {
@@ -128,6 +130,7 @@ public class DatabusCopyMapperImpl {
 			
     		byte[] valuearray = new byte[col.value().remaining()];
     		log.info("time="+time+" value array len="+valuearray.length);
+    		System.out.println("SStime="+time+" value array len="+valuearray.length);
     		col.value().get(valuearray);
 
     		String colName = streamColNames[index-1];
