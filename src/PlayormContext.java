@@ -33,6 +33,8 @@ public class PlayormContext implements IPlayormContext {
     private static final int BATCH_SIZE=500;
     private int batchCount = 0;
     
+    private int writeCounter = 0;
+
     public PlayormContext() {
     	
     }
@@ -149,8 +151,10 @@ public class PlayormContext implements IPlayormContext {
     			log.info("--- owning table "+tableNameIfVirtual+" on dest side does not exist, this probably means that the row we are copying belongs to a table taht did not get ported... skipping row.");
     		return;
     	}
-		if (log.isInfoEnabled())
-			log.info("writing to Timeseries, table name!!!!!!! = '" + tableNameIfVirtual + "' table is "+ table);
+    	
+    	this.writeCounter++;
+		//if (log.isInfoEnabled())
+		//	log.info("writing to Timeseries, table name!!!!!!! = '" + tableNameIfVirtual + "' table is "+ table);
 		String cf = table.getColumnFamily();
 
 		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
@@ -197,6 +201,9 @@ public class PlayormContext implements IPlayormContext {
 			typedSession.flush();
 			batchCount = 0;
 		}
+		
+		if(writeCounter % 1000 == 0)
+			log.info("we wrote number of rows="+writeCounter);
 	}
     
     public long calculatePartitionId(long longTime, Long partitionSize) {
