@@ -25,7 +25,8 @@ public class DatabusCopyMapperImpl {
 	static final String KEYSPACE2 = "databus";
 	
 	private final static IntWritable one = new IntWritable(1);
-    private Text word = new Text();
+    private Text word = new Text("count");
+    private Text written = new Text("written");
     
     private String[] streamColNames=new String[]{"time", "value"};
 
@@ -118,7 +119,7 @@ public class DatabusCopyMapperImpl {
 		String valueAsString = null;
 
 		if(columns.size() != 1)
-			log.warn("BIG ISSUE, column size="+columns.size()+" but should only have a value column");
+			throw new RuntimeException("BIG ISSUE, column size="+columns.size()+" but should only have a value column");
 
 		//we are only in here because this is a stream, there is only one column and it's name is "value":
 		for (IColumn col:columns.values()) {
@@ -129,7 +130,7 @@ public class DatabusCopyMapperImpl {
 
     		String colName = StandardConverters.convertFromBytes(String.class, nameArray);
     		if(!"value".equals(colName))
-    			log.warn("issue in that column name is not 'value'  name="+colName);
+    			throw new RuntimeException("issue in that column name is not 'value'  name="+colName);
 
     		try {
     			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
@@ -147,15 +148,19 @@ public class DatabusCopyMapperImpl {
 		}
 		
 		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
-			log.info("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
+			log.warn("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 			word.set(tableNameIfVirtual+" not written because MAX_VALUE");
 	        context.write(word, one);
 	        return;
 		}
 		
-		playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
+		boolean written = playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
+        if(written) {
+        	word.set(tableNameIfVirtual+" written");
+        	context.write(word, one);
+        }
 	}
 	
 	public void cleanup() {

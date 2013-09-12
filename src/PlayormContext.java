@@ -142,14 +142,14 @@ public class PlayormContext implements IPlayormContext {
 		row.addColumn(col.getColumnName(), newValue);
 	}
     
-    public void postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, String valueAsString) {
+    public boolean postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, String valueAsString) {
 
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
     	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
     	if (table == null) {
-    		if (log.isInfoEnabled()) 
-    			log.info("--- owning table "+tableNameIfVirtual+" on dest side does not exist, this probably means that the row we are copying belongs to a table taht did not get ported... skipping row.");
-    		return;
+    		if (log.isWarnEnabled()) 
+    			log.warn("--- owning table "+tableNameIfVirtual+" on dest side does not exist, this probably means that the row we are copying belongs to a table taht did not get ported... skipping row.");
+    		return false;
     	}
     	
     	this.writeCounter++;
@@ -204,6 +204,7 @@ public class PlayormContext implements IPlayormContext {
 		
 		if(writeCounter % 1000 == 0)
 			log.info("we wrote number of rows="+writeCounter);
+		return true;
 	}
     
     public long calculatePartitionId(long longTime, Long partitionSize) {
@@ -264,6 +265,7 @@ public class PlayormContext implements IPlayormContext {
 	}
 	
 	public void flushAll() {
+		log.info("flush all other records");
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
 		NoSqlSession session = destMgr.getSession();
 
