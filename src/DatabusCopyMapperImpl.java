@@ -157,8 +157,12 @@ public class DatabusCopyMapperImpl {
 		boolean written = playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
         context.write(word, one);
+        word.set("totalread");
+        context.write(word, one);
         if(written) {
         	word.set(tableNameIfVirtual+" written");
+        	context.write(word, one);
+        	word.set("totalwritten");
         	context.write(word, one);
         }
 	}

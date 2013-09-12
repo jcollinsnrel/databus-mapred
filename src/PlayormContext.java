@@ -202,6 +202,9 @@ public class PlayormContext implements IPlayormContext {
 			batchCount = 0;
 		}
 		
+		if(writeCounter > 60000)
+			typedSession.flush();
+
 		if(writeCounter % 1000 == 0)
 			log.info("we wrote number of rows="+writeCounter);
 		return true;
