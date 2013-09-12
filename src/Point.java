@@ -3,11 +3,15 @@ public class Point {
 	private String table;
 	private Object time;
 	private String value;
-	
-	public Point(String tableNameIfVirtual, Object pkValue, String valueAsString) {
+	private Object partKey;
+	private long time2;
+
+	public Point(String tableNameIfVirtual, Object pkValue, long time, String valueAsString, Object partKey) {
 		this.table = tableNameIfVirtual;
 		this.time = pkValue;
+		this.time2 = time;
 		this.value = valueAsString;
+		this.partKey = partKey;
 	}
 
 	public String getTable() {
@@ -36,6 +40,6 @@ public class Point {
 
 	@Override
 	public String toString() {
-		return "Point[t=" + table + "," + time + "," + value+ "]";
+		return "Point[t=" + table + "," + time + "," +time2+","+ value+ ",p="+partKey+"]";
 	}
 }

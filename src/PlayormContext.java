@@ -153,8 +153,6 @@ public class PlayormContext implements IPlayormContext {
     		return false;
     	}
     	
-    	points.add(new Point(tableNameIfVirtual, pkValue, valueAsString));
-
     	this.writeCounter++;
 		//if (log.isInfoEnabled())
 		//	log.info("writing to Timeseries, table name!!!!!!! = '" + tableNameIfVirtual + "' table is "+ table);
@@ -169,6 +167,8 @@ public class PlayormContext implements IPlayormContext {
 		//find the partition
 		Long partitionSize = table.getTimeSeriesPartionSize();
 		long partitionKey = calculatePartitionId(longTime, partitionSize);
+
+    	points.add(new Point(tableNameIfVirtual, pkValue, longTime, valueAsString, partitionKey));
 
 		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
 		BigInteger rowKey = new BigInteger(""+partitionKey);
