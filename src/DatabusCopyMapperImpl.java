@@ -116,29 +116,28 @@ public class DatabusCopyMapperImpl {
 	private void transferStream(byte[] key, SortedMap<ByteBuffer, IColumn> columns, String tableNameIfVirtual, Context context) throws IOException, InterruptedException {
 		String time = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 		String valueAsString = null;
-		
-		log.info("processing row time="+time+" col size="+columns.size());
-		System.out.println("SSprocessing row time="+time+" col size="+columns.size());
-		//we are only in here because this is a stream, there is only one column and it's name is "value":
-		int index = 0;
-		for (IColumn col:columns.values()) {
-			index++;
-			//EXPERIMENTAL!  'time' should always be the first col.  I don't want to read it to find out because that slows us down, 
-			//so try just assuming that it actually is always first and skip it:
-			if (index == 1)
-				continue;
-			
-    		byte[] valuearray = new byte[col.value().remaining()];
-    		log.info("time="+time+" value array len="+valuearray.length);
-    		System.out.println("SStime="+time+" value array len="+valuearray.length);
-    		col.value().get(valuearray);
 
-    		String colName = streamColNames[index-1];
+		if(columns.size() != 1)
+			log.warn("BIG ISSUE, column size="+columns.size()+" but should only have a value column");
+
+		//we are only in here because this is a stream, there is only one column and it's name is "value":
+		for (IColumn col:columns.values()) {
+			byte[] nameArray = new byte[col.name().remaining()];
+    		byte[] valuearray = new byte[col.value().remaining()];
+    		col.value().get(valuearray);
+    		col.name().get(nameArray);
+
+    		String colName = StandardConverters.convertFromBytes(String.class, nameArray);
+    		if(!"value".equals(colName))
+    			log.warn("issue in that column name is not 'value'  name="+colName);
+
     		try {
     			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
     			//try to account for every case of 'null' or empty we can think of:
-    			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString))
-    				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray);
+    			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString)) {
+    				String hex = StandardConverters.convertToString(valueAsString);
+    				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex);
+    			}
     		}
     		catch (Exception e) {
     			log.error("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
