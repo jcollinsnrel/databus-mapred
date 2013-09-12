@@ -202,14 +202,12 @@ public class PlayormContext implements IPlayormContext {
 			typedSession.put(cf, row);
 			session.flush();
 			typedSession.flush();
-			log.info("points="+points);
-			points.clear();
+			logPoints();
 			batchCount = 0;
 		}
 		
 		if(writeCounter > 60000) {
-			log.info("points="+points);
-			points.clear();
+			logPoints();
 			typedSession.flush();
 		}
 
@@ -218,7 +216,17 @@ public class PlayormContext implements IPlayormContext {
 		return true;
 	}
     
-    public long calculatePartitionId(long longTime, Long partitionSize) {
+    private void logPoints() {
+    	String msg = "points=\n";
+    	for(Point p : points) {
+    		msg += p+"\n";
+    	}
+    	log.info(msg);
+    	
+    	points.clear();
+	}
+
+	public long calculatePartitionId(long longTime, Long partitionSize) {
 		long partitionId = (longTime / partitionSize) * partitionSize;
 		if(partitionId < 0) {
 			//if partitionId is less than 0, it incorrectly ends up in the higher partition -20/50*50 = 0 and 20/50*50=0 when -20/50*50 needs to be -50 partitionId
