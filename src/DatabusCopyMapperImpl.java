@@ -72,7 +72,7 @@ public class DatabusCopyMapperImpl {
     	mapcounter++;
     	String tableNameIfVirtual = playorm.getTableNameFromKey(key);
     	
-    	if (mapcounter%1000 == 1) {
+    	if (mapcounter%10000 == 1) {
     		log.info("called map "+mapcounter+" times.");
     		//when this was writing to context instead of doing the copy directly in the map phase it was 
     		//timing out, this prevents that.  Now that we are copying the data in the map phase it is not needed:
@@ -82,9 +82,9 @@ public class DatabusCopyMapperImpl {
 		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
 			transferStream(key, columns, tableNameIfVirtual, context);
 		}
-//		else {
-//			transferOrdinary(key, columns, tableNameIfVirtual, context);
-//		}
+		else {
+			transferOrdinary(key, columns, tableNameIfVirtual, context);
+		}
 		
 		
     }
