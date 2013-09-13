@@ -121,6 +121,9 @@ public class DatabusCopyMapperImpl {
 		if(columns.size() != 1)
 			throw new RuntimeException("BIG ISSUE, column size="+columns.size()+" but should only have a value column");
 
+        word.set("totalread");
+        context.write(word, one);
+
 		//we are only in here because this is a stream, there is only one column and it's name is "value":
 		for (IColumn col:columns.values()) {
 			byte[] nameArray = new byte[col.name().remaining()];
@@ -137,7 +140,8 @@ public class DatabusCopyMapperImpl {
     			//try to account for every case of 'null' or empty we can think of:
     			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString)) {
     				String hex = StandardConverters.convertToString(valueAsString);
-    				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex);
+    				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex+" time="+time);
+    				return;
     			}
     		}
     		catch (Exception e) {
@@ -153,11 +157,11 @@ public class DatabusCopyMapperImpl {
 	        context.write(word, one);
 	        return;
 		}
-		
+        word.set("totaltrytowrite");
+        context.write(word, one);
+        
 		boolean written = playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
-        context.write(word, one);
-        word.set("totalread");
         context.write(word, one);
         if(written) {
         	word.set(tableNameIfVirtual+" written");
