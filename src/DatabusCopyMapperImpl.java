@@ -32,16 +32,16 @@ public class DatabusCopyMapperImpl {
 
 
 	public DatabusCopyMapperImpl () {
-		String cluster1 = "QACluster";
-		//String cluster1 = "DatabusCluster";
-		String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
-		//String seeds1 = "a1.bigde.nrel.gov:9160,a2.bigde.nrel.gov:9160,a3.bigde.nrel.gov:9160,a4.bigde.nrel.gov:9160,a5.bigde.nrel.gov:9160,a6.bigde.nrel.gov:9160,a7.bigde.nrel.gov:9160,a8.bigde.nrel.gov:9160,a9.bigde.nrel.gov:9160,a10.bigde.nrel.gov:9160,a11.bigde.nrel.gov:9160,a12.bigde.nrel.gov:9160";
+		//String cluster1 = "QACluster";
+		String cluster1 = "DatabusCluster";
+		//String seeds1 = "sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160";
+		String seeds1 = "a1.bigde.nrel.gov:9160,a2.bigde.nrel.gov:9160,a3.bigde.nrel.gov:9160,a4.bigde.nrel.gov:9160,a5.bigde.nrel.gov:9160,a6.bigde.nrel.gov:9160,a7.bigde.nrel.gov:9160,a8.bigde.nrel.gov:9160,a9.bigde.nrel.gov:9160,a10.bigde.nrel.gov:9160,a11.bigde.nrel.gov:9160,a12.bigde.nrel.gov:9160";
 		String port1 = "9160";
 		
-		String cluster2 = "QAClusterB";
-		//String cluster2 = "DatabusClusterB";
-		String seeds2 = "sdi-prod-01:9158,sdi-prod-02:9158,sdi-prod-03:9158,sdi-prod-04:9158";
-		//String seeds2 = "a1.bigde.nrel.gov:9158,a2.bigde.nrel.gov:9158,a3.bigde.nrel.gov:9158,a4.bigde.nrel.gov:9158,a5.bigde.nrel.gov:9158,a6.bigde.nrel.gov:9158,a7.bigde.nrel.gov:9158,a8.bigde.nrel.gov:9158,a9.bigde.nrel.gov:9158,a10.bigde.nrel.gov:9158,a11.bigde.nrel.gov:9158,a12.bigde.nrel.gov:9158";
+		//String cluster2 = "QAClusterB";
+		String cluster2 = "DatabusClusterB";
+		//String seeds2 = "sdi-prod-01:9158,sdi-prod-02:9158,sdi-prod-03:9158,sdi-prod-04:9158";
+		String seeds2 = "a1.bigde.nrel.gov:9158,a2.bigde.nrel.gov:9158,a3.bigde.nrel.gov:9158,a4.bigde.nrel.gov:9158,a5.bigde.nrel.gov:9158,a6.bigde.nrel.gov:9158,a7.bigde.nrel.gov:9158,a8.bigde.nrel.gov:9158,a9.bigde.nrel.gov:9158,a10.bigde.nrel.gov:9158,a11.bigde.nrel.gov:9158,a12.bigde.nrel.gov:9158";
 		String port2 = "9158";
 		try{
 //			System.out.println("the current contextclassloader is "+Thread.currentThread().getContextClassLoader()+" this thread is "+Thread.currentThread());
