@@ -65,6 +65,14 @@ public class DatabusCopyMapperImpl {
 		word.set("totalrows");
 		context.write(word, one);
 
+		for (IColumn col:columns.values()) { 
+			byte[] namearray = new byte[col.name().remaining()];
+    		col.name().get(namearray);
+    		byte[] valuearray = new byte[col.value().remaining()];
+    		col.value().get(valuearray);
+		}
+		
+		
 		byte[] key = new byte[keyData.remaining()];
 		keyData.get(key);
 		if (key.length==0) {
