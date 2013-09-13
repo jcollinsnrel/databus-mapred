@@ -17,7 +17,7 @@ public interface IPlayormContext {
 	public void postNormalTable(Map<String, Object> values, String tableNameIfVirtual, Object pkValue);
 	
     public String getSrcTableDesc(String tableNameIfVirtual);
-    public String getDestTableDesc(String tableNameIfVirtual);
+    //public String getDestTableDesc(String tableNameIfVirtual);
 	public void flushAll();
 
 

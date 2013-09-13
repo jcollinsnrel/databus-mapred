@@ -12,10 +12,13 @@ import org.slf4j.LoggerFactory;
 import com.alvazan.orm.api.base.Bootstrap;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
+import com.alvazan.orm.api.base.Query;
 import com.alvazan.orm.api.z3api.NoSqlTypedSession;
 import com.alvazan.orm.api.z5api.NoSqlSession;
+import com.alvazan.orm.api.z8spi.KeyValue;
 import com.alvazan.orm.api.z8spi.action.Column;
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
+import com.alvazan.orm.api.z8spi.iter.Cursor;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
@@ -35,6 +38,8 @@ public class PlayormContext implements IPlayormContext {
     
     private List<Point> points = new ArrayList<Point>();
     private int writeCounter = 0;
+
+    private Map<String, DboTableMeta> nameToTable = new HashMap<String, DboTableMeta>();
 
     public PlayormContext() {
     	
@@ -67,11 +72,24 @@ public class PlayormContext implements IPlayormContext {
     }
     
     public String getSrcTableDesc(String tableNameIfVirtual) {
-    	DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	DboTableMeta meta = lookupSourceMEta(tableNameIfVirtual);
     	String tableDesc = "";
     	tableDesc = tableNameIfVirtual+": "+meta.toString()+", isTimeSeries:"+meta.isTimeSeries()+", partitionSize: "+meta.getTimeSeriesPartionSize();
     	return tableDesc;
     }
+
+	private DboTableMeta lookupSourceMEta(String tableNameIfVirtual) {
+		if(nameToTable.size() == 0) {
+			//initialize it all
+			Query<DboTableMeta> query = sourceMgr.createNamedQuery(DboTableMeta.class, "findAll");
+			Cursor<KeyValue<DboTableMeta>> cursor = query.getResults();
+			while(cursor.next()) {
+				DboTableMeta t = cursor.getCurrent().getValue();
+				nameToTable.put(t.getColumnFamily(), t);
+			}
+		}
+		return nameToTable.get(tableNameIfVirtual);
+	}
     
     public String getDestTableDesc(String tableNameIfVirtual) {
     	DboTableMeta meta = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
@@ -86,7 +104,7 @@ public class PlayormContext implements IPlayormContext {
     }
     
     public boolean sourceTableIsStream(String tableNameIfVirtual, byte[] key) {
-    	DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	DboTableMeta meta = lookupSourceMEta(tableNameIfVirtual);
     	if(meta == null) {
     		throw new RuntimeException("table="+tableNameIfVirtual+" was not found");
     	}
@@ -256,19 +274,19 @@ public class PlayormContext implements IPlayormContext {
 	}
     
     public String getSourceIdColumnValue(String tableNameIfVirtual, byte[] key) {
-    	DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	DboTableMeta meta = lookupSourceMEta(tableNameIfVirtual);
     	byte[] nonvirtkey = meta.getIdColumnMeta().unformVirtRowKey(key);
 		return ""+meta.getIdColumnMeta().convertFromStorage2(nonvirtkey);
     }
     
 	public String getSourceIdColumnName(String tableNameIfVirtual) {
-		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+		DboTableMeta meta = lookupSourceMEta(tableNameIfVirtual);
 		return meta.getIdColumnMeta().getColumnName();
 	}
 
 	public Object sourceConvertFromBytes(String tableNameIfVirtual, String columnName,
 			byte[] valuearray) {
-		DboTableMeta meta = sourceMgr.find(DboTableMeta.class, tableNameIfVirtual);
+		DboTableMeta meta = lookupSourceMEta(tableNameIfVirtual);
 		DboColumnMeta columnMeta = meta.getColumnMeta(columnName);
 		return columnMeta.convertFromStorage2(valuearray);
 	}

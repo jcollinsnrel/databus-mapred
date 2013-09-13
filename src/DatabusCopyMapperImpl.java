@@ -124,41 +124,41 @@ public class DatabusCopyMapperImpl {
         word.set("totalread222");
         context.write(word, one);
 
-//		//we are only in here because this is a stream, there is only one column and it's name is "value":
-//		for (IColumn col:columns.values()) {
-//			byte[] nameArray = new byte[col.name().remaining()];
-//    		byte[] valuearray = new byte[col.value().remaining()];
-//    		col.value().get(valuearray);
-//    		col.name().get(nameArray);
-//
-//    		String colName = StandardConverters.convertFromBytes(String.class, nameArray);
-//    		if(!"value".equals(colName))
-//    			throw new RuntimeException("issue in that column name is not 'value'  name="+colName);
-//
-//    		try {
-//    			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
-//    			//try to account for every case of 'null' or empty we can think of:
-//    			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString)) {
-//    				String hex = StandardConverters.convertToString(valueAsString);
-//    				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex+" time="+time);
-//    		        word.set("total-null-values");
-//    		        context.write(word, one);
-//    				return;
-//    			}
-//    		}
-//    		catch (Exception e) {
-//    			log.error("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
-//    			System.err.println("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");	
-//    			throw new RuntimeException(e);
-//    		}
-//		}
-//		
-//		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
-//			log.warn("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to table="+playorm.getDestTableDesc(tableNameIfVirtual) +"' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
-//			word.set(tableNameIfVirtual+" not written because MAX_VALUE");
-//	        context.write(word, one);
-//	        return;
-//		}
+		//we are only in here because this is a stream, there is only one column and it's name is "value":
+		for (IColumn col:columns.values()) {
+			byte[] nameArray = new byte[col.name().remaining()];
+    		byte[] valuearray = new byte[col.value().remaining()];
+    		col.value().get(valuearray);
+    		col.name().get(nameArray);
+
+    		String colName = StandardConverters.convertFromBytes(String.class, nameArray);
+    		if(!"value".equals(colName))
+    			throw new RuntimeException("issue in that column name is not 'value'  name="+colName);
+
+    		try {
+    			valueAsString = ""+playorm.sourceConvertFromBytes(tableNameIfVirtual, "value", valuearray);
+    			//try to account for every case of 'null' or empty we can think of:
+    			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString)) {
+    				String hex = StandardConverters.convertToString(valueAsString);
+    				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex+" time="+time);
+    		        word.set("total-null-values");
+    		        context.write(word, one);
+    				return;
+    			}
+    		}
+    		catch (Exception e) {
+    			log.error("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");
+    			System.err.println("failed getting value from bytes!!!!! val[] len is "+valuearray.length+" column is "+colName+" table name is "+tableNameIfVirtual+" now attempting both bigint and bigdec");	
+    			throw new RuntimeException(e);
+    		}
+		}
+		
+		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
+			log.warn("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to dest table ' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
+			word.set(tableNameIfVirtual+" not written because MAX_VALUE");
+	        context.write(word, one);
+	        return;
+		}
 //        
 //		boolean written = playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 //		word.set(tableNameIfVirtual);
