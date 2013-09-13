@@ -40,6 +40,9 @@ public class PlayormContext implements IPlayormContext {
     private int writeCounter = 0;
 
     private Map<String, DboTableMeta> nameToTable = new HashMap<String, DboTableMeta>();
+    private Map<String, DboTableMeta> destToTable = new HashMap<String, DboTableMeta>();
+
+	private DboTableMeta partMeta;
 
     public PlayormContext() {
     	
@@ -94,7 +97,7 @@ public class PlayormContext implements IPlayormContext {
 	}
     
     public String getDestTableDesc(String tableNameIfVirtual) {
-    	DboTableMeta meta = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	DboTableMeta meta = lookupDest(tableNameIfVirtual);
     	String tableDesc = "";
     	tableDesc = tableNameIfVirtual+": "+meta.toString()+", isTimeSeries:"+meta.isTimeSeries()+", partitionSize: "+meta.getTimeSeriesPartionSize();
     	return tableDesc;
@@ -122,7 +125,7 @@ public class PlayormContext implements IPlayormContext {
     @Override
     public void postNormalTable(Map<String, Object> values, String tableNameIfVirtual, Object pkValue) {
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
-    	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	DboTableMeta table = lookupDest(tableNameIfVirtual);
     	
     	if (log.isInfoEnabled())
 			log.info("normal table name = '" + table.getColumnFamily() + "'");
@@ -157,6 +160,22 @@ public class PlayormContext implements IPlayormContext {
 			batchCount = 0;
 		}
 	}
+
+	private DboTableMeta lookupDest(String tableNameIfVirtual) {
+		if(destToTable.size() == 0) {
+			log.info("initializing all tables");
+			//initialize it all
+			Query<DboTableMeta> query = sourceMgr.createNamedQuery(DboTableMeta.class, "findAll");
+			Cursor<KeyValue<DboTableMeta>> cursor = query.getResults();
+			while(cursor.next()) {
+				DboTableMeta t = cursor.getCurrent().getValue();
+				destToTable.put(t.getColumnFamily(), t);
+			}
+			log.info("done initializing all tables");
+		}
+		
+		return destToTable.get(tableNameIfVirtual);
+	}
     
     private void addColumnData(TypedRow row, DboColumnMeta col, Object node, long time) {
 		Object newValue = convertToStorage(col, node);
@@ -166,7 +185,7 @@ public class PlayormContext implements IPlayormContext {
     public boolean postTimeSeriesToDest(String tableNameIfVirtual, Object pkValue, String valueAsString) {
 
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
-    	DboTableMeta table = destMgr.find(DboTableMeta.class, tableNameIfVirtual);
+    	DboTableMeta table = lookupDest(tableNameIfVirtual);
     	if (table == null) {
     		if (log.isWarnEnabled()) 
     			log.warn("--- owning table "+tableNameIfVirtual+" on dest side does not exist, this probably means that the row we are copying belongs to a table taht did not get ported... skipping row.");
@@ -194,14 +213,15 @@ public class PlayormContext implements IPlayormContext {
 		BigInteger rowKey = new BigInteger(""+partitionKey);
 		row.setRowKey(rowKey);
 
-		DboTableMeta meta = destMgr.find(DboTableMeta.class, "partitions");
+		if(partMeta == null)
+			partMeta = destMgr.find(DboTableMeta.class, "partitions");
 		byte[] partitionsRowKey = StandardConverters.convertToBytes(table.getColumnFamily());
 		byte[] partitionBytes = StandardConverters.convertToBytes(rowKey);
 		Column partitionIdCol = new Column(partitionBytes, null);
 		NoSqlSession session = destMgr.getSession();
 		List<Column> columns = new ArrayList<Column>();
 		columns.add(partitionIdCol);
-		session.put(meta, partitionsRowKey, columns);
+		session.put(partMeta, partitionsRowKey, columns);
 		
 		Collection<DboColumnMeta> cols = table.getAllColumns();
 		DboColumnMeta col = cols.iterator().next();

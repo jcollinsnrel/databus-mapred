@@ -159,16 +159,15 @@ public class DatabusCopyMapperImpl {
 	        context.write(word, one);
 	        return;
 		}
-//        
-//		boolean written = playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
-//		word.set(tableNameIfVirtual);
-//        context.write(word, one);
-//        if(written) {
-//        	word.set(tableNameIfVirtual+" written");
-//        	context.write(word, one);
-//        	word.set("totalwritten");
-//        	context.write(word, one);
-//        }
+        
+		boolean written = playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
+        if(written) {
+    		//word.set(tableNameIfVirtual);
+            //context.write(word, one);
+
+        	word.set("totalwritten");
+        	context.write(word, one);
+        }
 	}
 	
 	public void cleanup() {
