@@ -165,7 +165,7 @@ public class PlayormContext implements IPlayormContext {
 		if(destToTable.size() == 0) {
 			log.info("initializing all tables");
 			//initialize it all
-			Query<DboTableMeta> query = sourceMgr.createNamedQuery(DboTableMeta.class, "findAll");
+			Query<DboTableMeta> query = destMgr.createNamedQuery(DboTableMeta.class, "findAll");
 			Cursor<KeyValue<DboTableMeta>> cursor = query.getResults();
 			while(cursor.next()) {
 				DboTableMeta t = cursor.getCurrent().getValue();
