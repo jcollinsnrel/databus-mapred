@@ -82,5 +82,6 @@ export HADOOP_CLASSPATH=$CLASSPATH
 hadoop --config /home/hduser/hadoop-0.20.2 jar build/databus-mapred.jar DatabusMapredTest -conf /home/hduser/hadoop-0.20.2/conf/mapred-site.xml output_reducer=logger
 export hadoopendtime=`date`
 
-echo 'job started at '$hadoopstarttime
-echo `job ended at `$hadoopendtime
+echo 'NEXT RUN...' >> jobtimes.txt
+echo 'job started at '$hadoopstarttime >> jobtimes.txt
+echo 'job ended at '$hadoopendtime >> jobtimes.txt
