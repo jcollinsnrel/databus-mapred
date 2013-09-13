@@ -79,12 +79,12 @@ public class DatabusCopyMapperImpl {
     		//context.progress();
     	}
 		
-		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
-			transferStream(key, columns, tableNameIfVirtual, context);
-		}
-		else {
-			transferOrdinary(key, columns, tableNameIfVirtual, context);
-		}
+//		if (playorm.sourceTableIsStream(tableNameIfVirtual, key)) {
+//			transferStream(key, columns, tableNameIfVirtual, context);
+//		}
+//		else {
+//			transferOrdinary(key, columns, tableNameIfVirtual, context);
+//		}
 		
 		
     }
