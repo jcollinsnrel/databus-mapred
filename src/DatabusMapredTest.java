@@ -91,11 +91,11 @@ public class DatabusMapredTest extends Configured implements Tool
 	        SliceRange sliceRange = new SliceRange();
 	        sliceRange.setStart(new byte[0]);
 	        sliceRange.setFinish(new byte[0]);
-	        sliceRange.setCount(Integer.MAX_VALUE);
 	        predicate.setSlice_range(sliceRange);
 //	        Charset charset = Charset.forName("UTF-8");
 //	        CharsetEncoder encoder = charset.newEncoder();
 //	        predicate.setColumn_names(Arrays.asList(str_to_bb("time"), str_to_bb("value")));
+	        ConfigHelper.setInputSplitSize(job.getConfiguration(), 650000);
 	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 	
 	        int rangebatchsize = 1024;
