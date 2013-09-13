@@ -80,6 +80,7 @@ public class PlayormContext implements IPlayormContext {
 
 	private DboTableMeta lookupSourceMEta(String tableNameIfVirtual) {
 		if(nameToTable.size() == 0) {
+			log.info("initializing all tables");
 			//initialize it all
 			Query<DboTableMeta> query = sourceMgr.createNamedQuery(DboTableMeta.class, "findAll");
 			Cursor<KeyValue<DboTableMeta>> cursor = query.getResults();
@@ -87,6 +88,7 @@ public class PlayormContext implements IPlayormContext {
 				DboTableMeta t = cursor.getCurrent().getValue();
 				nameToTable.put(t.getColumnFamily(), t);
 			}
+			log.info("done initializing all tables");
 		}
 		return nameToTable.get(tableNameIfVirtual);
 	}
