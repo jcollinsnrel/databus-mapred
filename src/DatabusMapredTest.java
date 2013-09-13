@@ -91,6 +91,7 @@ public class DatabusMapredTest extends Configured implements Tool
 	        SliceRange sliceRange = new SliceRange();
 	        sliceRange.setStart(new byte[0]);
 	        sliceRange.setFinish(new byte[0]);
+	        sliceRange.setCount(650000);
 	        predicate.setSlice_range(sliceRange);
 //	        Charset charset = Charset.forName("UTF-8");
 //	        CharsetEncoder encoder = charset.newEncoder();
