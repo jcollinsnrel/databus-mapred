@@ -141,6 +141,8 @@ public class DatabusCopyMapperImpl {
     			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString)) {
     				String hex = StandardConverters.convertToString(valueAsString);
     				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex+" time="+time);
+    		        word.set("total-null-values");
+    		        context.write(word, one);
     				return;
     			}
     		}
@@ -157,8 +159,6 @@ public class DatabusCopyMapperImpl {
 	        context.write(word, one);
 	        return;
 		}
-        word.set("totaltrytowrite");
-        context.write(word, one);
         
 		boolean written = playorm.postTimeSeriesToDest(tableNameIfVirtual, time, valueAsString);
 		word.set(tableNameIfVirtual);
