@@ -129,7 +129,7 @@ public class PlayormContext implements IPlayormContext {
 
     	if (table == null) {
     		if (log.isWarnEnabled()) 
-    			log.warn("--- owning table "+tableNameIfVirtual+" on dest side does not exist, this probably means that the row we are copying belongs to a table taht did not get ported... skipping row.");
+    			log.warn("--- owning table RELATIONAL "+tableNameIfVirtual+" on dest side does not exist, this probably means that the row we are copying belongs to a table taht did not get ported... skipping row.");
     		return false;
     	}
 
