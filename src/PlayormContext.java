@@ -123,12 +123,18 @@ public class PlayormContext implements IPlayormContext {
 	}
 
     @Override
-    public void postNormalTable(Map<String, Object> values, String tableNameIfVirtual, Object pkValue) {
+    public boolean postNormalTable(Map<String, Object> values, String tableNameIfVirtual, Object pkValue) {
     	NoSqlTypedSession typedSession = destMgr.getTypedSession();
     	DboTableMeta table = lookupDest(tableNameIfVirtual);
-    	
+
+    	if (table == null) {
+    		if (log.isWarnEnabled()) 
+    			log.warn("--- owning table "+tableNameIfVirtual+" on dest side does not exist, this probably means that the row we are copying belongs to a table taht did not get ported... skipping row.");
+    		return false;
+    	}
+
     	if (log.isInfoEnabled())
-			log.info("normal table name = '" + table.getColumnFamily() + "'");
+			log.info("normal table name = '" + tableNameIfVirtual + "'");
 		
 		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
 		Object rowKey = convertToStorage(idColumnMeta, pkValue);
@@ -159,6 +165,8 @@ public class PlayormContext implements IPlayormContext {
 			typedSession.flush();
 			batchCount = 0;
 		}
+		
+		return true;
 	}
 
 	private DboTableMeta lookupDest(String tableNameIfVirtual) {

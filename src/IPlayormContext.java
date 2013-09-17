@@ -14,7 +14,7 @@ public interface IPlayormContext {
 	public String getSourceIdColumnName(String tableNameIfVirtual);
 	public Object sourceConvertFromBytes(String tableNameIfVirtual, String columnName, byte[] valuearray);
 	public String bytesToString(byte[] namearray);
-	public void postNormalTable(Map<String, Object> values, String tableNameIfVirtual, Object pkValue);
+	public boolean postNormalTable(Map<String, Object> values, String tableNameIfVirtual, Object pkValue);
 	
     public String getSrcTableDesc(String tableNameIfVirtual);
     //public String getDestTableDesc(String tableNameIfVirtual);
