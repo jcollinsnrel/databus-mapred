@@ -90,6 +90,16 @@ public class PlayormContext implements IPlayormContext {
 			while(cursor.next()) {
 				DboTableMeta t = cursor.getCurrent().getValue();
 				nameToTable.put(t.getColumnFamily(), t);
+				if(t.isTimeSeries()) {
+					DboColumnIdMeta idMeta = t.getIdColumnMeta();
+					//force load of meta
+					idMeta.getColumnName();
+					Collection<DboColumnMeta> columns = t.getAllColumns();
+					for(DboColumnMeta c : columns) {
+						//force load of meta...
+						c.getColumnName();
+					}
+				}
 			}
 			log.info("done initializing all tables");
 		}
