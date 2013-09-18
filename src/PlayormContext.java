@@ -87,10 +87,14 @@ public class PlayormContext implements IPlayormContext {
 			//initialize it all
 			Query<DboTableMeta> query = sourceMgr.createNamedQuery(DboTableMeta.class, "findAll");
 			Cursor<KeyValue<DboTableMeta>> cursor = query.getResults();
+			int count = 0;
+			int numTables = 0;
 			while(cursor.next()) {
 				DboTableMeta t = cursor.getCurrent().getValue();
 				nameToTable.put(t.getColumnFamily(), t);
+				numTables++;
 				if(t.isTimeSeries()) {
+					count++;
 					DboColumnIdMeta idMeta = t.getIdColumnMeta();
 					//force load of meta
 					idMeta.getColumnName();
@@ -101,7 +105,7 @@ public class PlayormContext implements IPlayormContext {
 					}
 				}
 			}
-			log.info("done initializing all tables");
+			log.info("done initializing all tables cnt="+numTables+" numTimeSeries="+count);
 		}
 		return nameToTable.get(tableNameIfVirtual);
 	}
@@ -185,11 +189,25 @@ public class PlayormContext implements IPlayormContext {
 			//initialize it all
 			Query<DboTableMeta> query = destMgr.createNamedQuery(DboTableMeta.class, "findAll");
 			Cursor<KeyValue<DboTableMeta>> cursor = query.getResults();
+			int numTables = 0;
+			int count = 0;
 			while(cursor.next()) {
 				DboTableMeta t = cursor.getCurrent().getValue();
 				destToTable.put(t.getColumnFamily(), t);
+				numTables++;
+				if(t.isTimeSeries()) {
+					count++;
+					DboColumnIdMeta idMeta = t.getIdColumnMeta();
+					//force load of meta
+					idMeta.getColumnName();
+					Collection<DboColumnMeta> columns = t.getAllColumns();
+					for(DboColumnMeta c : columns) {
+						//force load of meta...
+						c.getColumnName();
+					}
+				}
 			}
-			log.info("done initializing all tables");
+			log.info("done initializing all tables...numTables="+numTables+" timeSeries="+count);
 		}
 		
 		return destToTable.get(tableNameIfVirtual);
