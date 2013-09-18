@@ -95,7 +95,7 @@ public class DatabusMapredTest extends Configured implements Tool
 //	        Charset charset = Charset.forName("UTF-8");
 //	        CharsetEncoder encoder = charset.newEncoder();
 //	        predicate.setColumn_names(Arrays.asList(str_to_bb("time"), str_to_bb("value")));
-	        ConfigHelper.setInputSplitSize(job.getConfiguration(), 650000);
+	        ConfigHelper.setInputSplitSize(job.getConfiguration(), 3000000);
 	        ConfigHelper.setInputSlicePredicate(job.getConfiguration(), predicate);
 	
 	        int rangebatchsize = 1024;
