@@ -103,8 +103,14 @@ public class DatabusCopyMapperImpl {
     		byte[] valuearray = new byte[col.value().remaining()];
     		col.value().get(valuearray);
 			String colName = playorm.bytesToString(namearray); 
-			Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
-			values.put(colName, objVal);
+			try {
+				Object objVal = playorm.sourceConvertFromBytes(tableNameIfVirtual, colName, valuearray);
+				values.put(colName, objVal);
+			} catch(RuntimeException e) {
+				log.warn("Exception converting table="+tableNameIfVirtual+" col="+colName);
+				word.set("FAILURE-"+tableNameIfVirtual);
+				context.write(word, one);
+			}
 		}
 		String pkValue = playorm.getSourceIdColumnValue(tableNameIfVirtual, key);
 
@@ -148,7 +154,7 @@ public class DatabusCopyMapperImpl {
     			//try to account for every case of 'null' or empty we can think of:
     			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString)) {
     				String hex = StandardConverters.convertToString(valueAsString);
-    				log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex+" time="+time);
+    				//log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex+" time="+time);
     		        word.set("total-null-values");
     		        context.write(word, one);
     				return;
@@ -162,7 +168,7 @@ public class DatabusCopyMapperImpl {
 		}
 		
 		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
-			log.warn("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to dest table ' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
+			//log.warn("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to dest table ' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
 			word.set(tableNameIfVirtual+" not written because MAX_VALUE");
 	        context.write(word, one);
 	        return;

@@ -345,7 +345,13 @@ public class PlayormContext implements IPlayormContext {
 	public Object sourceConvertFromBytes(String tableNameIfVirtual, String columnName,
 			byte[] valuearray) {
 		DboTableMeta meta = lookupSourceMEta(tableNameIfVirtual);
+		if(meta == null) {
+			throw new RuntimeException("Big issue looking up table that does not exist="+tableNameIfVirtual+" c="+columnName);
+		}
 		DboColumnMeta columnMeta = meta.getColumnMeta(columnName);
+		if(columnMeta == null) {
+			throw new RuntimeException("Issue looking up column meta table="+tableNameIfVirtual+" column="+columnName);
+		}
 		return columnMeta.convertFromStorage2(valuearray);
 	}
 	
