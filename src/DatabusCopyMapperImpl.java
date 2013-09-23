@@ -117,13 +117,13 @@ public class DatabusCopyMapperImpl {
 		boolean written = playorm.postNormalTable(values, tableNameIfVirtual, pkValue);
 		
 		if(written) {
-			word.set("totalrelationalwritten");
+			word.set("Xtotalrelationalwritten");
 			context.write(word, one);
 		} else {
-			word.set("totalrelationalskipped");
+			word.set("Xtotalrelationalskipped");
 			context.write(word, one);
 		}
-		word.set(tableNameIfVirtual);
+		word.set("ARELATIONAL-"+tableNameIfVirtual);
 		context.write(word, one);
 	}
 
@@ -135,7 +135,7 @@ public class DatabusCopyMapperImpl {
 		if(columns.size() != 1)
 			throw new RuntimeException("BIG ISSUE, column size="+columns.size()+" but should only have a value column");
 
-        word.set("totalread222");
+        word.set("Xtotalread222");
         context.write(word, one);
 
 		//we are only in here because this is a stream, there is only one column and it's name is "value":
@@ -155,7 +155,7 @@ public class DatabusCopyMapperImpl {
     			if (valueAsString == null || "".equals(valueAsString) || "null".equalsIgnoreCase(valueAsString)) {
     				String hex = StandardConverters.convertToString(valueAsString);
     				//log.warn("got a null or empty value in a timeseries! valueAsString is '"+valueAsString+"', tableNameIfVirtual is "+tableNameIfVirtual+" valuearray is "+valuearray+" len="+valuearray.length+" hex="+hex+" time="+time);
-    		        word.set("total-null-values");
+    		        word.set("Xtotal-null-values");
     		        context.write(word, one);
     				return;
     			}
@@ -169,7 +169,7 @@ public class DatabusCopyMapperImpl {
 		
 		if ((""+Integer.MAX_VALUE).equals(valueAsString)) {
 			//log.warn("NOT POSTING TO TIMESERIES BECAUSE VALUE IS Integer.MAX_VALUE!!!! from table='"+ playorm.getSrcTableDesc(tableNameIfVirtual)+" to dest table ' key="+time+", value="+valueAsString+" mapcounter is "+mapcounter);
-			word.set(tableNameIfVirtual+" not written because MAX_VALUE");
+			word.set("Xnot written because MAX_VALUE");
 	        context.write(word, one);
 	        return;
 		}
@@ -179,10 +179,10 @@ public class DatabusCopyMapperImpl {
     		//word.set(tableNameIfVirtual);
             //context.write(word, one);
 
-        	word.set("totalwritten");
+        	word.set("Xtotalwritten");
         	context.write(word, one);
         } else {
-        	word.set(tableNameIfVirtual+" not written, no table found");
+        	word.set("A-"+tableNameIfVirtual+" not written, no table found");
         	context.write(word, one);
         }
 	}
